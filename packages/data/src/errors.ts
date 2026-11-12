@@ -12,6 +12,8 @@ export type ForecastErrorKind =
   | 'provider'
   /** La respuesta no tiene el formato esperado o le faltan datos imprescindibles. */
   | 'invalid-data'
+  /** El servicio rechazó la clave de acceso (HTTP 401 o 403). */
+  | 'auth'
   /** La petición se canceló (por ejemplo, el usuario cambió de pantalla). */
   | 'aborted';
 

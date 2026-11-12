@@ -7,7 +7,34 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
-En la rama `fase-5b`. Aún no hay cambios cerrados.
+Nada todavía.
+
+## [0.7.0] - 2026-11-12 · fase 5b
+
+### Añadido
+
+- Pantalla Mapa: mapa propio en SVG con zoom animado del mundo a España, pin rojo en cada estación
+  (mismo formato en el mapa y en la leyenda), zoom sobre la zona de la estación elegida, ciudades de
+  referencia y tu ubicación con un aviso discreto si no está activada (ADR 0009).
+- Distancia en línea recta a cada estación y rutas en coche (tiempo con tráfico, retraso, peajes) y
+  en autobús (tiempo, tarifa, líneas) con Google Routes API.
+- Ajustes: clave de Google Maps de cada usuario, guardada solo en su equipo.
+- Control de versiones documentado: etiquetas `v0.1.0` a `v0.6.0`, `docs/VERSIONES.md` y este
+  registro de cambios.
+
+### Cambiado
+
+- `fetchJson` admite POST y cabeceras y distingue el error de clave rechazada.
+- Las ramas de fases cerradas se borran al fusionarlas, para que no choquen con sus etiquetas.
+
+### Seguridad
+
+- La clave de Google no va en el código ni en el instalador: cada persona usa la suya.
+- La CSP de Tauri permite conectar con `routes.googleapis.com`.
+
+### Sin verificar
+
+- Las rutas no se probaron con una clave real de Google.
 
 ## [0.6.0] - 2026-11-12 · fase 5a
 
