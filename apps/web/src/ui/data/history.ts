@@ -14,7 +14,7 @@ import { useNow } from '../hooks/useNow';
 export const historyProvider = createOpenMeteoHistory();
 
 /** Cuántas temporadas se muestran: la última y las cuatro anteriores. */
-export const SEASONS_SHOWN = 5;
+const SEASONS_SHOWN = 5;
 
 /**
  * Última temporada que ya ha empezado. En verano (de junio a septiembre) la "actual" todavía no ha

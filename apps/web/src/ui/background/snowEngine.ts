@@ -33,7 +33,7 @@ export interface SnowField {
 export const MAX_DT_SECONDS = 0.05;
 
 /** Copos por cada 1280×820 px con intensidad 1 (densidad de la maqueta). */
-export const BASE_DENSITY = 180;
+const BASE_DENSITY = 180;
 
 const LAYERS = [
   { share: 0.5, size: 1.2, speed: 28 },

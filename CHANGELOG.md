@@ -7,6 +7,27 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.12.0] - 2026-11-12 · fase 10
+
+### Añadido
+
+- El mapa de pistas dibuja la forma de la montaña: relieve sombreado en los tonos de la app que
+  recorta la silueta alrededor de las pistas, y curvas de nivel cada 100 m (más marcadas cada
+  500 m). Se pueden ocultar desde la leyenda (ADR 0013).
+- Al pasar por una pista o un remonte se ve su cota de salida, de llegada y el desnivel.
+- Mallas de altitud de las 10 estaciones (Terrain Tiles de Mapzen en AWS), dentro de la app y sin
+  conexión; se regeneran con `scripts/build-terrain.mjs`.
+- Tests de la geometría del mapa de pistas, del relieve y de los datos de pistas y terreno.
+
+### Cambiado
+
+- Las pantallas se cargan al abrirlas por primera vez: el paquete inicial baja de 1,26 MB a unos
+  260 KB.
+- `MapScreen` (770 líneas) se divide en componentes propios dentro de `ui/map/`.
+- El cuadro del mapa de pistas atrapa el foco, devuelve el foco al cerrarse y no se vuelve a
+  montar al repintar la pantalla.
+- Se quitan exportaciones que no usaba nadie.
+
 ## [0.11.0] - 2026-11-12 · fase 9
 
 ### Añadido

@@ -10,10 +10,10 @@ import { useQueries } from '@tanstack/react-query';
 import { useRoutesKey } from '../state/routesKeyStore';
 
 /** Cada cuánto se vuelve a pedir una ruta: el tráfico cambia, pero cada petición cuesta dinero. */
-export const ROUTE_STALE_MS = 10 * 60_000;
+const ROUTE_STALE_MS = 10 * 60_000;
 
 /** Redondea a 3 decimales (unos 100 m): moverse un poco no repite la petición. */
-export const roundCoord = (n: number) => Math.round(n * 1000) / 1000;
+const roundCoord = (n: number) => Math.round(n * 1000) / 1000;
 
 export interface RouteState {
   mode: TravelMode;

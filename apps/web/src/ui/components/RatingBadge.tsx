@@ -16,7 +16,7 @@ export const RATING_STYLE: Record<Rating, string> = {
   mala: 'bg-rose-400/20 text-rose-100 ring-rose-300/40',
 };
 
-export const DISCIPLINE_LABEL: Record<Discipline, string> = {
+const DISCIPLINE_LABEL: Record<Discipline, string> = {
   ski: 'Esquí',
   snowboard: 'Snowboard',
 };

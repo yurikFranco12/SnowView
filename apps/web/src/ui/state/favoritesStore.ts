@@ -4,7 +4,7 @@ import { storage } from '../../platform/storage';
 
 const KEY = 'favorites';
 /** Favoritas del primer arranque: Pirineo y Sierra Nevada. */
-export const DEFAULT_FAVORITES = ['baqueira-beret', 'formigal', 'sierra-nevada'] as const;
+const DEFAULT_FAVORITES = ['baqueira-beret', 'formigal', 'sierra-nevada'] as const;
 
 interface FavoritesState {
   /** Ids en orden; la primera es la estación principal. */

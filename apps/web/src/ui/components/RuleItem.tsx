@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<RuleStatus | 'cargando' | 'error' | 'desactivada', st
   desactivada: 'Desactivada',
 };
 
-export function ruleStatusKey(r: RuleResult): keyof typeof STATUS_LABEL {
+function ruleStatusKey(r: RuleResult): keyof typeof STATUS_LABEL {
   if (!r.rule.enabled) return 'desactivada';
   if (r.evaluation) return r.evaluation.status;
   return r.loading ? 'cargando' : 'error';
