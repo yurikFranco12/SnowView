@@ -2,7 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useEffect, type ReactNode } from 'react';
 import { SnowCanvas } from './background/SnowCanvas';
-import { queryClient } from './data/forecast';
+import { applyRefreshInterval, queryClient } from './data/forecast';
 import { useRuleMonitor } from './data/rules';
 import { Sidebar } from './layout/Sidebar';
 import { TitleBar } from './layout/TitleBar';
@@ -14,6 +14,7 @@ import { StationsScreen } from './screens/StationsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
 import { useRules } from './state/rulesStore';
+import { snowIntensity, useSettings } from './state/settingsStore';
 
 const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
@@ -32,11 +33,19 @@ export function App() {
   const view = useAppStore((s) => s.view);
   const loadFavorites = useFavorites((s) => s.load);
   const loadRules = useRules((s) => s.load);
+  const loadSettings = useSettings((s) => s.load);
+  const refreshMinutes = useSettings((s) => s.refreshMinutes);
+  const snowLevel = useSettings((s) => s.snowLevel);
 
   useEffect(() => {
     void loadFavorites();
     void loadRules();
-  }, [loadFavorites, loadRules]);
+    void loadSettings();
+  }, [loadFavorites, loadRules, loadSettings]);
+
+  useEffect(() => {
+    applyRefreshInterval(refreshMinutes);
+  }, [refreshMinutes]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -47,7 +56,7 @@ export function App() {
           className="relative flex h-full flex-col overflow-hidden"
           style={{ background: 'var(--sv-background)' }}
         >
-          <SnowCanvas />
+          <SnowCanvas intensity={snowIntensity(snowLevel)} />
           <TitleBar />
           <div className="relative flex min-h-0 flex-1">
             <Sidebar />

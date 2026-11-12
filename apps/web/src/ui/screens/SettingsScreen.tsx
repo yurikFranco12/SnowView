@@ -1,4 +1,4 @@
-import { Bell, Power } from 'lucide-react';
+import { Bell, Power, RefreshCw, Snowflake } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useId, useState } from 'react';
 import { autostartAvailable, isAutostartEnabled, setAutostart } from '../../platform/autostart';
@@ -9,6 +9,7 @@ import {
   type NotificationAccess,
 } from '../../platform/notifications';
 import { revealItem } from '../motion/reveal';
+import { REFRESH_OPTIONS, SNOW_LEVELS, useSettings } from '../state/settingsStore';
 
 const ACCESS_TEXT: Record<NotificationAccess, string> = {
   granted: 'Activadas',
@@ -114,6 +115,86 @@ function NotificationsRow() {
   );
 }
 
+interface ChoiceProps<T extends string | number> {
+  icon: typeof Bell;
+  title: string;
+  hint: string;
+  value: T;
+  options: readonly { value: T; label: string }[];
+  onChange: (value: T) => void;
+}
+
+/** Fila con un grupo de opciones excluyentes (radiogroup). */
+function ChoiceRow<T extends string | number>({
+  icon: Icon,
+  title,
+  hint,
+  value,
+  options,
+  onChange,
+}: ChoiceProps<T>) {
+  const labelId = useId();
+  return (
+    <li className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 py-4">
+      <Icon className="size-5 shrink-0 text-ice" aria-hidden="true" strokeWidth={1.6} />
+      <div className="min-w-0 flex-1">
+        <p id={labelId} className="text-[15px] font-semibold">
+          {title}
+        </p>
+        <p className="text-xs text-muted">{hint}</p>
+      </div>
+      <div role="radiogroup" aria-labelledby={labelId} className="flex shrink-0 gap-1.5">
+        {options.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={o.value === value}
+            onClick={() => onChange(o.value)}
+            className={`rounded-xl px-3 py-1.5 text-xs transition-colors ${
+              o.value === value
+                ? 'bg-ice/[0.2] font-semibold text-ice'
+                : 'text-muted hover:bg-white/[0.08] hover:text-text'
+            }`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </li>
+  );
+}
+
+function RefreshRow() {
+  const minutes = useSettings((s) => s.refreshMinutes);
+  const set = useSettings((s) => s.setRefreshMinutes);
+  return (
+    <ChoiceRow
+      icon={RefreshCw}
+      title="Consultar la previsión cada"
+      hint="Con menos tiempo los avisos llegan antes, pero se hacen más peticiones a Open-Meteo."
+      value={minutes}
+      options={REFRESH_OPTIONS.map((o) => ({ value: o.minutes, label: o.label }))}
+      onChange={set}
+    />
+  );
+}
+
+function SnowRow() {
+  const level = useSettings((s) => s.snowLevel);
+  const set = useSettings((s) => s.setSnowLevel);
+  return (
+    <ChoiceRow
+      icon={Snowflake}
+      title="Nevada de fondo"
+      hint="Menos copos gastan menos GPU. Con movimiento reducido en Windows la escena queda fija."
+      value={level}
+      options={SNOW_LEVELS.map((l) => ({ value: l.level, label: l.label }))}
+      onChange={set}
+    />
+  );
+}
+
 export function SettingsScreen() {
   return (
     <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
@@ -127,6 +208,8 @@ export function SettingsScreen() {
         <ul className="flex flex-col gap-3">
           <NotificationsRow />
           <AutostartRow />
+          <RefreshRow />
+          <SnowRow />
         </ul>
         <p className="mt-4 text-xs text-muted">
           Al cerrar la ventana, SnowView sigue en la bandeja. Para salir del todo, usa «Salir» en el
