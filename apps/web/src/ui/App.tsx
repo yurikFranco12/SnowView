@@ -19,6 +19,7 @@ import { WebcamsScreen } from './screens/WebcamsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
 import { useRules } from './state/rulesStore';
+import { useManualLocation } from './state/manualLocationStore';
 import { useRoutesKey } from './state/routesKeyStore';
 import { snowIntensity, useSettings } from './state/settingsStore';
 
@@ -46,6 +47,7 @@ export function App() {
   const loadRules = useRules((s) => s.load);
   const loadSettings = useSettings((s) => s.load);
   const loadRoutesKey = useRoutesKey((s) => s.load);
+  const loadManualLocation = useManualLocation((s) => s.load);
   const refreshMinutes = useSettings((s) => s.refreshMinutes);
   const snowLevel = useSettings((s) => s.snowLevel);
 
@@ -54,7 +56,8 @@ export function App() {
     void loadRules();
     void loadSettings();
     void loadRoutesKey();
-  }, [loadFavorites, loadRules, loadSettings, loadRoutesKey]);
+    void loadManualLocation();
+  }, [loadFavorites, loadRules, loadSettings, loadRoutesKey, loadManualLocation]);
 
   useEffect(() => {
     applyRefreshInterval(refreshMinutes);

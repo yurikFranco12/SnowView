@@ -9,6 +9,21 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 Nada todavía.
 
+## [0.7.1] - 2026-11-12 · fase 5c
+
+### Añadido
+
+- Ubicación fijada a mano en el mapa: pulsando en él o escribiendo coordenadas; manda sobre la del
+  equipo y se guarda en él.
+- Precisión de la ubicación del equipo visible (±X km), con aviso si pasa de 5 km y círculo en el
+  mapa si pasa de 300 m.
+- Mapa interactivo: rueda para acercar, arrastrar para mover y botones + y −.
+
+### Corregido
+
+- La ubicación del equipo podía quedar a decenas de kilómetros de donde estás (Windows la calcula por
+  la red): ahora se pide con alta precisión y se puede corregir.
+
 ## [0.7.0] - 2026-11-12 · fase 5b
 
 ### Añadido

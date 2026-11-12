@@ -133,6 +133,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-4b` | v0.5.0  | 2026-11-12 | `2ae6842`        | Condiciones para esquiar y snowboard, calendario       |
 | `fase-5a` | v0.6.0  | 2026-11-12 | `5667031`        | Webcams de las estaciones dentro de la app             |
 | `fase-5b` | v0.7.0  | 2026-11-12 | `git show`       | Control de versiones documentado y mapa de estaciones  |
+| `fase-5c` | v0.7.1  | 2026-11-12 | `git show`       | Ubicación a mano y mapa interactivo                    |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).

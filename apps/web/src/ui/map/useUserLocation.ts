@@ -1,5 +1,6 @@
 import type { LatLng } from '@snowview/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useManualLocation } from '../state/manualLocationStore';
 
 export type LocationStatus =
   /** Aún no se ha comprobado. */
@@ -18,8 +19,13 @@ export type LocationStatus =
 
 export interface UserLocation {
   status: LocationStatus;
+  /** La ubicación fijada a mano si la hay; si no, la del equipo. */
   position: LatLng | undefined;
-  /** Pide la posición: si el permiso estaba sin decidir, Windows lo preguntará. */
+  /** De dónde viene `position`. */
+  source: 'manual' | 'device' | undefined;
+  /** Precisión de la ubicación del equipo, en metros (undefined si es manual o no se conoce). */
+  accuracyM: number | undefined;
+  /** Pide la posición del equipo: si el permiso estaba sin decidir, Windows lo preguntará. */
   request: () => void;
 }
 
@@ -36,10 +42,14 @@ function initialStatus(): LocationStatus {
  * Ubicación del usuario. Al montarse solo CONSULTA el permiso (no lo pide): si ya está concedido
  * lee la posición; si no, deja el estado para que la interfaz muestre un aviso discreto.
  * Se queda observando el permiso, para reaccionar si el usuario lo cambia en Windows.
+ * Una ubicación fijada a mano (`useManualLocation`) tiene prioridad sobre la del equipo.
  */
 export function useUserLocation(): UserLocation {
+  const manual = useManualLocation((s) => s.manual);
   const [status, setStatus] = useState<LocationStatus>(initialStatus);
-  const [position, setPosition] = useState<LatLng | undefined>(undefined);
+  const [device, setDevice] = useState<{ position: LatLng; accuracyM: number } | undefined>(
+    undefined,
+  );
   const alive = useRef(true);
 
   const read = useCallback(() => {
@@ -48,14 +58,18 @@ export function useUserLocation(): UserLocation {
     navigator.geolocation.getCurrentPosition(
       (p) => {
         if (!alive.current) return;
-        setPosition({ latitude: p.coords.latitude, longitude: p.coords.longitude });
+        setDevice({
+          position: { latitude: p.coords.latitude, longitude: p.coords.longitude },
+          accuracyM: p.coords.accuracy,
+        });
         setStatus('granted');
       },
       (e) => {
         if (!alive.current) return;
         setStatus(e.code === e.PERMISSION_DENIED ? 'denied' : 'error');
       },
-      { enableHighAccuracy: false, timeout: 15_000, maximumAge: 5 * 60_000 },
+      // Alta precisión: Windows usa Wi-Fi o GPS si los tiene, en vez de la IP del operador.
+      { enableHighAccuracy: true, timeout: 20_000, maximumAge: 2 * 60_000 },
     );
   }, []);
 
@@ -85,5 +99,20 @@ export function useUserLocation(): UserLocation {
     };
   }, [read]);
 
-  return { status, position, request: read };
+  if (manual) {
+    return {
+      status: 'granted',
+      position: manual,
+      source: 'manual',
+      accuracyM: undefined,
+      request: read,
+    };
+  }
+  return {
+    status,
+    position: device?.position,
+    source: device ? 'device' : undefined,
+    accuracyM: device?.accuracyM,
+    request: read,
+  };
 }

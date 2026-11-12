@@ -43,6 +43,19 @@ coche (con tráfico y peajes) y en autobús. La app se va a repartir entre amigo
    previstos» solo cuando Google no devuelve peaje, y «Hay peajes, pero Google no da el precio» si
    los devuelve sin importe. El autobús suele no tener ruta en estaciones sin línea regular.
 
+## Actualización (fase 5c): ubicación a mano y mapa interactivo
+
+La ubicación del equipo no siempre es buena: Windows la calcula por Wi-Fi o por la dirección IP del
+operador y puede errar decenas de kilómetros (el autor, en Guriezo, la vio mal). Se añade:
+
+- **Ubicación fijada a mano**, que manda sobre la del equipo y se guarda en él: pulsando en el mapa,
+  escribiendo coordenadas (formato de Google Maps) o volviendo a «Usar la del equipo».
+- **Precisión visible**: la ubicación del equipo se pide con alta precisión (Wi-Fi o GPS si los hay), se
+  muestra su margen (±X km) y, si pasa de 300 m, se dibuja un círculo en el mapa; con más de 5 km se
+  avisa de que conviene corregirla.
+- **Mapa interactivo**: rueda para acercar (centrada en el puntero), arrastrar para mover y botones
+  - y −, necesarios para fijar la ubicación con precisión.
+
 ## Sin verificar
 
 La API de Google **no se ha probado con una clave real** (el desarrollo no tiene una con
