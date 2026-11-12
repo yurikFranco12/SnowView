@@ -6,8 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** 3b, comparador de estaciones, en la rama `fase-3b`. Después, 3c (historial de
-  nevadas). La Fase 2 está en pausa a petición del usuario.
+- **Fase actual:** ninguna en curso. La Fase 3 está completa (3a, 3b y 3c); app 0.4.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -16,13 +15,21 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
 
+## Fase 3c — tareas
+
+- [x] Verificar la API histórica de Open-Meteo (ADR 0006)
+- [x] `core/`: temporadas y resumen por temporada (14 tests)
+- [x] `data/`: cliente del historial; `fetchJson` común con la previsión (11 tests)
+- [x] Pantalla Historial: últimas 5 temporadas, nieve por mes y mayor nevada; CSP actualizada
+- [x] Cerrar la fase: instalador 0.4.0, fusión en `main`, etiqueta `fase-3c` y sincronizar claude.ai
+
 ## Fase 3b — tareas
 
 - [x] Pantalla Comparar: hasta 4 estaciones, nieve en cima y base, próximas 48 h, temperatura, viento
       y tiempo, con el mejor valor de cada fila marcado (estrella y texto, no solo color)
 - [x] Gráfica de barras de nieve en la cima y tabla accesible (`caption`, `scope`)
 - [x] Lógica de destacados y de selección con tests (7 tests)
-- [ ] Cerrar la fase: fusión en `main` y etiqueta `fase-3b`
+- [x] Cerrar la fase: fusión en `main` y etiqueta `fase-3b`
 
 ## Fase 3a — tareas
 
@@ -84,5 +91,5 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Fase 3c: historial de nevadas por temporada, e instalador con todo lo de la Fase 3.
+1. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
 2. Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.
