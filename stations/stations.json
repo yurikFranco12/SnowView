@@ -12,7 +12,9 @@
       "la-molina": "ca.wikipedia.org/wiki/La_Molina_(estació_d'esquí): 1667-2537 m (base corregida de 1700 a 1667; es.wikipedia da 1650; la web oficial no estaba accesible)",
       "masella": "es.wikipedia.org/wiki/Masella: 1600-2535 m (coincide)",
       "grandvalira": "es.wikipedia.org/wiki/Grandvalira: 1710-2640 m (coincide)",
-      "sierra-nevada": "es.wikipedia.org/wiki/Sierra_Nevada_(estación_de_esquí): 2100-3300 m (coincide)"
+      "sierra-nevada": "es.wikipedia.org/wiki/Sierra_Nevada_(estación_de_esquí): 2100-3300 m (coincide)",
+      "alto-campoo": "es.wikipedia.org/wiki/Alto_Campoo: 1650-2172 m (Cantur da una cima de 2125 m; se usa Wikipedia; coordenadas de Brañavieja, GeoNames 8617852)",
+      "cauterets": "SIN VERIFICAR: skiinfo.fr da 1730-2450 m (el texto cita la cima del telesilla de la Brèche a 2415 m) y alti-mag.com 1730-2415 m; la web oficial y Wikipedia no dan cifras. Coordenadas de Cauterets Puntas (GeoNames 12908715)."
     }
   },
   "stations": [
@@ -111,6 +113,30 @@
       "topElevationM": 3300,
       "timeZone": "Europe/Madrid",
       "elevationsVerified": true
+    },
+    {
+      "id": "alto-campoo",
+      "name": "Alto Campoo",
+      "region": "Cantabria · Cordillera Cantábrica",
+      "country": "ES",
+      "latitude": 43.03389,
+      "longitude": -4.35677,
+      "baseElevationM": 1650,
+      "topElevationM": 2172,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": true
+    },
+    {
+      "id": "cauterets",
+      "name": "Cauterets",
+      "region": "Hautes-Pyrénées · Pirineo francés",
+      "country": "FR",
+      "latitude": 42.85142,
+      "longitude": -0.13603,
+      "baseElevationM": 1730,
+      "topElevationM": 2415,
+      "timeZone": "Europe/Paris",
+      "elevationsVerified": false
     }
   ]
 }
