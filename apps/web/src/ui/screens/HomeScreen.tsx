@@ -12,6 +12,9 @@ import { revealItem } from '../motion/reveal';
 import { useNow } from '../hooks/useNow';
 import { useAppStore } from '../state/appStore';
 import { useFavorites } from '../state/favoritesStore';
+import { useSettings } from '../state/settingsStore';
+import { ageMinutes, formatAge, isOutdated } from '../data/offlineCache';
+import { WifiOff } from 'lucide-react';
 import { useRules } from '../state/rulesStore';
 
 const dateFormatter = new Intl.DateTimeFormat('es-ES', {
@@ -250,9 +253,23 @@ export function HomeScreen() {
   const loaded = useFavorites((s) => s.loaded);
   const [mainId, ...rest] = ids;
   const mainQuery = useStationForecast(mainId);
+  const refreshMinutes = useSettings((s) => s.refreshMinutes);
+  // Hora real de la previsión: si hubo que usar datos guardados, es anterior a la última consulta.
+  const fetchedAt = mainQuery.data?.fetchedAt;
+  const age = mainQuery.data ? ageMinutes(mainQuery.data, now) : 0;
+  const outdated = mainQuery.data !== undefined && isOutdated(age, refreshMinutes);
 
   return (
     <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
+      {outdated && (
+        <p
+          role="status"
+          className="flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm"
+        >
+          <WifiOff className="size-4 shrink-0 text-muted" aria-hidden="true" />
+          Sin conexión con Open-Meteo: se muestran datos guardados {formatAge(age)}.
+        </p>
+      )}
       <motion.header variants={revealItem} className="flex items-end justify-between">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
@@ -283,8 +300,7 @@ export function HomeScreen() {
           </h2>
           <p className="text-xs text-muted">
             {provider.attribution}
-            {mainQuery.dataUpdatedAt > 0 &&
-              ` · actualizado a las ${timeFormatter.format(mainQuery.dataUpdatedAt)}`}
+            {fetchedAt !== undefined && ` · actualizado a las ${timeFormatter.format(fetchedAt)}`}
           </p>
         </motion.div>
         {rest.length > 0 ? (

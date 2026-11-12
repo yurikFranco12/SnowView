@@ -6,8 +6,8 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. La Fase 1 (Windows) está completa; la Fase 2 (iOS y servidor)
-  es condicional y pregunta por el Mac y la cuenta de Apple Developer.
+- **Fase actual:** 3a, ajustes y modo sin conexión, en la rama `fase-3a`. Después, 3b (comparador
+  de estaciones) y 3c (historial de nevadas). La Fase 2 está en pausa a petición del usuario.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -15,6 +15,14 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 3a — tareas
+
+- [x] Ajuste: frecuencia de consulta de la previsión (15 min, 30 min, 1 h, 3 h)
+- [x] Ajuste: intensidad de la nevada de fondo (sin nieve, suave, normal, intensa)
+- [x] Modo sin conexión: la última previsión de cada estación se guarda en disco y se usa si falla
+      la consulta, con aviso de su edad (tests de caché)
+- [ ] Cerrar la fase: fusión en `main` y etiqueta `fase-3a`
 
 ## Fase 1c — tareas (cerrada)
 
@@ -68,7 +76,6 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Decidir si se sigue con la Fase 2 (iOS y servidor). Antes hay que usar la versión de Windows y
-   preguntar por el Mac y la cuenta de Apple Developer.
-2. Ajustes pendientes: frecuencia de consulta e intensidad de la nevada de fondo.
+1. Fase 3b: comparador de estaciones.
+2. Fase 3c: historial de nevadas por temporada, e instalador con todo lo de la Fase 3.
 3. Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.

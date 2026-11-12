@@ -11,7 +11,7 @@ import { useEffect, useMemo } from 'react';
 import { showNotification } from '../../platform/notifications';
 import { useNow } from '../hooks/useNow';
 import { useRules } from '../state/rulesStore';
-import { provider } from './forecast';
+import { fetchStationForecast } from './forecast';
 import { alertBody, alertTitle } from './ruleText';
 
 export interface RuleResult {
@@ -39,7 +39,7 @@ export function useRuleResults(): RuleResult[] {
       queryFn: ({ signal }: { signal: AbortSignal }) => {
         const station = getStation(id);
         if (!station) throw new Error('Estación desconocida');
-        return provider.getForecast(station, { signal });
+        return fetchStationForecast(station, signal);
       },
     })),
   });

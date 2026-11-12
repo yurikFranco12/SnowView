@@ -16,6 +16,7 @@ import {
   type ForecastErrorKind,
 } from '@snowview/data';
 import { QueryClient, useQuery } from '@tanstack/react-query';
+import { loadCachedForecast, saveCachedForecast } from './offlineCache';
 
 /** Único proveedor de la app. Cambiar de proveedor es cambiar esta línea. */
 export const provider = createOpenMeteoProvider();
@@ -37,6 +38,43 @@ export const queryClient = new QueryClient({
   },
 });
 
+/**
+ * Cambia cada cuánto se refresca la previsión (ajuste del usuario). La frescura es la mitad del
+ * intervalo, con tope de 30 min, para que un refresco programado siempre vuelva a pedir datos.
+ */
+export function applyRefreshInterval(minutes: number): void {
+  const defaults = queryClient.getDefaultOptions();
+  queryClient.setDefaultOptions({
+    ...defaults,
+    queries: {
+      ...defaults.queries,
+      refetchInterval: minutes * 60_000,
+      staleTime: Math.min(30, minutes / 2) * 60_000,
+    },
+  });
+}
+
+/**
+ * Pide la previsión de una estación. Si la consulta falla (sin conexión, límite de peticiones,
+ * error del proveedor) y hay una previsión guardada reciente, devuelve esa: así la app sigue siendo
+ * útil sin conexión. La pantalla avisa de la edad de los datos con `fetchedAt`.
+ */
+export async function fetchStationForecast(
+  station: CuratedStation,
+  signal: AbortSignal,
+): Promise<StationForecast> {
+  try {
+    const forecast = await provider.getForecast(station, { signal });
+    void saveCachedForecast(forecast);
+    return forecast;
+  } catch (error) {
+    if (signal.aborted) throw error;
+    const cached = await loadCachedForecast(station.id);
+    if (cached) return cached;
+    throw error;
+  }
+}
+
 export function useStationForecast(stationId: string | undefined) {
   const station = stationId ? getStation(stationId) : undefined;
   return useQuery({
@@ -44,7 +82,7 @@ export function useStationForecast(stationId: string | undefined) {
     enabled: station !== undefined,
     queryFn: ({ signal }) => {
       if (!station) throw new Error('Estación desconocida');
-      return provider.getForecast(station, { signal });
+      return fetchStationForecast(station, signal);
     },
   });
 }
