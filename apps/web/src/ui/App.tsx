@@ -1,5 +1,4 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Settings } from 'lucide-react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useEffect, type ReactNode } from 'react';
 import { SnowCanvas } from './background/SnowCanvas';
@@ -10,7 +9,7 @@ import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
 import { AlertsScreen } from './screens/AlertsScreen';
 import { HomeScreen } from './screens/HomeScreen';
-import { PlaceholderScreen } from './screens/PlaceholderScreen';
+import { SettingsScreen } from './screens/SettingsScreen';
 import { StationsScreen } from './screens/StationsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
@@ -20,14 +19,7 @@ const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
   estaciones: () => <StationsScreen />,
   alertas: () => <AlertsScreen />,
-  ajustes: () => (
-    <PlaceholderScreen
-      title="Ajustes"
-      icon={Settings}
-      description="Arranque con Windows, frecuencia de consulta e intensidad de la nevada de fondo."
-      phase="Llega en la Fase 1c"
-    />
-  ),
+  ajustes: () => <SettingsScreen />,
 };
 
 /** Vigila las reglas mientras la app está abierta. Va dentro del QueryClientProvider. */

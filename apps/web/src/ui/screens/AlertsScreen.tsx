@@ -2,9 +2,9 @@ import { MAX_WINDOW_HOURS, validateRule, type AlertRule } from '@snowview/core';
 import { searchStations } from '@snowview/data';
 import { Bell, BellOff, Pencil, Plus, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import {
-  notificationAccess,
+  getNotificationAccess,
   requestNotificationAccess,
   type NotificationAccess,
 } from '../../platform/notifications';
@@ -209,7 +209,10 @@ function RuleForm({ rule, onClose }: { rule: AlertRule | undefined; onClose: () 
 }
 
 function NotificationBanner() {
-  const [access, setAccess] = useState<NotificationAccess>(() => notificationAccess());
+  const [access, setAccess] = useState<NotificationAccess>('granted');
+  useEffect(() => {
+    void getNotificationAccess().then(setAccess);
+  }, []);
   if (access === 'granted') return null;
   return (
     <div

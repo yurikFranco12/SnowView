@@ -86,10 +86,19 @@ export function useRuleMonitor(): void {
     const evaluations = results.flatMap((r) => (r.evaluation ? [r.evaluation] : []));
     const fresh = pickNewAlerts(evaluations, notified);
     if (fresh.length === 0) return;
-    const sent = fresh.filter((e) => {
-      const name = getStation(e.rule.stationId)?.name ?? e.rule.stationId;
-      return showNotification(alertTitle(name), alertBody(e), e.eventKey ?? undefined);
-    });
-    if (sent.length > 0) recordNotified(sent, Date.now());
+    let cancelled = false;
+    void (async () => {
+      const sent: RuleEvaluation[] = [];
+      for (const e of fresh) {
+        const name = getStation(e.rule.stationId)?.name ?? e.rule.stationId;
+        if (await showNotification(alertTitle(name), alertBody(e), e.eventKey ?? undefined)) {
+          sent.push(e);
+        }
+      }
+      if (!cancelled && sent.length > 0) recordNotified(sent, Date.now());
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [results, notified, loaded, recordNotified]);
 }

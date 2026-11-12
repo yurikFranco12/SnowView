@@ -17,13 +17,14 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 - [x] `core/`: reglas del usuario (más de 15 cm en las próximas 48 h, viento y temperatura
       opcionales), episodios de nieve y registro de avisos sin repetir (23 tests)
-- [ ] Notificaciones sin repetir (plugin de notificaciones de Tauri)
-- [ ] Bandeja del sistema (Rust)
-- [ ] Arranque con Windows (plugin autostart)
+- [x] Notificaciones sin repetir (plugin de notificaciones de Tauri), con registro en disco
+- [x] Bandeja del sistema (Rust): cerrar oculta la ventana; «Salir» en el menú
+- [x] Arranque con Windows (plugin autostart) con interruptor en Ajustes
+- [ ] Probar en el equipo real: notificación nativa, bandeja y arranque con Windows
 - [x] Pantalla de Alertas (crear, editar, activar, borrar) y panel del inicio con datos reales
 - [ ] Pulido de animaciones y `prefers-reduced-motion`
 - [ ] Accesibilidad: contraste AA, ARIA y teclado
-- [ ] README de la Fase 1c
+- [x] README de la Fase 1c y ADR 0005
 - [ ] Cerrar la fase: instalador 0.3.0, fusión en `main`, etiqueta `fase-1c` y sincronizar claude.ai
 
 ## Fase 1b — cerrada
@@ -47,6 +48,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 | 2026-11-12 | Identificador de la app `com.snowview.desktop`             | fase-1a/README |
 | 2026-11-12 | Open-Meteo: base y cima en una llamada, UTC y días locales | ADR 0004       |
 | 2026-11-12 | Gráficas hechas a mano, sin Recharts ni Visx               | ADR 0004       |
+| 2026-11-12 | Aviso por episodio de nieve; cerrar oculta en bandeja      | ADR 0005       |
 | 2026-11-12 | Cotas verificadas; Formigal base 1510, La Molina base 1667 | stations.json  |
 
 ## Notas de entorno
