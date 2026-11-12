@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 5c (ubicación a mano y mapa interactivo); app 0.7.1.
+- **Fase actual:** ninguna en curso. Hecha la 5d (repositorio en GitHub); app 0.7.1.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,11 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 5d — tareas
+
+- [x] Conectar `origin` (<https://github.com/yurikFranco12/SnowView>) y publicar `main` y todas las
+      etiquetas; `docs/VERSIONES.md` explica cómo publicar a partir de ahora
 
 ## Fase 5c — tareas
 
@@ -35,7 +40,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
       cada usuario en Ajustes, nunca en el código (ADR 0009)
 - [x] Instalador 0.7.0, fusión en `main`, etiquetas `fase-5b` y `v0.7.0`, claude.ai sincronizado
 - [ ] Probar las rutas con una clave real de Google (Madrid a Baqueira-Beret, coche y autobús)
-- [ ] Conectar el repositorio de GitHub (falta la URL) y subir `main` y las etiquetas
+- [x] Repositorio de GitHub conectado (`origin`): `main` y las 20 etiquetas publicados el 2026-11-12
 
 ## Fase 5a — tareas
 
@@ -131,8 +136,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Facilitar la URL del repositorio de GitHub para conectarlo y subir `main` y las etiquetas.
-2. Probar las rutas con una clave real de Google y las webcams en la app instalada.
-3. Añadir más estaciones de España, sur de Francia y Andorra: el mapa dibuja las que estén en `stations/stations.json`.
-4. Verificar las cotas de Cauterets con una fuente oficial.
-5. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
+1. Probar las rutas con una clave real de Google y las webcams en la app instalada.
+2. Añadir más estaciones de España, sur de Francia y Andorra: el mapa dibuja las que estén en `stations/stations.json`.
+3. Verificar las cotas de Cauterets con una fuente oficial.
+4. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
