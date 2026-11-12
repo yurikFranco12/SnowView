@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 6 (relieve y provincias en el mapa); app 0.8.0.
+- **Fase actual:** ninguna en curso. Hecha la 7 (mapa acotado y buscador de pueblos); app 0.9.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,13 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 7 — tareas
+
+- [x] Quitar el relieve y las curvas de nivel; dejar solo las provincias
+- [x] Mapa acotado: zoom mínimo y límites por los cuatro lados; mapa base más ancho (sin cortes)
+- [x] Buscador de pueblos con autocompletado (Photon) en lugar de coordenadas (ADR 0011)
+- [x] Instalador 0.9.0, fusión en `main`, etiquetas `fase-7` y `v0.9.0`, push y claude.ai
 
 ## Fase 6 — tareas
 

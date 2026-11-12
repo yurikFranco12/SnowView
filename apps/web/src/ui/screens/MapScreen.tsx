@@ -1,10 +1,4 @@
-import {
-  formatDistanceKm,
-  formatDuration,
-  haversineKm,
-  parseLatLng,
-  type LatLng,
-} from '@snowview/core';
+import { formatDistanceKm, formatDuration, haversineKm, type LatLng } from '@snowview/core';
 import {
   isForecastError,
   searchStations,
@@ -24,14 +18,16 @@ import {
   MapPinOff,
   Route as RouteIcon,
   RotateCw,
+  Search,
   X,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { storage } from '../../platform/storage';
 import { Skeleton } from '../components/StatusViews';
 import { useStationRoutes, type RouteState } from '../data/routes';
 import { MapView } from '../map/MapView';
+import { PlaceSearch } from '../map/PlaceSearch';
 import { SPAIN_VIEW, fitView, stationView, type View } from '../map/projection';
 import { useUserLocation, type UserLocation } from '../map/useUserLocation';
 import { revealItem } from '../motion/reveal';
@@ -336,8 +332,6 @@ function formatAccuracy(meters: number): string {
   return meters >= 1000 ? `±${Math.round(meters / 1000)} km` : `±${Math.round(meters)} m`;
 }
 
-const roundTo4 = (n: number) => Math.round(n * 1e4) / 1e4;
-
 /** Dónde estás: la del equipo con su precisión, o la que fijas a mano si Windows se equivoca. */
 function LocationPanel({
   location,
@@ -350,11 +344,8 @@ function LocationPanel({
 }) {
   const setManual = useManualLocation((s) => s.set);
   const clearManual = useManualLocation((s) => s.clear);
-  const [typing, setTyping] = useState(false);
-  const [text, setText] = useState('');
-  const [error, setError] = useState(false);
-  const inputId = useId();
-  const { position, source, accuracyM } = location;
+  const [searching, setSearching] = useState(false);
+  const { position, source, accuracyM, label } = location;
   const imprecise = source === 'device' && accuracyM !== undefined && accuracyM > 5000;
 
   return (
@@ -369,16 +360,24 @@ function LocationPanel({
         {!position
           ? 'Sin ubicación todavía.'
           : source === 'manual'
-            ? `Fijada a mano (${roundTo4(position.latitude)}, ${roundTo4(position.longitude)}).`
+            ? `Fijada a mano${label ? `: ${label}` : ''}.`
             : `La del equipo${accuracyM !== undefined ? `, ${formatAccuracy(accuracyM)}` : ''}.`}
       </p>
       {imprecise && (
         <p className="text-[11px] leading-snug text-amber-200">
-          Windows la calcula por la red y puede errar varios kilómetros. Si no es donde estás,
-          corrígela.
+          Windows la calcula por la red y puede errar varios kilómetros. Si no es donde estás, busca
+          tu pueblo o márcalo en el mapa.
         </p>
       )}
       <div className="flex flex-wrap gap-1.5">
+        <button
+          type="button"
+          onClick={() => setSearching((v) => !v)}
+          aria-expanded={searching}
+          className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${searching ? 'bg-ice/[0.18] font-semibold text-ice' : 'bg-white/[0.06] hover:bg-white/[0.12]'}`}
+        >
+          <Search className="size-3.5" aria-hidden="true" /> Buscar mi pueblo
+        </button>
         <button
           type="button"
           onClick={onTogglePick}
@@ -386,17 +385,6 @@ function LocationPanel({
           className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${pickMode ? 'bg-ice/[0.18] font-semibold text-ice' : 'bg-white/[0.06] hover:bg-white/[0.12]'}`}
         >
           <Crosshair className="size-3.5" aria-hidden="true" /> Fijar en el mapa
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setTyping((v) => !v);
-            setError(false);
-          }}
-          aria-expanded={typing}
-          className="rounded-xl bg-white/[0.06] px-2.5 py-1.5 text-xs transition-colors hover:bg-white/[0.12]"
-        >
-          Escribir coordenadas
         </button>
         {source === 'manual' && (
           <button
@@ -411,48 +399,14 @@ function LocationPanel({
           </button>
         )}
       </div>
-      {typing && (
-        <form
-          className="flex flex-col gap-1.5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const point = parseLatLng(text);
-            if (!point) {
-              setError(true);
-              return;
-            }
-            setManual(point);
-            setTyping(false);
-            setText('');
-            setError(false);
+      {searching && (
+        <PlaceSearch
+          onClose={() => setSearching(false)}
+          onPick={(place) => {
+            setManual({ latitude: place.latitude, longitude: place.longitude }, place.label);
+            setSearching(false);
           }}
-        >
-          <label htmlFor={inputId} className="text-[11px] text-muted">
-            Latitud y longitud, como las da Google Maps al pulsar con el botón derecho
-          </label>
-          <div className="flex gap-1.5">
-            <input
-              id={inputId}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="43.3167, -3.3667"
-              autoComplete="off"
-              aria-invalid={error}
-              className="min-w-0 flex-1 rounded-[10px] border border-white/10 bg-white/[0.06] px-2.5 py-1.5 text-xs text-text placeholder:text-muted focus:border-ice/50 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="rounded-xl bg-ice/[0.16] px-3 py-1.5 text-xs text-ice transition-colors hover:bg-ice/25"
-            >
-              Usar
-            </button>
-          </div>
-          {error && (
-            <p role="alert" className="text-[11px] text-[#FFB4A8]">
-              No entiendo esas coordenadas. Ejemplo: 43.3167, -3.3667
-            </p>
-          )}
-        </form>
+        />
       )}
     </section>
   );
@@ -632,14 +586,9 @@ export function MapScreen() {
                 />{' '}
                 Provincias
               </li>
-              <li className="flex items-center gap-2">
-                <span className="h-px w-4 bg-[rgba(165,180,255,0.7)]" aria-hidden="true" /> Curvas
-                de nivel (cada 500 m, al acercar)
-              </li>
             </ul>
             <p className="mt-2 text-[10px] leading-snug text-muted">
-              Relieve: Terrain Tiles (SRTM, EU-DEM de Copernicus y otras fuentes). Provincias y
-              fronteras: Natural Earth.
+              Fronteras y provincias: Natural Earth.
             </p>
           </section>
 

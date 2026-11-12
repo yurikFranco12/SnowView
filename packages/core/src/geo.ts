@@ -45,26 +45,3 @@ export function formatDuration(minutes: number): string {
   if (h === 0) return `${m} min`;
   return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }
-
-/**
- * Lee unas coordenadas escritas a mano, como las que da Google Maps al pulsar con el botón derecho:
- * "43.3167, -3.3667", "43.3167 -3.3667" o con coma decimal ("43,3167; -3,3667"). Devuelve null si no
- * son dos números o están fuera de rango.
- */
-export function parseLatLng(text: string): LatLng | null {
-  const parts = text
-    .trim()
-    .replace(/[()°]/g, '')
-    .split(/\s*[;\s]\s*|\s*,\s+(?=-?\d)/)
-    .filter(Boolean);
-  // "43.3167,-3.3667" sin espacio: la coma separa los dos números.
-  const tokens =
-    parts.length === 1 && /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(parts[0] ?? '')
-      ? (parts[0] ?? '').split(',')
-      : parts;
-  if (tokens.length !== 2) return null;
-  const [a, b] = tokens.map((t) => Number(t.replace(',', '.')));
-  if (a === undefined || b === undefined) return null;
-  const point = { latitude: a, longitude: b };
-  return isValidLatLng(point) ? point : null;
-}

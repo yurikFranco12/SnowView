@@ -1,6 +1,7 @@
 # ADR 0010 — Relieve y provincias en el mapa
 
-- Estado: aceptada
+- Estado: reemplazada en parte por el [ADR 0011](0011-mapa-acotado-y-buscador-de-lugares.md): el
+  relieve y las curvas de nivel se quitaron; las provincias siguen
 - Fecha: 2026-11-12
 
 ## Contexto

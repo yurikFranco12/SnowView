@@ -132,6 +132,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-5c` | v0.7.1  | 2026-11-12 | `git show`       | Ubicación a mano y mapa interactivo                    |
 | `fase-5d` | —       | 2026-11-12 | `git show`       | Repositorio publicado en GitHub                        |
 | `fase-6`  | v0.8.0  | 2026-11-12 | `git show`       | Relieve y provincias en el mapa                        |
+| `fase-7`  | v0.9.0  | 2026-11-12 | `git show`       | Mapa acotado y buscador de pueblos                     |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).

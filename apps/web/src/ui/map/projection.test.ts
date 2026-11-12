@@ -5,6 +5,9 @@ import {
   MAX_ZOOM,
   SPAIN_VIEW,
   fitView,
+  COVERAGE,
+  USER_MIN_ZOOM,
+  clampView,
   layerOpacity,
   metersToUnits,
   project,
@@ -128,5 +131,58 @@ describe('unproject y screenToBase', () => {
     const [bx, by] = screenToBase([sx, sy], view);
     expect(bx).toBeCloseTo(base[0], 6);
     expect(by).toBeCloseTo(base[1], 6);
+  });
+});
+
+describe('clampView (límites del mapa)', () => {
+  const corners = (view: { x: number; y: number; zoom: number }) => {
+    const hw = MAP_W / 2 / view.zoom;
+    const hh = MAP_H / 2 / view.zoom;
+    return { left: view.x - hw, right: view.x + hw, top: view.y - hh, bottom: view.y + hh };
+  };
+  const [cx0, cy0] = project(COVERAGE.west, COVERAGE.north);
+  const [cx1, cy1] = project(COVERAGE.east, COVERAGE.south);
+
+  it('no deja alejar más del zoom mínimo ni acercar más del máximo', () => {
+    expect(clampView({ x: 500, y: 130, zoom: 1 }).zoom).toBe(USER_MIN_ZOOM);
+    expect(clampView({ x: 500, y: 130, zoom: 99999 }).zoom).toBe(MAX_ZOOM);
+  });
+
+  it('deja intacta una vista que ya está dentro', () => {
+    expect(clampView(SPAIN_VIEW)).toEqual(SPAIN_VIEW);
+    const view = stationView(0.93, 42.7);
+    expect(clampView(view)).toEqual(view);
+  });
+
+  it('en los cuatro lados, la pantalla nunca se sale de la cobertura', () => {
+    const far = 1e6;
+    for (const [x, y] of [
+      [-far, 0],
+      [far, 0],
+      [0, -far],
+      [0, far],
+      [-far, -far],
+      [far, far],
+    ] as const) {
+      for (const zoom of [USER_MIN_ZOOM, 20, 100, MAX_ZOOM]) {
+        const c = corners(clampView({ x, y, zoom }));
+        expect(c.left).toBeGreaterThanOrEqual(cx0 - 1e-9);
+        expect(c.right).toBeLessThanOrEqual(cx1 + 1e-9);
+        expect(c.top).toBeGreaterThanOrEqual(cy0 - 1e-9);
+        expect(c.bottom).toBeLessThanOrEqual(cy1 + 1e-9);
+      }
+    }
+  });
+
+  it('al alejar cerca de un borde, el centro se desplaza para no salirse', () => {
+    const edge = stationView(COVERAGE.east - 0.5, 40);
+    const out = clampView({ ...edge, zoom: USER_MIN_ZOOM });
+    expect(corners(out).right).toBeLessThanOrEqual(cx1 + 1e-9);
+  });
+
+  it('con la cobertura entera a zoom mínimo cabe la pantalla', () => {
+    const c = corners(clampView({ x: (cx0 + cx1) / 2, y: (cy0 + cy1) / 2, zoom: USER_MIN_ZOOM }));
+    expect(c.right - c.left).toBeLessThanOrEqual(cx1 - cx0);
+    expect(c.bottom - c.top).toBeLessThanOrEqual(cy1 - cy0);
   });
 });

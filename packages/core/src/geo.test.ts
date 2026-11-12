@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDistanceKm, formatDuration, haversineKm, isValidLatLng, parseLatLng } from './geo';
+import { formatDistanceKm, formatDuration, haversineKm, isValidLatLng } from './geo';
 
 const madrid = { latitude: 40.4168, longitude: -3.7038 };
 const barcelona = { latitude: 41.3874, longitude: 2.1686 };
@@ -68,26 +68,5 @@ describe('formatDuration', () => {
   it('da "—" sin duración válida', () => {
     expect(formatDuration(0)).toBe('—');
     expect(formatDuration(NaN)).toBe('—');
-  });
-});
-
-describe('parseLatLng', () => {
-  const guriezo = { latitude: 43.3167, longitude: -3.3667 };
-
-  it('lee los formatos habituales', () => {
-    expect(parseLatLng('43.3167, -3.3667')).toEqual(guriezo);
-    expect(parseLatLng('43.3167 -3.3667')).toEqual(guriezo);
-    expect(parseLatLng('43.3167,-3.3667')).toEqual(guriezo);
-    expect(parseLatLng(' (43.3167, -3.3667) ')).toEqual(guriezo);
-    expect(parseLatLng('43,3167; -3,3667')).toEqual(guriezo);
-  });
-
-  it('rechaza lo que no son dos números válidos', () => {
-    expect(parseLatLng('')).toBeNull();
-    expect(parseLatLng('Guriezo')).toBeNull();
-    expect(parseLatLng('43.3167')).toBeNull();
-    expect(parseLatLng('43.3, -3.3, 5')).toBeNull();
-    expect(parseLatLng('95, 10')).toBeNull();
-    expect(parseLatLng('10, 200')).toBeNull();
   });
 });

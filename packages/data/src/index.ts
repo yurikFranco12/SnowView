@@ -34,6 +34,16 @@ export {
   type OpenMeteoOptions,
 } from './openMeteo';
 export {
+  MIN_QUERY_LENGTH,
+  PLACE_SEARCH_ATTRIBUTION,
+  buildPlaceSearchUrl,
+  createPlaceSearch,
+  parsePlaces,
+  placeLabel,
+  type PlaceResult,
+  type PlaceSearchProvider,
+} from './placeSearch';
+export {
   FIELD_MASK,
   GOOGLE_ROUTES_URL,
   buildRoutesBody,

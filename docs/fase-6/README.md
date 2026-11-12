@@ -3,6 +3,9 @@
 Estado: **completada** el 2026-11-12. Etiquetas `fase-6` y `v0.8.0`. Decisiones en el
 [ADR 0010](../adr/0010-relieve-y-provincias.md).
 
+> **Nota:** el relieve sombreado y las curvas de nivel se quitaron en la fase 7 (ADR 0011). Las
+> provincias se conservan; este documento queda como historia de lo que se hizo.
+
 ## Qué incluye
 
 - **Provincias**: líneas finas discontinuas entre las provincias de España, los departamentos del

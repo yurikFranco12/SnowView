@@ -116,3 +116,32 @@ export function screenToBase(point: Point, view: View): Point {
   const { tx, ty } = translateFor(view);
   return [(point[0] - tx) / view.zoom, (point[1] - ty) / view.zoom];
 }
+
+/**
+ * Zona que cubre el mapa detallado (longitud y latitud). El usuario no puede mover ni alejar el
+ * mapa más allá: así no se ve el borde de los datos. La animación de entrada sí parte del mundo.
+ */
+export const COVERAGE = { west: -17, east: 17, south: 28, north: 53 } as const;
+
+/** Zoom mínimo que puede poner el usuario: con él, la pantalla cabe dentro de la cobertura. */
+export const USER_MIN_ZOOM = 12;
+
+/**
+ * Ajusta una vista para que la pantalla (1000×600 unidades del lienzo, a ese zoom) quede siempre
+ * dentro de la cobertura: limita el zoom a [USER_MIN_ZOOM, MAX_ZOOM] y el centro a lo que deja ver.
+ * Si la cobertura fuera más pequeña que la pantalla en algún eje, se centra en ese eje.
+ */
+export function clampView(view: View): View {
+  const zoom = Math.min(MAX_ZOOM, Math.max(USER_MIN_ZOOM, view.zoom));
+  const [x0, y0] = project(COVERAGE.west, COVERAGE.north);
+  const [x1, y1] = project(COVERAGE.east, COVERAGE.south);
+  const halfW = MAP_W / 2 / zoom;
+  const halfH = MAP_H / 2 / zoom;
+  const clampAxis = (value: number, min: number, max: number, half: number) =>
+    max - min <= 2 * half ? (min + max) / 2 : Math.min(max - half, Math.max(min + half, value));
+  return {
+    zoom,
+    x: clampAxis(view.x, x0, x1, halfW),
+    y: clampAxis(view.y, y0, y1, halfH),
+  };
+}

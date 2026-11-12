@@ -23,6 +23,8 @@ export interface UserLocation {
   position: LatLng | undefined;
   /** De dónde viene `position`. */
   source: 'manual' | 'device' | undefined;
+  /** Nombre del lugar si se fijó buscándolo ("Guriezo, Cantabria"). */
+  label: string | undefined;
   /** Precisión de la ubicación del equipo, en metros (undefined si es manual o no se conoce). */
   accuracyM: number | undefined;
   /** Pide la posición del equipo: si el permiso estaba sin decidir, Windows lo preguntará. */
@@ -102,8 +104,9 @@ export function useUserLocation(): UserLocation {
   if (manual) {
     return {
       status: 'granted',
-      position: manual,
+      position: { latitude: manual.latitude, longitude: manual.longitude },
       source: 'manual',
+      label: manual.label,
       accuracyM: undefined,
       request: read,
     };
@@ -112,6 +115,7 @@ export function useUserLocation(): UserLocation {
     status,
     position: device?.position,
     source: device ? 'device' : undefined,
+    label: undefined,
     accuracyM: device?.accuracyM,
     request: read,
   };
