@@ -1,6 +1,6 @@
 # Fase 1c — Alertas y sistema
 
-Estado: en curso en la rama `fase-1c` (2026-11-12). Decisiones en
+Estado: **completada** el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Decisiones en
 [ADR 0005](../adr/0005-reglas-avisos-y-bandeja.md).
 
 ## Qué incluye
@@ -29,8 +29,24 @@ pnpm dev
 
 En PowerShell: `pnpm.cmd dev`.
 
+## Probado en el equipo real
+
+Notificación nativa de prueba, aviso de una regla real, bandeja (cerrar oculta, clic abre, «Salir»
+cierra) e interruptor de arranque con Windows. En `pnpm dev` la notificación no se ve si Windows
+tiene activado «No molestar» (la app aparece como «Windows PowerShell»); una app instalada tiene
+identidad propia.
+
+## Instaladores (app 0.3.0)
+
+Generados con `pnpm.cmd build` en el terminal del usuario, en `src-tauri/target/release/bundle/`:
+
+| Archivo                             | Tamaño   |
+| ----------------------------------- | -------- |
+| `msi/SnowView_0.3.0_x64_en-US.msi`  | 4,24 MiB |
+| `nsis/SnowView_0.3.0_x64-setup.exe` | 3,11 MiB |
+
 ## Pendiente
 
-- Probar en el equipo real: notificación nativa, bandeja y arranque con Windows.
-- Pulido de animaciones, `prefers-reduced-motion` y accesibilidad (contraste AA, ARIA, teclado).
-- Instalador 0.3.0, fusión en `main` y etiqueta `fase-1c`.
+- Ajustes pendientes de la especificación: frecuencia de consulta e intensidad de la nevada de
+  fondo (hoy la previsión se refresca cada hora).
+- Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.

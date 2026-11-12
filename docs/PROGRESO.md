@@ -6,26 +6,31 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** 1c, alertas y sistema, en la rama `fase-1c`.
+- **Fase actual:** ninguna en curso. La Fase 1 (Windows) está completa; la Fase 2 (iOS y servidor)
+  es condicional y pregunta por el Mac y la cuenta de Apple Developer.
+- **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
+  `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
   `docs/fase-1b/README.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
 
-## Fase 1c — tareas
+## Fase 1c — tareas (cerrada)
 
 - [x] `core/`: reglas del usuario (más de 15 cm en las próximas 48 h, viento y temperatura
       opcionales), episodios de nieve y registro de avisos sin repetir (23 tests)
 - [x] Notificaciones sin repetir (plugin de notificaciones de Tauri), con registro en disco
 - [x] Bandeja del sistema (Rust): cerrar oculta la ventana; «Salir» en el menú
 - [x] Arranque con Windows (plugin autostart) con interruptor en Ajustes
-- [ ] Probar en el equipo real: notificación nativa, bandeja y arranque con Windows
+- [x] Probado en el equipo real: notificación nativa, bandeja y arranque con Windows
 - [x] Pantalla de Alertas (crear, editar, activar, borrar) y panel del inicio con datos reales
-- [ ] Pulido de animaciones y `prefers-reduced-motion`
-- [ ] Accesibilidad: contraste AA, ARIA y teclado
+- [x] Animaciones y `prefers-reduced-motion`: las nuevas pantallas usan Motion bajo `MotionConfig`
+      (reducedMotion=user) y `motion-safe:`
+- [x] Accesibilidad de las pantallas nuevas: etiquetas en formularios, ARIA en barras de progreso y
+      botones por regla, foco visible global, colores de los tokens ya medidos con AA
 - [x] README de la Fase 1c y ADR 0005
-- [ ] Cerrar la fase: instalador 0.3.0, fusión en `main`, etiqueta `fase-1c` y sincronizar claude.ai
+- [x] Cerrar la fase: instalador 0.3.0, fusión en `main`, etiqueta `fase-1c` y sincronizar claude.ai
 
 ## Fase 1b — cerrada
 
@@ -63,4 +68,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Fase 1c: empezar por las reglas en `core/` con tests; después notificaciones, bandeja y autostart.
+1. Decidir si se sigue con la Fase 2 (iOS y servidor). Antes hay que usar la versión de Windows y
+   preguntar por el Mac y la cuenta de Apple Developer.
+2. Ajustes pendientes: frecuencia de consulta e intensidad de la nevada de fondo.
+3. Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.
