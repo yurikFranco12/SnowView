@@ -11,6 +11,7 @@ import { AlertsScreen } from './screens/AlertsScreen';
 import { CalendarScreen } from './screens/CalendarScreen';
 import { CompareScreen } from './screens/CompareScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
+import { MapScreen } from './screens/MapScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { StationsScreen } from './screens/StationsScreen';
@@ -18,11 +19,13 @@ import { WebcamsScreen } from './screens/WebcamsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
 import { useRules } from './state/rulesStore';
+import { useRoutesKey } from './state/routesKeyStore';
 import { snowIntensity, useSettings } from './state/settingsStore';
 
 const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
   estaciones: () => <StationsScreen />,
+  mapa: () => <MapScreen />,
   comparar: () => <CompareScreen />,
   calendario: () => <CalendarScreen />,
   webcams: () => <WebcamsScreen />,
@@ -42,6 +45,7 @@ export function App() {
   const loadFavorites = useFavorites((s) => s.load);
   const loadRules = useRules((s) => s.load);
   const loadSettings = useSettings((s) => s.load);
+  const loadRoutesKey = useRoutesKey((s) => s.load);
   const refreshMinutes = useSettings((s) => s.refreshMinutes);
   const snowLevel = useSettings((s) => s.snowLevel);
 
@@ -49,7 +53,8 @@ export function App() {
     void loadFavorites();
     void loadRules();
     void loadSettings();
-  }, [loadFavorites, loadRules, loadSettings]);
+    void loadRoutesKey();
+  }, [loadFavorites, loadRules, loadSettings, loadRoutesKey]);
 
   useEffect(() => {
     applyRefreshInterval(refreshMinutes);

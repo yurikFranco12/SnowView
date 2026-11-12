@@ -61,6 +61,11 @@ export default tseslint.config(
     },
   },
   {
+    // Scripts de desarrollo (se ejecutan con Node a mano, no van en la app).
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: globals.node },
+  },
+  {
     // La UI: navegador + reglas de hooks de React. Tauri solo se usa desde src/platform/.
     files: ['apps/web/**/*.{ts,tsx}'],
     languageOptions: { globals: globals.browser },

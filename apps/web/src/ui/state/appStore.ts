@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export type View =
   | 'inicio'
   | 'estaciones'
+  | 'mapa'
   | 'comparar'
   | 'calendario'
   | 'webcams'

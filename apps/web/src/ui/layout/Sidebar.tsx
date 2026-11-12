@@ -3,6 +3,7 @@ import {
   CalendarDays,
   ChartColumn,
   House,
+  Map,
   Mountain,
   Scale,
   Settings,
@@ -21,6 +22,7 @@ interface NavItem {
 const MAIN_ITEMS: readonly NavItem[] = [
   { view: 'inicio', label: 'Inicio', icon: House },
   { view: 'estaciones', label: 'Estaciones', icon: Mountain },
+  { view: 'mapa', label: 'Mapa', icon: Map },
   { view: 'comparar', label: 'Comparar', icon: Scale },
   { view: 'calendario', label: 'Calendario', icon: CalendarDays },
   { view: 'webcams', label: 'Webcams', icon: Video },

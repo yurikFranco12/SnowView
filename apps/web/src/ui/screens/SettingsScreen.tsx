@@ -1,4 +1,4 @@
-import { Bell, Power, RefreshCw, Snowflake } from 'lucide-react';
+import { Bell, KeyRound, Power, RefreshCw, Snowflake } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useId, useState } from 'react';
 import { autostartAvailable, isAutostartEnabled, setAutostart } from '../../platform/autostart';
@@ -9,6 +9,7 @@ import {
   type NotificationAccess,
 } from '../../platform/notifications';
 import { revealItem } from '../motion/reveal';
+import { isPlausibleApiKey, useRoutesKey } from '../state/routesKeyStore';
 import { REFRESH_OPTIONS, SNOW_LEVELS, useSettings } from '../state/settingsStore';
 
 const ACCESS_TEXT: Record<NotificationAccess, string> = {
@@ -195,6 +196,89 @@ function SnowRow() {
   );
 }
 
+/** Clave de Google Maps del propio usuario, para el tiempo con tráfico, los peajes y el autobús. */
+function RoutesKeyRow() {
+  const apiKey = useRoutesKey((s) => s.apiKey);
+  const save = useRoutesKey((s) => s.save);
+  const clear = useRoutesKey((s) => s.clear);
+  const inputId = useId();
+  const [draft, setDraft] = useState('');
+  const invalid = draft.trim() !== '' && !isPlausibleApiKey(draft);
+
+  return (
+    <li className="flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 py-4">
+      <div className="flex items-start gap-4">
+        <KeyRound
+          className="mt-0.5 size-5 shrink-0 text-ice"
+          aria-hidden="true"
+          strokeWidth={1.6}
+        />
+        <div className="min-w-0 flex-1">
+          <label htmlFor={inputId} className="text-[15px] font-semibold">
+            Clave de Google Maps
+          </label>
+          <p className="text-xs text-muted">
+            Sirve para calcular en el mapa el tiempo en coche con tráfico, el precio de los peajes y
+            la ruta en autobús. Cada persona usa la suya: se crea en Google Cloud activando «Routes
+            API», se restringe a esa API y conviene fijar un límite de gasto. Se guarda solo en este
+            equipo. Sin clave, el mapa sigue funcionando y muestra la distancia en línea recta.
+          </p>
+          {apiKey && (
+            <p className="mt-1 text-xs" aria-live="polite">
+              Clave guardada (termina en {apiKey.slice(-4)}).
+            </p>
+          )}
+        </div>
+      </div>
+      <form
+        className="flex flex-wrap items-center gap-2 pl-9"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (isPlausibleApiKey(draft)) {
+            save(draft);
+            setDraft('');
+          }
+        }}
+      >
+        <input
+          id={inputId}
+          type="password"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          autoComplete="off"
+          spellCheck={false}
+          placeholder={apiKey ? 'Pega otra clave para cambiarla' : 'Pega tu clave'}
+          aria-invalid={invalid}
+          aria-describedby={invalid ? `${inputId}-error` : undefined}
+          className="min-w-64 flex-1 rounded-[12px] border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-text placeholder:text-muted focus:border-ice/50 focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={!isPlausibleApiKey(draft)}
+          className="rounded-xl bg-ice/[0.16] px-3.5 py-2 text-sm text-ice transition-colors hover:bg-ice/25 disabled:opacity-40"
+        >
+          Guardar
+        </button>
+        {apiKey && (
+          <button
+            type="button"
+            onClick={clear}
+            className="rounded-xl px-3.5 py-2 text-sm text-muted transition-colors hover:bg-white/[0.08] hover:text-text"
+          >
+            Quitar
+          </button>
+        )}
+        {invalid && (
+          <p id={`${inputId}-error`} role="alert" className="w-full text-xs text-[#FFB4A8]">
+            No parece una clave de Google: son de 30 a 60 letras, números, guiones o guiones bajos,
+            sin espacios.
+          </p>
+        )}
+      </form>
+    </li>
+  );
+}
+
 export function SettingsScreen() {
   return (
     <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
@@ -210,6 +294,7 @@ export function SettingsScreen() {
           <AutostartRow />
           <RefreshRow />
           <SnowRow />
+          <RoutesKeyRow />
         </ul>
         <p className="mt-4 text-xs text-muted">
           Al cerrar la ventana, SnowView sigue en la bandeja. Para salir del todo, usa «Salir» en el

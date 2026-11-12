@@ -16,6 +16,8 @@ export interface FetchContext {
   doFetch: typeof fetch;
   limiter: RateLimiter;
   timeoutMs: number;
+  /** Nombre del servicio para los mensajes de error. Por defecto, Open-Meteo. */
+  service?: string;
 }
 
 /**
@@ -24,8 +26,9 @@ export interface FetchContext {
  */
 export async function fetchJson(
   url: string,
-  { doFetch, limiter, timeoutMs }: FetchContext,
+  { doFetch, limiter, timeoutMs, service = 'Open-Meteo' }: FetchContext,
   signal?: AbortSignal,
+  init: Omit<RequestInit, 'signal'> = {},
 ): Promise<unknown> {
   limiter.acquire();
 
@@ -40,12 +43,12 @@ export async function fetchJson(
 
   let response: Response;
   try {
-    response = await doFetch(url, { signal: controller.signal });
+    response = await doFetch(url, { ...init, signal: controller.signal });
   } catch (cause) {
     if (timedOut)
-      throw new ForecastError('timeout', 'Open-Meteo no respondió a tiempo.', { cause });
+      throw new ForecastError('timeout', `${service} no respondió a tiempo.`, { cause });
     if (signal?.aborted) throw new ForecastError('aborted', 'Petición cancelada.', { cause });
-    throw new ForecastError('offline', 'Sin conexión con Open-Meteo.', { cause });
+    throw new ForecastError('offline', `Sin conexión con ${service}.`, { cause });
   } finally {
     clearTimeout(timer);
     signal?.removeEventListener('abort', onAbort);
@@ -57,7 +60,7 @@ export async function fetchJson(
     limiter.pause(retryAfterMs);
     throw new ForecastError(
       'rate-limited',
-      'Open-Meteo pide esperar antes de volver a consultar.',
+      `${service} pide esperar antes de volver a consultar.`,
       {
         status: 429,
         retryAfterMs,
@@ -71,16 +74,19 @@ export async function fetchJson(
   } catch (cause) {
     throw new ForecastError(
       response.ok ? 'invalid-data' : 'provider',
-      response.ok ? 'La respuesta no es JSON válido.' : `Open-Meteo respondió ${response.status}.`,
+      response.ok ? 'La respuesta no es JSON válido.' : `${service} respondió ${response.status}.`,
       { status: response.status, cause },
     );
   }
 
   if (!response.ok) {
-    const reason = (json as { reason?: unknown } | null)?.reason;
+    // Open-Meteo da `reason`; Google da `error.message`.
+    const body = json as { reason?: unknown; error?: { message?: unknown } } | null;
+    const reason = body?.reason ?? body?.error?.message;
+    const unauthorized = response.status === 401 || response.status === 403;
     throw new ForecastError(
-      'provider',
-      typeof reason === 'string' ? reason : `Open-Meteo respondió ${response.status}.`,
+      unauthorized ? 'auth' : 'provider',
+      typeof reason === 'string' ? reason : `${service} respondió ${response.status}.`,
       { status: response.status },
     );
   }

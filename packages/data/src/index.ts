@@ -34,6 +34,21 @@ export {
   type OpenMeteoOptions,
 } from './openMeteo';
 export {
+  FIELD_MASK,
+  GOOGLE_ROUTES_URL,
+  buildRoutesBody,
+  createGoogleRoutesProvider,
+  decodePolyline,
+  parseMoney,
+  parseRoutesResponse,
+  type GoogleRoutesOptions,
+  type Money,
+  type RouteResult,
+  type RoutesProvider,
+  type TollInfo,
+  type TravelMode,
+} from './routes';
+export {
   ARCHIVE_DELAY_DAYS,
   buildHistoryUrl,
   createOpenMeteoHistory,
