@@ -46,3 +46,4 @@
 | `fase-3c` | 0.4.0                  | 2026-11-12 | Historial de nevadas por temporada                     |
 | `fase-4a` | 0.5.0                  | 2026-11-12 | Estaciones Alto Campoo y Cauterets                     |
 | `fase-4b` | 0.5.0                  | 2026-11-12 | Condiciones para esquiar y snowboard, calendario       |
+| `fase-5a` | 0.6.0                  | 2026-11-12 | Webcams de las estaciones dentro de la app             |

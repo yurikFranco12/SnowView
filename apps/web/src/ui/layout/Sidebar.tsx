@@ -6,6 +6,7 @@ import {
   Mountain,
   Scale,
   Settings,
+  Video,
   type LucideIcon,
 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -22,6 +23,7 @@ const MAIN_ITEMS: readonly NavItem[] = [
   { view: 'estaciones', label: 'Estaciones', icon: Mountain },
   { view: 'comparar', label: 'Comparar', icon: Scale },
   { view: 'calendario', label: 'Calendario', icon: CalendarDays },
+  { view: 'webcams', label: 'Webcams', icon: Video },
   { view: 'historial', label: 'Historial', icon: ChartColumn },
   { view: 'alertas', label: 'Alertas', icon: Bell },
 ];

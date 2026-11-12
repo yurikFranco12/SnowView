@@ -14,6 +14,7 @@ import { HistoryScreen } from './screens/HistoryScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { StationsScreen } from './screens/StationsScreen';
+import { WebcamsScreen } from './screens/WebcamsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
 import { useRules } from './state/rulesStore';
@@ -24,6 +25,7 @@ const SCREENS: Record<View, () => ReactNode> = {
   estaciones: () => <StationsScreen />,
   comparar: () => <CompareScreen />,
   calendario: () => <CalendarScreen />,
+  webcams: () => <WebcamsScreen />,
   historial: () => <HistoryScreen />,
   alertas: () => <AlertsScreen />,
   ajustes: () => <SettingsScreen />,

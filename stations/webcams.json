@@ -1,0 +1,590 @@
+{
+  "version": 1,
+  "updated": "2026-11-12",
+  "sources": {
+    "note": "Webcams publicadas por las propias estaciones o por sus proveedores (feratel, ipcamlive, Skaping). Las URL se obtuvieron de la web oficial de cada estación el 2026-11-12 y se comprobó que responden. Las imágenes se muestran tal cual, con su crédito; no se copian ni se guardan. Si una estación cambia sus URL, hay que actualizar este archivo.",
+    "license": "Las imágenes y vídeos son de sus propietarios; SnowView solo los muestra mientras la app está abierta."
+  },
+  "webcams": [
+    {
+      "id": "baqueira-teso-dera-mina",
+      "stationId": "baqueira-beret",
+      "name": "Teso dera Mina",
+      "elevationM": 2500,
+      "image": {
+        "url": "https://baqueira-static.s3.eu-south-2.amazonaws.com/webcams/miniaturas/1-Baqueira-baqueira2500_pos1-large.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Baqueira Beret",
+      "pageUrl": "https://www.baqueira.es/es/webcams"
+    },
+    {
+      "id": "baqueira-1500",
+      "stationId": "baqueira-beret",
+      "name": "Baqueira 1500",
+      "elevationM": 1500,
+      "image": {
+        "url": "https://baqueira-static.s3.eu-south-2.amazonaws.com/webcams/miniaturas/2-Baqueira-baqueira_1500_pos4-large.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Baqueira Beret",
+      "pageUrl": "https://www.baqueira.es/es/webcams"
+    },
+    {
+      "id": "baqueira-blanhiblar",
+      "stationId": "baqueira-beret",
+      "name": "Blanhiblar",
+      "elevationM": 2245,
+      "image": {
+        "url": "https://baqueira-static.s3.eu-south-2.amazonaws.com/webcams/miniaturas/3-Beret-beret_blanhiblar_2245_pos2-large.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Baqueira Beret",
+      "pageUrl": "https://www.baqueira.es/es/webcams"
+    },
+    {
+      "id": "baqueira-orri",
+      "stationId": "baqueira-beret",
+      "name": "Orri",
+      "image": {
+        "url": "https://baqueira-static.s3.eu-south-2.amazonaws.com/webcams/miniaturas/2-Beret-orri_pos18-large.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Baqueira Beret",
+      "pageUrl": "https://www.baqueira.es/es/webcams"
+    },
+    {
+      "id": "baqueira-bonaigua",
+      "stationId": "baqueira-beret",
+      "name": "Bonaigua",
+      "elevationM": 1900,
+      "image": {
+        "url": "https://baqueira-static.s3.eu-south-2.amazonaws.com/webcams/miniaturas/1-Bonaigua-bonaigua_2000_pos1-large.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Baqueira Beret",
+      "pageUrl": "https://www.baqueira.es/es/webcams"
+    },
+    {
+      "id": "formigal-anayet",
+      "stationId": "formigal",
+      "name": "Anayet",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15020.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15020"
+      },
+      "credit": "Aramón Formigal-Panticosa · feratel",
+      "pageUrl": "https://www.aramon.com/formigal-panticosa/webcam-formigal-panticosa.html"
+    },
+    {
+      "id": "formigal-garmet",
+      "stationId": "formigal",
+      "name": "Garmet",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15021.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15021"
+      },
+      "credit": "Aramón Formigal-Panticosa · feratel",
+      "pageUrl": "https://www.aramon.com/formigal-panticosa/webcam-formigal-panticosa.html"
+    },
+    {
+      "id": "formigal-cantal",
+      "stationId": "formigal",
+      "name": "Cantal",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15026.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15026"
+      },
+      "credit": "Aramón Formigal-Panticosa · feratel",
+      "pageUrl": "https://www.aramon.com/formigal-panticosa/webcam-formigal-panticosa.html"
+    },
+    {
+      "id": "formigal-petrosos",
+      "stationId": "formigal",
+      "name": "Panticosa · Zona Petrosos",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15024.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15024"
+      },
+      "credit": "Aramón Formigal-Panticosa · feratel",
+      "pageUrl": "https://www.aramon.com/formigal-panticosa/webcam-formigal-panticosa.html"
+    },
+    {
+      "id": "cerler-ampriu",
+      "stationId": "cerler",
+      "name": "Ampriu",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15080.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15080"
+      },
+      "credit": "Aramón Cerler · feratel",
+      "pageUrl": "https://www.aramon.com/cerler/webcam-cerler.html"
+    },
+    {
+      "id": "cerler-gallinero",
+      "stationId": "cerler",
+      "name": "Gallinero",
+      "elevationM": 2630,
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15079.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15079"
+      },
+      "credit": "Aramón Cerler · feratel",
+      "pageUrl": "https://www.aramon.com/cerler/webcam-cerler.html"
+    },
+    {
+      "id": "candanchu-zapatilla",
+      "stationId": "candanchu",
+      "name": "Zapatilla · Taquillas",
+      "elevationM": 1560,
+      "live": {
+        "url": "https://g0.ipcamlive.com/player/player.php?alias=67481cb23ff82&skin=white&autoplay=1&mute=1&hidelink=1&disableautofullscreen=1&disablezoombutton=1&disabletimelapseplayer=1&disablestorageplayer=1&disableplaybackspeedbutton=1&disablenavigation=1"
+      },
+      "credit": "Candanchú · ipcamlive",
+      "pageUrl": "https://candanchu.com/es/webcams"
+    },
+    {
+      "id": "candanchu-aralar",
+      "stationId": "candanchu",
+      "name": "Pista Grande Aralar",
+      "elevationM": 1560,
+      "live": {
+        "url": "https://g0.ipcamlive.com/player/player.php?alias=674819639799e&skin=white&autoplay=1&mute=1&hidelink=1&disableautofullscreen=1&disablezoombutton=1&disabletimelapseplayer=1&disablestorageplayer=1&disableplaybackspeedbutton=1&disablenavigation=1"
+      },
+      "credit": "Candanchú · ipcamlive",
+      "pageUrl": "https://candanchu.com/es/webcams"
+    },
+    {
+      "id": "candanchu-sarrios",
+      "stationId": "candanchu",
+      "name": "Rinconada Sarrios",
+      "elevationM": 2000,
+      "live": {
+        "url": "https://g0.ipcamlive.com/player/player.php?alias=677560e9d897d&skin=white&autoplay=1&mute=1&hidelink=1&disableautofullscreen=1&disablezoombutton=1&disabletimelapseplayer=1&disablestorageplayer=1&disableplaybackspeedbutton=1&disablenavigation=1"
+      },
+      "credit": "Candanchú · ipcamlive",
+      "pageUrl": "https://candanchu.com/es/webcams"
+    },
+    {
+      "id": "candanchu-tuca-blanca",
+      "stationId": "candanchu",
+      "name": "Tuca Blanca",
+      "elevationM": 1950,
+      "live": {
+        "url": "https://g0.ipcamlive.com/player/player.php?alias=67a9e0907f077&skin=white&autoplay=1&mute=1&hidelink=1&disableautofullscreen=1&disablezoombutton=1&disabletimelapseplayer=1&disablestorageplayer=1&disableplaybackspeedbutton=1&disablenavigation=1"
+      },
+      "credit": "Candanchú · ipcamlive",
+      "pageUrl": "https://candanchu.com/es/webcams"
+    },
+    {
+      "id": "la-molina-comella",
+      "stationId": "la-molina",
+      "name": "Cap de Comella",
+      "image": {
+        "url": "https://media.turismefgc.cat/lamolina/comella.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "FGC · Pirineu365",
+      "pageUrl": "https://pirineu365.cat/es/lamolina/en-directo/webcams/"
+    },
+    {
+      "id": "la-molina-telecabina",
+      "stationId": "la-molina",
+      "name": "Telecabina superior",
+      "image": {
+        "url": "https://media.turismefgc.cat/lamolina/telecabinasup.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "FGC · Pirineu365",
+      "pageUrl": "https://pirineu365.cat/es/lamolina/en-directo/webcams/"
+    },
+    {
+      "id": "la-molina-pla-comercial",
+      "stationId": "la-molina",
+      "name": "Pla comercial",
+      "image": {
+        "url": "https://media.turismefgc.cat/lamolina/plcomercial.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "FGC · Pirineu365",
+      "pageUrl": "https://pirineu365.cat/es/lamolina/en-directo/webcams/"
+    },
+    {
+      "id": "la-molina-torrent",
+      "stationId": "la-molina",
+      "name": "Torrent",
+      "image": {
+        "url": "https://media.turismefgc.cat/lamolina/torrent.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "FGC · Pirineu365",
+      "pageUrl": "https://pirineu365.cat/es/lamolina/en-directo/webcams/"
+    },
+    {
+      "id": "la-molina-llac",
+      "stationId": "la-molina",
+      "name": "Llac",
+      "image": {
+        "url": "https://media.turismefgc.cat/lamolina/cam-llac.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "FGC · Pirineu365",
+      "pageUrl": "https://pirineu365.cat/es/lamolina/en-directo/webcams/"
+    },
+    {
+      "id": "la-molina-tubbing",
+      "stationId": "la-molina",
+      "name": "Tubbing",
+      "image": {
+        "url": "https://media.turismefgc.cat/lamolina/tubbing.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "FGC · Pirineu365",
+      "pageUrl": "https://pirineu365.cat/es/lamolina/en-directo/webcams/"
+    },
+    {
+      "id": "masella-la-tosa",
+      "stationId": "masella",
+      "name": "La Tosa",
+      "image": {
+        "url": "https://www.masella.com/cam1/latosatmp.jpg",
+        "refreshSeconds": 120
+      },
+      "credit": "Masella",
+      "pageUrl": "https://www.masella.com/ca/webcam"
+    },
+    {
+      "id": "masella-coma-oriola",
+      "stationId": "masella",
+      "name": "Coma Oriola",
+      "image": {
+        "url": "https://www.masella.com/cam1/comaoriolatmp.jpg",
+        "refreshSeconds": 120
+      },
+      "credit": "Masella",
+      "pageUrl": "https://www.masella.com/ca/webcam"
+    },
+    {
+      "id": "masella-coma-pregona",
+      "stationId": "masella",
+      "name": "Coma Pregona",
+      "image": {
+        "url": "https://www.masella.com/cam1/comapregonatmp.jpg",
+        "refreshSeconds": 120
+      },
+      "credit": "Masella",
+      "pageUrl": "https://www.masella.com/ca/webcam"
+    },
+    {
+      "id": "masella-tgv",
+      "stationId": "masella",
+      "name": "TGV · estación inferior",
+      "image": {
+        "url": "https://www.masella.com/cam1/tgvtmp.jpg",
+        "refreshSeconds": 120
+      },
+      "credit": "Masella",
+      "pageUrl": "https://www.masella.com/ca/webcam"
+    },
+    {
+      "id": "masella-pleta",
+      "stationId": "masella",
+      "name": "La Pleta",
+      "image": {
+        "url": "https://www.masella.com/cam1/pletatmp.jpg",
+        "refreshSeconds": 120
+      },
+      "credit": "Masella",
+      "pageUrl": "https://www.masella.com/ca/webcam"
+    },
+    {
+      "id": "grandvalira-15045",
+      "stationId": "grandvalira",
+      "name": "El Tarter · Pi de Migdia",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15045.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15045"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15061",
+      "stationId": "grandvalira",
+      "name": "Soldeu · Estadi Creand",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15061.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15061"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15060",
+      "stationId": "grandvalira",
+      "name": "Soldeu · Espiolets",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15060.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15060"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15050",
+      "stationId": "grandvalira",
+      "name": "Grau Roig",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15050.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15050"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15055",
+      "stationId": "grandvalira",
+      "name": "Pas de la Casa",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15055.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15055"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15056",
+      "stationId": "grandvalira",
+      "name": "Pas de la Casa · Coll Blanc",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15056.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15056"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15065",
+      "stationId": "grandvalira",
+      "name": "Canillo · El Forn",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15065.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15065"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "grandvalira-15090",
+      "stationId": "grandvalira",
+      "name": "Encamp · Cortals",
+      "image": {
+        "url": "https://wtvpict.feratel.com/picture/38/15090.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "live": {
+        "url": "https://webtv.feratel.com/webtv/?design=v5&cam=15090"
+      },
+      "credit": "Grandvalira · feratel",
+      "pageUrl": "https://www.grandvalira.com/es/estacion/webcams"
+    },
+    {
+      "id": "sierra-nevada-pradollano",
+      "stationId": "sierra-nevada",
+      "name": "Pradollano",
+      "elevationM": 2100,
+      "image": {
+        "url": "https://recursos.sierranevada.es/_extras/fotos_camaras/pradollano/snap_c1.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Cetursa Sierra Nevada",
+      "pageUrl": "https://sierranevada.es/es/webcams/"
+    },
+    {
+      "id": "sierra-nevada-borreguiles",
+      "stationId": "sierra-nevada",
+      "name": "Desde Borreguiles",
+      "elevationM": 2625,
+      "image": {
+        "url": "https://wtvhspt.feratel.com/hotspot/35/15111/1.jpeg?design=v5&dcsdesign=feratel4",
+        "refreshSeconds": 300
+      },
+      "credit": "Cetursa Sierra Nevada · feratel",
+      "pageUrl": "https://sierranevada.es/es/webcams/"
+    },
+    {
+      "id": "sierra-nevada-visera",
+      "stationId": "sierra-nevada",
+      "name": "Pista La Visera",
+      "elevationM": 2750,
+      "image": {
+        "url": "https://wtvhspt.feratel.com/hotspot/35/15111/0.jpeg?design=v5&dcsdesign=feratel4",
+        "refreshSeconds": 300
+      },
+      "credit": "Cetursa Sierra Nevada · feratel",
+      "pageUrl": "https://sierranevada.es/es/webcams/"
+    },
+    {
+      "id": "sierra-nevada-granados",
+      "stationId": "sierra-nevada",
+      "name": "Pistas Granados - Morillas",
+      "elevationM": 2800,
+      "image": {
+        "url": "https://wtvhspt.feratel.com/hotspot/35/15111/2.jpeg?design=v5&dcsdesign=feratel4",
+        "refreshSeconds": 300
+      },
+      "credit": "Cetursa Sierra Nevada · feratel",
+      "pageUrl": "https://sierranevada.es/es/webcams/"
+    },
+    {
+      "id": "sierra-nevada-veleta",
+      "stationId": "sierra-nevada",
+      "name": "Telesilla Veleta Superior",
+      "elevationM": 3030,
+      "image": {
+        "url": "https://webtvhotspot.feratel.com/hotspot/35/15112/0.jpeg?design=v3",
+        "refreshSeconds": 300
+      },
+      "credit": "Cetursa Sierra Nevada · feratel",
+      "pageUrl": "https://sierranevada.es/es/webcams/"
+    },
+    {
+      "id": "alto-campoo-tres-mares",
+      "stationId": "alto-campoo",
+      "name": "Tres Mares",
+      "image": {
+        "url": "https://cantur.com/camaras/3mares/3mares_vista_valle.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Cantur · Alto Campoo",
+      "pageUrl": "https://www.altocampoo.com/webcams"
+    },
+    {
+      "id": "alto-campoo-el-chivo",
+      "stationId": "alto-campoo",
+      "name": "El Chivo",
+      "image": {
+        "url": "https://cantur.com/camaras/chivo/chivo_vista_valle.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Cantur · Alto Campoo",
+      "pageUrl": "https://www.altocampoo.com/webcams"
+    },
+    {
+      "id": "alto-campoo-calgosa",
+      "stationId": "alto-campoo",
+      "name": "Calgosa",
+      "image": {
+        "url": "https://cantur.com/camaras/multi/calgosa_vista_calgosa.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Cantur · Alto Campoo",
+      "pageUrl": "https://www.altocampoo.com/webcams"
+    },
+    {
+      "id": "alto-campoo-pidruecos",
+      "stationId": "alto-campoo",
+      "name": "Pidruecos",
+      "image": {
+        "url": "https://cantur.com/camaras/VALLE/VALLE.jpg",
+        "refreshSeconds": 300
+      },
+      "credit": "Cantur · Alto Campoo",
+      "pageUrl": "https://www.altocampoo.com/webcams"
+    },
+    {
+      "id": "cauterets-cirque-du-lys",
+      "stationId": "cauterets",
+      "name": "Cirque du Lys · La Terrasse",
+      "elevationM": 1850,
+      "live": {
+        "url": "https://www.skaping.com/cauterets/cirque-du-lys/panorama"
+      },
+      "credit": "Cauterets · Skaping",
+      "pageUrl": "https://www.cauterets.com/live/webcams/"
+    },
+    {
+      "id": "cauterets-les-cretes",
+      "stationId": "cauterets",
+      "name": "Les Crêtes",
+      "elevationM": 2400,
+      "live": {
+        "url": "https://www.skaping.com/cauterets/les-cretes/panoramique"
+      },
+      "credit": "Cauterets · Skaping",
+      "pageUrl": "https://www.cauterets.com/live/webcams/"
+    },
+    {
+      "id": "cauterets-puntas",
+      "stationId": "cauterets",
+      "name": "Puntas",
+      "elevationM": 1500,
+      "live": {
+        "url": "https://www.skaping.com/cauterets/puntas/video"
+      },
+      "credit": "Cauterets · Skaping",
+      "pageUrl": "https://www.cauterets.com/live/webcams/"
+    },
+    {
+      "id": "cauterets-pont-despagne",
+      "stationId": "cauterets",
+      "name": "Pont d'Espagne · Cascade",
+      "elevationM": 1500,
+      "live": {
+        "url": "https://www.skaping.com/cauterets/pontdespagne/video"
+      },
+      "credit": "Cauterets · Skaping",
+      "pageUrl": "https://www.cauterets.com/live/webcams/"
+    },
+    {
+      "id": "cauterets-village",
+      "stationId": "cauterets",
+      "name": "Village · Casino",
+      "elevationM": 930,
+      "live": {
+        "url": "https://www.skaping.com/cauterets/village/casino"
+      },
+      "credit": "Cauterets · Skaping",
+      "pageUrl": "https://www.cauterets.com/live/webcams/"
+    }
+  ]
+}

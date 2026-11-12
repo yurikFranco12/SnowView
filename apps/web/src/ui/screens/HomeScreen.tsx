@@ -1,5 +1,5 @@
 import { getStation } from '@snowview/data';
-import { Mountain, Plus, Star } from 'lucide-react';
+import { Mountain, Plus, Star, Video } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PeriodSelector } from '../components/PeriodSelector';
 import { RatingBadge } from '../components/RatingBadge';
@@ -52,6 +52,8 @@ function TodayRatings({
 
 function MainStationCard({ stationId }: { stationId: string }) {
   const period = useAppStore((s) => s.period);
+  const setView = useAppStore((s) => s.setView);
+  const setWebcamStation = useAppStore((s) => s.setWebcamStation);
   const now = useNow();
   const station = getStation(stationId);
   const query = useStationForecast(stationId);
@@ -72,9 +74,22 @@ function MainStationCard({ stationId }: { stationId: string }) {
           </span>
         )}
       </div>
-      <h2 id="main-station-name" className="mt-1.5 font-display text-[30px] font-semibold">
-        {station?.name ?? stationId}
-      </h2>
+      <div className="mt-1.5 flex items-center justify-between gap-3">
+        <h2 id="main-station-name" className="font-display text-[30px] font-semibold">
+          {station?.name ?? stationId}
+        </h2>
+        <button
+          type="button"
+          onClick={() => {
+            setWebcamStation(stationId);
+            setView('webcams');
+          }}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.08] px-3 py-1.5 text-xs transition-colors hover:bg-white/[0.14]"
+        >
+          <Video className="size-3.5" aria-hidden="true" />
+          Webcams
+        </button>
+      </div>
 
       {query.isPending && (
         <>
