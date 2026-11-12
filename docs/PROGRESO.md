@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 9 (mapa de pistas de cada estación); app 0.11.0.
+- **Fase actual:** ninguna en curso. Hecha la 10 (relieve en el mapa de pistas y depuración); app 0.12.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,15 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 10 — tareas
+
+- [x] Mallas de altitud de las 10 estaciones (`scripts/build-terrain.mjs`, Terrain Tiles)
+- [x] Relieve sombreado con la silueta de la montaña y curvas de nivel en el mapa de pistas; cotas y
+      desnivel al pasar por una pista (ADR 0013)
+- [x] Depuración: `MapScreen` partido en componentes, pantallas con carga diferida, geometría y
+      relieve con tests, foco del cuadro, exportaciones sobrantes
+- [x] Instalador 0.12.0, fusión en `main`, etiquetas `fase-10` y `v0.12.0`, push y claude.ai
 
 ## Fase 9 — tareas
 

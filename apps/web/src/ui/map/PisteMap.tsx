@@ -1,6 +1,5 @@
 import type { CuratedStation } from '@snowview/data';
 import { useQuery } from '@tanstack/react-query';
-import { createPortal } from 'react-dom';
 import { Minus, Plus, RotateCcw, X } from 'lucide-react';
 import {
   useEffect,
@@ -11,24 +10,23 @@ import {
   type PointerEvent,
   type WheelEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
+import {
+  fitBox,
+  homeBox,
+  makeProjection,
+  toPath,
+  toXY,
+  zoomBox,
+  type Box,
+  type Difficulty,
+  type PisteData,
+  type SceneProjection,
+} from './pisteScene';
+import { contourSegments, elevationAt, shadeImage, type TerrainGrid } from './terrain';
 
-type Difficulty = 'green' | 'blue' | 'red' | 'black' | 'freeride' | 'unknown';
-interface RawPiste {
-  d: Difficulty;
-  n?: string;
-  c: [number, number][];
-}
-interface RawLift {
-  k: string;
-  n?: string;
-  c: [number, number][];
-}
-interface PisteData {
-  pistes: RawPiste[];
-  lifts: RawLift[];
-}
-
-const loaders = import.meta.glob<PisteData>('./data/pistes/*.json', {
+const pisteLoaders = import.meta.glob<PisteData>('./data/pistes/*.json', { import: 'default' });
+const terrainLoaders = import.meta.glob<TerrainGrid>('./data/terrain/*.json', {
   import: 'default',
 });
 
@@ -36,11 +34,18 @@ const loaders = import.meta.glob<PisteData>('./data/pistes/*.json', {
 function usePisteData(stationId: string) {
   return useQuery({
     queryKey: ['pistes', stationId],
-    queryFn: async () => {
-      const load = loaders[`./data/pistes/${stationId}.json`];
-      if (!load) return undefined;
-      return load();
-    },
+    // TanStack Query no admite undefined como resultado: null = no hay datos.
+    queryFn: async () => (await pisteLoaders[`./data/pistes/${stationId}.json`]?.()) ?? null,
+    staleTime: Infinity,
+    retry: false,
+  });
+}
+
+/** Malla de altitudes de la estación; puede no existir (entonces se dibujan solo las pistas). */
+function useTerrain(stationId: string) {
+  return useQuery({
+    queryKey: ['terrain', stationId],
+    queryFn: async () => (await terrainLoaders[`./data/terrain/${stationId}.json`]?.()) ?? null,
     staleTime: Infinity,
     retry: false,
   });
@@ -56,69 +61,110 @@ const DIFFICULTY: Record<Difficulty, { label: string; color: string; halo?: stri
 };
 const DIFFICULTY_ORDER: Difficulty[] = ['green', 'blue', 'red', 'black', 'freeride', 'unknown'];
 const LIFT_COLOR = '#7de3ff';
+/** Hasta dónde llega el relieve alrededor de las pistas. */
+const REACH_KM = 1.5;
+const CONTOUR_STEP_M = 100;
 
-interface Box {
+interface TerrainLayerData {
+  imageUrl: string;
   x: number;
   y: number;
-  w: number;
-  h: number;
+  width: number;
+  height: number;
+  minorPath: string;
+  majorPath: string;
 }
 
-const toPath = (pts: [number, number][], lon0: number, lat0: number, kx: number) =>
-  pts
-    .map(
-      ([lon, lat], i) =>
-        `${i ? 'L' : 'M'}${((lon - lon0) * kx).toFixed(1)} ${((lat0 - lat) * 1000).toFixed(1)}`,
-    )
-    .join('');
+/** Imagen sombreada del relieve y curvas de nivel, en las coordenadas de la escena. */
+function buildTerrainLayer(
+  grid: TerrainGrid,
+  proj: SceneProjection,
+  lines: PisteData['pistes'][number]['c'][],
+): TerrainLayerData | undefined {
+  const cellKm = grid.dLat * 111.32;
+  const reachCells = Math.max(2, REACH_KM / cellKm);
+  const img = shadeImage(grid, proj.lat0, lines, reachCells);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return undefined;
+  ctx.putImageData(new ImageData(new Uint8ClampedArray(img.rgba), img.width, img.height), 0, 0);
 
-function PisteCanvas({ station, data }: { station: CuratedStation; data: PisteData }) {
+  const cellToXY = (ci: number, cj: number) =>
+    toXY(proj, grid.lon0 + ci * grid.dLon, grid.lat0 - cj * grid.dLat);
+  const [x0, y0] = cellToXY(-0.5, -0.5);
+  const [x1, y1] = cellToXY(grid.nx - 0.5, grid.ny - 0.5);
+
+  let minor = '';
+  let major = '';
+  for (const { level, segments } of contourSegments(grid, CONTOUR_STEP_M)) {
+    for (const [ax, ay, bx, by] of segments) {
+      // Solo las curvas cercanas a las pistas, igual que el relieve.
+      const di = Math.round((ax + bx) / 2);
+      const dj = Math.round((ay + by) / 2);
+      const d = img.dist[Math.min(grid.ny - 1, dj) * grid.nx + Math.min(grid.nx - 1, di)] ?? 1e9;
+      if (d > reachCells * 0.85) continue;
+      const [px, py] = cellToXY(ax, ay);
+      const [qx, qy] = cellToXY(bx, by);
+      const seg = `M${px.toFixed(1)} ${py.toFixed(1)}L${qx.toFixed(1)} ${qy.toFixed(1)}`;
+      if (level % 500 === 0) major += seg;
+      else minor += seg;
+    }
+  }
+  return {
+    imageUrl: canvas.toDataURL('image/png'),
+    x: x0,
+    y: y0,
+    width: x1 - x0,
+    height: y1 - y0,
+    minorPath: minor,
+    majorPath: major,
+  };
+}
+
+const metres = (v: number) => `${Math.round(v).toLocaleString('es-ES')} m`;
+
+function PisteCanvas({
+  station,
+  data,
+  terrain,
+}: {
+  station: CuratedStation;
+  data: PisteData;
+  terrain: TerrainGrid | undefined;
+}) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [hover, setHover] = useState<string | undefined>(undefined);
   const drag = useRef<{ x: number; y: number; box: Box } | undefined>(undefined);
 
-  // Proyección local: 1° de latitud = 1000 unidades; la longitud se corrige con el coseno.
   const scene = useMemo(() => {
-    const lat0 = station.latitude;
-    const lon0 = station.longitude;
-    const kx = Math.cos((lat0 * Math.PI) / 180) * 1000;
-    // El encuadre se ajusta a la zona donde se concentran las pistas (sin contar las que quedan
-    // sueltas lejos, que pueden ser de otra estación).
-    const xs: number[] = [];
-    const ys: number[] = [];
-    for (const piste of data.pistes) {
-      for (const [lon, lat] of piste.c) {
-        xs.push((lon - lon0) * kx);
-        ys.push((lat0 - lat) * 1000);
-      }
-    }
-    const pct = (arr: number[], f: number) => {
-      const sorted = [...arr].sort((u, v) => u - v);
-      return sorted[Math.min(sorted.length - 1, Math.max(0, Math.floor(f * sorted.length)))] ?? 0;
-    };
-    let minX = pct(xs, 0.02);
-    let maxX = pct(xs, 0.98);
-    let minY = pct(ys, 0.02);
-    let maxY = pct(ys, 0.98);
-    if (xs.length === 0) {
-      minX = minY = -10;
-      maxX = maxY = 10;
-    }
-    const m = Math.max(maxX - minX, maxY - minY) * 0.08;
-    const home: Box = { x: minX - m, y: minY - m, w: maxX - minX + 2 * m, h: maxY - minY + 2 * m };
+    const proj = makeProjection(station);
     return {
-      home,
-      pistes: data.pistes.map((p, i) => ({ ...p, id: `p${i}`, path: toPath(p.c, lon0, lat0, kx) })),
-      lifts: data.lifts.map((l, i) => ({ ...l, id: `l${i}`, path: toPath(l.c, lon0, lat0, kx) })),
+      proj,
+      home: homeBox(proj, data.pistes),
+      pistes: data.pistes.map((p, i) => ({ ...p, id: `p${i}`, path: toPath(proj, p.c) })),
+      lifts: data.lifts.map((l, i) => ({ ...l, id: `l${i}`, path: toPath(proj, l.c) })),
     };
   }, [station, data]);
+
+  const layer = useMemo(
+    () =>
+      terrain
+        ? buildTerrainLayer(
+            terrain,
+            scene.proj,
+            [...data.pistes, ...data.lifts].map((i) => i.c),
+          )
+        : undefined,
+    [terrain, scene.proj, data],
+  );
 
   // undefined = vista completa de la estación
   const [custom, setBox] = useState<Box | undefined>(undefined);
   const box = custom ?? scene.home;
 
-  // Ajusta la caja a la proporción del lienzo para que el mapa no se deforme.
   const [ratio, setRatio] = useState(1.6);
   useEffect(() => {
     const el = svgRef.current;
@@ -130,28 +176,10 @@ function PisteCanvas({ station, data }: { station: CuratedStation; data: PisteDa
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const view = useMemo(() => {
-    const cx = box.x + box.w / 2;
-    const cy = box.y + box.h / 2;
-    let w = box.w;
-    let h = box.h;
-    if (w / h < ratio) w = h * ratio;
-    else h = w / ratio;
-    return { x: cx - w / 2, y: cy - h / 2, w, h };
-  }, [box, ratio]);
+  const view = useMemo(() => fitBox(box, ratio), [box, ratio]);
 
-  const zoomAt = (factor: number, fx = 0.5, fy = 0.5) => {
-    setBox(() => {
-      const w = Math.min(Math.max(view.w * factor, scene.home.w / 40), scene.home.w * 3);
-      const h = (w / view.w) * view.h;
-      return {
-        x: view.x + view.w * fx - w * fx,
-        y: view.y + view.h * fy - h * fy,
-        w,
-        h,
-      };
-    });
-  };
+  const zoomAt = (factor: number, fx = 0.5, fy = 0.5) =>
+    setBox(zoomBox(view, scene.home, factor, fx, fy));
   const onWheel = (e: WheelEvent<SVGSVGElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     zoomAt(
@@ -201,13 +229,25 @@ function PisteCanvas({ station, data }: { station: CuratedStation; data: PisteDa
       else next.add(key);
       return next;
     });
-  const hoveredName = useMemo(() => {
+
+  // Texto de lo que hay bajo el puntero, con su desnivel si se conoce el terreno.
+  const hoveredText = useMemo(() => {
     if (!hover) return undefined;
-    const p = scene.pistes.find((x) => x.id === hover);
-    if (p) return `Pista ${DIFFICULTY[p.d].label.toLowerCase()}${p.n ? `: ${p.n}` : ''}`;
-    const l = scene.lifts.find((x) => x.id === hover);
-    return l ? `Remonte${l.n ? `: ${l.n}` : ''}` : undefined;
-  }, [hover, scene]);
+    const piste = scene.pistes.find((x) => x.id === hover);
+    const lift = scene.lifts.find((x) => x.id === hover);
+    const item = piste ?? lift;
+    if (!item) return undefined;
+    const title = piste ? `Pista ${DIFFICULTY[piste.d].label.toLowerCase()}` : 'Remonte';
+    const name = item.n ? `: ${item.n}` : '';
+    const first = item.c[0];
+    const last = item.c[item.c.length - 1];
+    if (!terrain || !first || !last) return title + name;
+    const a = elevationAt(terrain, first[0], first[1]);
+    const b = elevationAt(terrain, last[0], last[1]);
+    if (a === undefined || b === undefined) return title + name;
+    const drop = Math.abs(a - b);
+    return `${title}${name} · ${metres(Math.max(a, b))} → ${metres(Math.min(a, b))} (desnivel ${metres(drop)})`;
+  }, [hover, scene, terrain]);
 
   return (
     <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(ellipse_at_30%_20%,#1a2468_0%,#0b1138_70%)]">
@@ -225,6 +265,32 @@ function PisteCanvas({ station, data }: { station: CuratedStation; data: PisteDa
         onPointerUp={onPointerUp}
         onKeyDown={onKeyDown}
       >
+        {layer && !hidden.has('relief') && (
+          <image
+            href={layer.imageUrl}
+            x={layer.x}
+            y={layer.y}
+            width={layer.width}
+            height={layer.height}
+            preserveAspectRatio="none"
+          />
+        )}
+        {layer && !hidden.has('contours') && (
+          <g fill="none" strokeLinecap="round">
+            <path
+              d={layer.minorPath}
+              stroke="rgba(190,215,255,0.22)"
+              strokeWidth={0.6}
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={layer.majorPath}
+              stroke="rgba(190,215,255,0.5)"
+              strokeWidth={1}
+              vectorEffect="non-scaling-stroke"
+            />
+          </g>
+        )}
         <g fill="none" strokeLinecap="round" strokeLinejoin="round">
           {DIFFICULTY_ORDER.filter((d) => !hidden.has(d)).map((d) => {
             const style = DIFFICULTY[d];
@@ -290,42 +356,50 @@ function PisteCanvas({ station, data }: { station: CuratedStation; data: PisteDa
         <p className="text-xs font-semibold">Leyenda</p>
         <ul className="flex flex-col gap-1" aria-label="Capas del mapa de pistas">
           {DIFFICULTY_ORDER.filter((d) => counts.has(d)).map((d) => (
-            <li key={d}>
-              <button
-                type="button"
-                aria-pressed={!hidden.has(d)}
-                onClick={() => toggle(d)}
-                className={`flex w-full items-center gap-2 text-left transition-opacity ${hidden.has(d) ? 'opacity-40' : ''}`}
-              >
+            <LegendToggle
+              key={d}
+              hidden={hidden.has(d)}
+              onToggle={() => toggle(d)}
+              count={counts.get(d)}
+              label={DIFFICULTY[d].label}
+              swatch={
                 <span
                   className="h-1 w-5 rounded"
                   style={{
                     background: DIFFICULTY[d].color,
                     boxShadow: DIFFICULTY[d].halo ? `0 0 0 1px ${DIFFICULTY[d].halo}` : undefined,
                   }}
-                  aria-hidden="true"
                 />
-                {DIFFICULTY[d].label}
-                <span className="ml-auto pl-2 text-muted">{counts.get(d)}</span>
-              </button>
-            </li>
+              }
+            />
           ))}
-          <li>
-            <button
-              type="button"
-              aria-pressed={!hidden.has('lifts')}
-              onClick={() => toggle('lifts')}
-              className={`flex w-full items-center gap-2 text-left transition-opacity ${hidden.has('lifts') ? 'opacity-40' : ''}`}
-            >
-              <span
-                className="w-5 border-t-2 border-dashed"
-                style={{ borderColor: LIFT_COLOR }}
-                aria-hidden="true"
+          <LegendToggle
+            hidden={hidden.has('lifts')}
+            onToggle={() => toggle('lifts')}
+            count={scene.lifts.length}
+            label="Remontes"
+            swatch={
+              <span className="w-5 border-t-2 border-dashed" style={{ borderColor: LIFT_COLOR }} />
+            }
+          />
+          {layer && (
+            <>
+              <LegendToggle
+                hidden={hidden.has('relief')}
+                onToggle={() => toggle('relief')}
+                label="Relieve"
+                swatch={
+                  <span className="h-3 w-5 rounded bg-gradient-to-br from-[#121e5c] to-[#688cc8]" />
+                }
               />
-              Remontes
-              <span className="ml-auto pl-2 text-muted">{scene.lifts.length}</span>
-            </button>
-          </li>
+              <LegendToggle
+                hidden={hidden.has('contours')}
+                onToggle={() => toggle('contours')}
+                label={`Curvas cada ${CONTOUR_STEP_M} m`}
+                swatch={<span className="h-px w-5 bg-[rgba(190,215,255,0.7)]" />}
+              />
+            </>
+          )}
         </ul>
         <p className="text-[10px] leading-snug text-muted">Pulsa un tipo para ocultarlo.</p>
       </div>
@@ -354,11 +428,42 @@ function PisteCanvas({ station, data }: { station: CuratedStation; data: PisteDa
       <p
         role="status"
         aria-live="polite"
-        className="pointer-events-none absolute bottom-3 left-3 rounded-xl bg-[#0d1340]/90 px-3 py-1.5 text-xs backdrop-blur-md empty:hidden"
+        className="pointer-events-none absolute bottom-3 left-3 max-w-[calc(100%-72px)] rounded-xl bg-[#0d1340]/90 px-3 py-1.5 text-xs backdrop-blur-md empty:hidden"
       >
-        {hoveredName}
+        {hoveredText}
       </p>
     </div>
+  );
+}
+
+function LegendToggle({
+  hidden,
+  onToggle,
+  label,
+  count,
+  swatch,
+}: {
+  hidden: boolean;
+  onToggle: () => void;
+  label: string;
+  count?: number | undefined;
+  swatch: React.ReactNode;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        aria-pressed={!hidden}
+        onClick={onToggle}
+        className={`flex w-full items-center gap-2 text-left transition-opacity ${hidden ? 'opacity-40' : ''}`}
+      >
+        <span aria-hidden="true" className="grid w-5 place-items-center">
+          {swatch}
+        </span>
+        {label}
+        {count !== undefined && <span className="ml-auto pl-2 text-muted">{count}</span>}
+      </button>
+    </li>
   );
 }
 
@@ -373,19 +478,52 @@ export function PisteMapDialog({
   station: CuratedStation;
   onClose: () => void;
 }) {
-  const query = usePisteData(station.id);
+  const pistes = usePisteData(station.id);
+  const terrain = useTerrain(station.id);
   const closeRef = useRef<HTMLButtonElement>(null);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
   useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
     const onKey = (e: globalThis.KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onCloseRef.current();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      // Foco atrapado dentro del cuadro mientras está abierto.
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [tabindex="0"]',
+      );
+      const first = focusable?.[0];
+      const last = focusable?.[focusable.length - 1];
+      if (!first || !last) return;
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !dialogRef.current?.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !dialogRef.current?.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      previous?.focus();
+    };
+  }, []);
 
-  const empty = query.data && query.data.pistes.length + query.data.lifts.length === 0;
+  const data = pistes.data;
+  const empty = data && data.pistes.length + data.lifts.length === 0;
+  // Se espera al terreno para no dibujar primero sin relieve y luego con él.
+  const ready = !pistes.isPending && !terrain.isPending;
 
   return createPortal(
     <div
@@ -395,6 +533,7 @@ export function PisteMapDialog({
       }}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={`Mapa de pistas de ${station.name}`}
@@ -421,14 +560,14 @@ export function PisteMapDialog({
           </button>
         </div>
 
-        {query.isPending ? (
+        {!ready ? (
           <div
             role="status"
             className="grid min-h-0 flex-1 place-items-center rounded-2xl border border-white/10 text-sm text-muted"
           >
             Cargando el mapa…
           </div>
-        ) : query.isError || !query.data || empty ? (
+        ) : pistes.isError || !data || empty ? (
           <div
             role="status"
             className="grid min-h-0 flex-1 place-items-center rounded-2xl border border-white/10 p-6 text-center text-sm text-muted"
@@ -436,12 +575,13 @@ export function PisteMapDialog({
             No hay datos de pistas de esta estación todavía.
           </div>
         ) : (
-          <PisteCanvas station={station} data={query.data} />
+          <PisteCanvas station={station} data={data} terrain={terrain.data ?? undefined} />
         )}
 
         <p className="text-[10px] leading-snug text-muted">
-          Pistas y remontes: © colaboradores de OpenStreetMap (licencia ODbL). Pueden no estar al
-          día ni reflejar las pistas abiertas.
+          Pistas y remontes: © colaboradores de OpenStreetMap (licencia ODbL). Relieve: Terrain
+          Tiles (Mapzen, SRTM y otras fuentes). Pueden no estar al día ni reflejar las pistas
+          abiertas.
         </p>
       </div>
     </div>,

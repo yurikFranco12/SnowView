@@ -33,3 +33,22 @@ describe('datos de pistas', () => {
     });
   }
 });
+
+const terrainFiles = import.meta.glob<{
+  nx: number;
+  ny: number;
+  z: number[];
+}>('./data/terrain/*.json', { eager: true, import: 'default' });
+
+describe('datos de terreno', () => {
+  for (const station of stationsFile.stations) {
+    it(`${station.id} tiene una malla de altitudes coherente`, () => {
+      const g = terrainFiles[`./data/terrain/${station.id}.json`];
+      expect(g).toBeDefined();
+      expect(g?.z.length).toBe((g?.nx ?? 0) * (g?.ny ?? 0));
+      // la cima de la estación debe caber en lo que muestra la malla (con holgura)
+      expect(Math.max(...(g?.z ?? [0]))).toBeGreaterThan(station.topElevationM - 400);
+      expect(Math.min(...(g?.z ?? [0]))).toBeGreaterThan(0);
+    });
+  }
+});

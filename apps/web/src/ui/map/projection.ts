@@ -23,7 +23,7 @@ export function zoomForSpan(spanDegrees: number, fill = 0.8): number {
   return (360 * fill) / spanDegrees;
 }
 
-export const MIN_ZOOM = 1;
+const MIN_ZOOM = 1;
 export const MAX_ZOOM = 600;
 
 /** Encuadre: qué punto del lienzo base queda en el centro y con cuánto zoom. */
@@ -76,7 +76,7 @@ export function fitView(
 }
 
 /** Traslación (en unidades del lienzo) que deja el punto (x, y) de la vista en el centro. */
-export function translateFor(view: View): { tx: number; ty: number } {
+function translateFor(view: View): { tx: number; ty: number } {
   return { tx: MAP_W / 2 - view.zoom * view.x, ty: MAP_H / 2 - view.zoom * view.y };
 }
 
@@ -96,7 +96,7 @@ export function layerOpacity(zoom: number, from: number, to: number): number {
  * Metros que mide una unidad del lienzo base a una latitud. El mundo mide 1000 unidades de ancho
  * (la circunferencia de la Tierra) y Mercator ensancha las unidades con 1/cos(latitud).
  */
-export function metersPerUnit(latitude: number): number {
+function metersPerUnit(latitude: number): number {
   return (40_075_017 / MAP_W) * Math.cos((latitude * Math.PI) / 180);
 }
 

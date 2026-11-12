@@ -1,27 +1,43 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
-import { useEffect, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { SnowCanvas } from './background/SnowCanvas';
 import { applyRefreshInterval, queryClient } from './data/forecast';
 import { useRuleMonitor } from './data/rules';
 import { Sidebar } from './layout/Sidebar';
 import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
-import { AlertsScreen } from './screens/AlertsScreen';
-import { CalendarScreen } from './screens/CalendarScreen';
-import { CompareScreen } from './screens/CompareScreen';
-import { HistoryScreen } from './screens/HistoryScreen';
-import { MapScreen } from './screens/MapScreen';
 import { HomeScreen } from './screens/HomeScreen';
-import { SettingsScreen } from './screens/SettingsScreen';
-import { StationsScreen } from './screens/StationsScreen';
-import { WebcamsScreen } from './screens/WebcamsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
 import { useRules } from './state/rulesStore';
 import { useManualLocation } from './state/manualLocationStore';
 import { useRoutesKey } from './state/routesKeyStore';
 import { snowIntensity, useSettings } from './state/settingsStore';
+
+// Cada pantalla se descarga al abrirla por primera vez: el arranque carga solo el inicio.
+const AlertsScreen = lazy(() =>
+  import('./screens/AlertsScreen').then((m) => ({ default: m.AlertsScreen })),
+);
+const CalendarScreen = lazy(() =>
+  import('./screens/CalendarScreen').then((m) => ({ default: m.CalendarScreen })),
+);
+const CompareScreen = lazy(() =>
+  import('./screens/CompareScreen').then((m) => ({ default: m.CompareScreen })),
+);
+const HistoryScreen = lazy(() =>
+  import('./screens/HistoryScreen').then((m) => ({ default: m.HistoryScreen })),
+);
+const MapScreen = lazy(() => import('./screens/MapScreen').then((m) => ({ default: m.MapScreen })));
+const SettingsScreen = lazy(() =>
+  import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })),
+);
+const StationsScreen = lazy(() =>
+  import('./screens/StationsScreen').then((m) => ({ default: m.StationsScreen })),
+);
+const WebcamsScreen = lazy(() =>
+  import('./screens/WebcamsScreen').then((m) => ({ default: m.WebcamsScreen })),
+);
 
 const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
@@ -87,7 +103,18 @@ export function App() {
                   animate="animate"
                   exit="exit"
                 >
-                  {SCREENS[view]()}
+                  <Suspense
+                    fallback={
+                      <p
+                        role="status"
+                        className="grid h-full place-items-center text-sm text-muted"
+                      >
+                        Cargando…
+                      </p>
+                    }
+                  >
+                    {SCREENS[view]()}
+                  </Suspense>
                 </motion.div>
               </AnimatePresence>
             </main>
