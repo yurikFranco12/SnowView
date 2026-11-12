@@ -21,6 +21,11 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 - Fase 3 completada: ajustes y modo sin conexión (3a), comparador (3b) e historial (3c). Progreso en
   [docs/PROGRESO.md](docs/PROGRESO.md).
 
+## Versiones
+
+Cambios por versión en [CHANGELOG.md](CHANGELOG.md). Ramas, etiquetas y cómo se publica en
+[docs/VERSIONES.md](docs/VERSIONES.md).
+
 ## Estructura
 
 ```

@@ -1,49 +1,137 @@
-# Ramas y versiones
+# Control de versiones
+
+Cómo se organiza el código de SnowView en git: ramas, etiquetas, versiones de la app, mensajes de
+commit, cierre de fase y publicación en GitHub. El detalle de cada versión está en el
+[CHANGELOG](../CHANGELOG.md).
 
 ## Ramas
 
-- **`main`**: solo fases terminadas. Cada commit de `main` compila, pasa `pnpm check` y genera el
-  instalador.
-- **`fase-<n>`** (`fase-1b`, `fase-1c`…): el trabajo de una fase. Se crea desde `main` al empezar la
-  fase y se puede hacer en ella todos los commits que haga falta.
+| Rama       | Para qué sirve                                                                        | Vida           |
+| ---------- | ------------------------------------------------------------------------------------- | -------------- |
+| `main`     | Solo fases terminadas. Cada commit compila, pasa `pnpm check` y genera el instalador. | Permanente     |
+| `fase-<n>` | El trabajo de una fase (`fase-5b`, `fase-6`…). Sale de `main`.                        | Hasta cerrarla |
 
-## Cerrar una fase
+Reglas:
 
-1. En la rama de la fase: `pnpm check` en verde, instalador generado, README de la fase,
-   `docs/PROGRESO.md` y este archivo al día.
-2. Fusionar en `main` sin avance rápido, para que la fase quede como un bloque en el historial:
+- Nunca se trabaja directamente en `main`: solo recibe fusiones de fases cerradas.
+- Una fase = una rama = un conjunto de commits que se pueden revisar juntos.
+- **Al cerrar la fase se borra su rama** (`git branch -d`, que solo borra si ya está fusionada). El
+  trabajo no se pierde: queda dentro de `main` como segundo padre de la fusión y con su etiqueta. Se
+  borra para que el nombre de la rama no choque con el de su etiqueta (`fase-5a` rama y `fase-5a`
+  etiqueta hacen que git avise de una referencia ambigua).
+
+## Etiquetas
+
+Dos juegos, ambos anotados (`git tag -a`, con mensaje) y sobre commits de `main`:
+
+- **`fase-<n>`**: marca el commit de fusión en que se cerró cada fase.
+- **`v<mayor>.<menor>.<parche>`**: marca cada versión de la app con instalador (SemVer). El mensaje
+  dice qué fases incluye y el tamaño de los instaladores.
+
+Para ver qué incluye una versión: `git show v0.6.0`. Para ver el código de una fase:
+`git checkout fase-3c` (queda en «HEAD desacoplado»; no se commitea ahí).
+
+## Versión de la app
+
+Mientras no haya versión 1.0, la app sigue SemVer con estas reglas:
+
+- **Menor (0.x.0)**: una fase o grupo de fases con funciones nuevas para el usuario.
+- **Parche (0.x.y)**: correcciones sin funciones nuevas.
+- **1.0.0**: cuando el usuario lo decida; hasta entonces todo es 0.x.
+
+La versión se escribe en tres sitios, siempre a la vez y en el commit de cierre de la fase:
+`src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` y `src-tauri/Cargo.lock` (paquete `snowview`).
+Las fases que no generan instalador no suben la versión.
+
+## Mensajes de commit
+
+Primera línea: `Fase <n>: <qué cambia>` (o `Corregir …` / `Documentar …` fuera de una fase), en
+español, sin punto final, de hasta unos 70 caracteres. Después una línea en blanco y una lista de lo
+hecho (el porqué, no el cómo). Los commits que escribe Claude terminan con la línea
+`Co-Authored-By`. En PowerShell 5.1 el mensaje se pasa por archivo: `git commit -F archivo.txt`.
+
+Las fusiones se llaman `Fusionar fase-<n>: <qué trae>`.
+
+## Ciclo de una fase
+
+1. **Abrir**: desde `main` actualizada, `git switch -c fase-<n>`. Se apunta en `docs/PROGRESO.md`.
+2. **Trabajar**: commits pequeños en la rama. Antes de cada commit, `pnpm check` en verde.
+3. **Cerrar**, todo en la rama de la fase:
+   - `pnpm check` en verde y, si la fase sube versión, instalador generado con `pnpm.cmd build` en el
+     terminal del usuario.
+   - README de la fase (`docs/fase-<n>/README.md`), ADR si hubo decisiones, `docs/PROGRESO.md`,
+     esta tabla y el `CHANGELOG.md` al día.
+4. **Fusionar y etiquetar**:
 
    ```bash
    git switch main
    ```
 
    ```bash
-   git merge --no-ff fase-1b
+   git merge --no-ff fase-5b -m "Fusionar fase-5b: <qué trae>"
    ```
-
-3. Etiquetar el commit de `main` con el nombre de la fase:
 
    ```bash
-   git tag -a fase-1b -m "Fase 1b: datos reales"
+   git tag -a fase-5b -m "Fase 5b: <qué trae>"
    ```
 
-4. Crear la rama de la fase siguiente desde `main`:
+   Si la fase sube versión, además `git tag -a v0.7.0 -m "SnowView 0.7.0 (fase-5b): …"`.
+
+5. **Limpiar y seguir**:
 
    ```bash
-   git switch -c fase-1c
+   git branch -d fase-5b
    ```
+
+   ```bash
+   git switch -c fase-6
+   ```
+
+6. **Publicar** (ver más abajo) y sincronizar el documento de progreso de claude.ai.
+
+## GitHub
+
+El repositorio local no tiene remoto hasta que el usuario facilite la URL del repositorio de GitHub.
+Cuando exista, se conecta una sola vez:
+
+```bash
+git remote add origin <URL-del-repositorio>
+```
+
+La primera subida lleva `main`, la rama en curso y todas las etiquetas:
+
+```bash
+git push -u origin main
+```
+
+```bash
+git push -u origin fase-5b
+```
+
+```bash
+git push origin --tags
+```
+
+Después, tras cerrar cada fase: `git push origin main --follow-tags` y la rama nueva con
+`git push -u origin fase-<n>`. Las ramas de fase ya cerradas no se suben (se borran al cerrarlas).
+
+Nunca se reescribe el historial publicado (`push --force`, `rebase` de commits ya subidos). Si algo
+se subió por error, se corrige con un commit nuevo.
 
 ## Historial
 
-| Etiqueta  | Versión de la app      | Fecha      | Contenido                                              |
-| --------- | ---------------------- | ---------- | ------------------------------------------------------ |
-| `fase-0`  | —                      | 2026-11-12 | Entorno, monorepo, tokens de diseño y ADR 0001         |
-| `fase-1a` | 0.1.0                  | 2026-11-12 | Prototipo visual con Tauri 2 y datos simulados         |
-| `fase-1b` | 0.2.0                  | 2026-11-12 | Open-Meteo real, estaciones verificadas, favoritas     |
-| `fase-1c` | 0.3.0                  | 2026-11-12 | Reglas, avisos nativos, bandeja y arranque con Windows |
-| `fase-3a` | 0.3.0 (sin instalador) | 2026-11-12 | Ajustes de consulta y nevada, modo sin conexión        |
-| `fase-3b` | 0.3.0 (sin instalador) | 2026-11-12 | Comparador de estaciones                               |
-| `fase-3c` | 0.4.0                  | 2026-11-12 | Historial de nevadas por temporada                     |
-| `fase-4a` | 0.5.0                  | 2026-11-12 | Estaciones Alto Campoo y Cauterets                     |
-| `fase-4b` | 0.5.0                  | 2026-11-12 | Condiciones para esquiar y snowboard, calendario       |
-| `fase-5a` | 0.6.0                  | 2026-11-12 | Webcams de las estaciones dentro de la app             |
+| Etiqueta  | Versión | Fecha      | Commit de fusión | Contenido                                              |
+| --------- | ------- | ---------- | ---------------- | ------------------------------------------------------ |
+| `fase-0`  | —       | 2026-11-12 | `9bcee9e`        | Entorno, monorepo, tokens de diseño y ADR 0001         |
+| `fase-1a` | v0.1.0  | 2026-11-12 | `6c8e8d4`        | Prototipo visual con Tauri 2 y datos simulados         |
+| `fase-1b` | v0.2.0  | 2026-11-12 | `bc33716`        | Open-Meteo real, estaciones verificadas, favoritas     |
+| `fase-1c` | v0.3.0  | 2026-11-12 | `2a4fa7a`        | Reglas, avisos nativos, bandeja y arranque con Windows |
+| `fase-3a` | —       | 2026-11-12 | `6cc2d1e`        | Ajustes de consulta y nevada, modo sin conexión        |
+| `fase-3b` | —       | 2026-11-12 | `778a4a4`        | Comparador de estaciones                               |
+| `fase-3c` | v0.4.0  | 2026-11-12 | `b8b82ad`        | Historial de nevadas por temporada                     |
+| `fase-4a` | —       | 2026-11-12 | `2fa30b7`        | Estaciones Alto Campoo y Cauterets                     |
+| `fase-4b` | v0.5.0  | 2026-11-12 | `2ae6842`        | Condiciones para esquiar y snowboard, calendario       |
+| `fase-5a` | v0.6.0  | 2026-11-12 | `5667031`        | Webcams de las estaciones dentro de la app             |
+
+Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
+siguiente (v0.4.0 y v0.5.0).

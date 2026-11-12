@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 5a (webcams); app 0.6.0.
+- **Fase actual:** 5b, control de versiones documentado, en la rama `fase-5b`.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,15 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 5b — tareas
+
+- [x] Ramas de fases cerradas borradas (estaban fusionadas) para evitar nombres ambiguos con las
+      etiquetas
+- [x] Etiquetas de versión `v0.1.0` a `v0.6.0` sobre los commits de `main`
+- [x] `docs/VERSIONES.md` reescrito: ramas, etiquetas, SemVer, mensajes de commit, ciclo de fase y
+      publicación en GitHub; `CHANGELOG.md` con todas las versiones
+- [ ] Conectar el repositorio de GitHub (falta la URL) y subir `main`, `fase-5b` y las etiquetas
 
 ## Fase 5a — tareas
 
