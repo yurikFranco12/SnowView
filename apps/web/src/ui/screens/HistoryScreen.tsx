@@ -108,7 +108,7 @@ export function HistoryScreen() {
   const firstError = results.find((r) => r.error)?.error;
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px]">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-6">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">Nieve en la cima</p>

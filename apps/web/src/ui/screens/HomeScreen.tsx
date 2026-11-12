@@ -2,11 +2,13 @@ import { getStation } from '@snowview/data';
 import { Mountain, Plus, Star } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PeriodSelector } from '../components/PeriodSelector';
+import { RatingBadge } from '../components/RatingBadge';
 import { RuleItem } from '../components/RuleItem';
 import { SnowBars } from '../components/SnowBars';
 import { Sparkline } from '../components/Sparkline';
 import { ErrorView, Skeleton } from '../components/StatusViews';
 import { formatCm, provider, summarize, useStationForecast } from '../data/forecast';
+import { rateStationDays } from '../data/conditions';
 import { useRuleResults } from '../data/rules';
 import { revealItem } from '../motion/reveal';
 import { useNow } from '../hooks/useNow';
@@ -23,6 +25,30 @@ const dateFormatter = new Intl.DateTimeFormat('es-ES', {
   month: 'long',
 });
 const timeFormatter = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+/** Valoración de hoy para esquí y snowboard, con el motivo principal. */
+function TodayRatings({
+  forecast,
+  stationId,
+}: {
+  forecast: Parameters<typeof rateStationDays>[0] | undefined;
+  stationId: string;
+}) {
+  const now = useNow();
+  const station = getStation(stationId);
+  if (!forecast || !station) return null;
+  const ski = rateStationDays(forecast, station, now, 1, 'ski')[0]?.rating;
+  const board = rateStationDays(forecast, station, now, 1, 'snowboard')[0]?.rating;
+  const reason = ski?.reasons[0] ?? board?.reasons[0];
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Condiciones de hoy">
+      <span className="text-xs text-muted">Hoy:</span>
+      <RatingBadge rating={ski} prefix="Esquí" />
+      <RatingBadge rating={board} prefix="Snowboard" />
+      {reason && <span className="text-xs text-muted">{reason}</span>}
+    </div>
+  );
+}
 
 function MainStationCard({ stationId }: { stationId: string }) {
   const period = useAppStore((s) => s.period);
@@ -109,6 +135,7 @@ function MainStationCard({ stationId }: { stationId: string }) {
               Próximas 48 h: {formatCm(summary.next48hCm)} cm
             </li>
           </ul>
+          <TodayRatings forecast={query.data} stationId={station.id} />
           {summary.incomplete && (
             <p className="mt-2 text-xs text-muted">
               Faltan datos de algunas horas en este periodo.
@@ -169,6 +196,21 @@ function RulesPanel() {
 
 const SPARK_COLORS = ['#7DE3FF', '#A5B4FF', '#9FB3D9'] as const;
 
+function FavoriteRating({
+  forecast,
+  stationId,
+}: {
+  forecast: Parameters<typeof rateStationDays>[0] | undefined;
+  stationId: string;
+}) {
+  const now = useNow();
+  const discipline = useSettings((s) => s.discipline);
+  const station = getStation(stationId);
+  if (!forecast || !station) return null;
+  const rating = rateStationDays(forecast, station, now, 1, discipline)[0]?.rating;
+  return <RatingBadge rating={rating} prefix={discipline === 'ski' ? 'Esquí' : 'Snowboard'} />;
+}
+
 function FavoriteCard({ stationId, index }: { stationId: string; index: number }) {
   const period = useAppStore((s) => s.period);
   const now = useNow();
@@ -216,6 +258,9 @@ function FavoriteCard({ stationId, index }: { stationId: string; index: number }
             <span className="mt-1.5 font-display text-[40px] font-bold">
               {formatCm(summary.topTotalCm)}
               <span className="text-base font-medium text-muted"> cm / {period} días</span>
+            </span>
+            <span className="mt-1">
+              <FavoriteRating forecast={query.data} stationId={stationId} />
             </span>
             <Sparkline values={summary.days.map((d) => d.totalCm)} color={color} />
           </>

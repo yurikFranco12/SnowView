@@ -1,6 +1,6 @@
 [package]
 name = "snowview"
-version = "0.4.0"
+version = "0.5.0"
 description = "SnowView: monitor de nieve para estaciones de esquí"
 authors = ["Yurik"]
 license = ""

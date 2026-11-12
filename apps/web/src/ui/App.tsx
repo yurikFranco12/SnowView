@@ -8,6 +8,7 @@ import { Sidebar } from './layout/Sidebar';
 import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
 import { AlertsScreen } from './screens/AlertsScreen';
+import { CalendarScreen } from './screens/CalendarScreen';
 import { CompareScreen } from './screens/CompareScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
 import { HomeScreen } from './screens/HomeScreen';
@@ -22,6 +23,7 @@ const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
   estaciones: () => <StationsScreen />,
   comparar: () => <CompareScreen />,
+  calendario: () => <CalendarScreen />,
   historial: () => <HistoryScreen />,
   alertas: () => <AlertsScreen />,
   ajustes: () => <SettingsScreen />,

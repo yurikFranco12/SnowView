@@ -93,7 +93,7 @@ export function CompareScreen() {
   const maxTop = Math.max(...columns.map((c) => c.summary?.topTotalCm ?? 0), 1);
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px]">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-6">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">

@@ -1,3 +1,4 @@
+import type { Discipline } from '@snowview/core';
 import { create } from 'zustand';
 import { storage } from '../../platform/storage';
 
@@ -24,9 +25,15 @@ export const SNOW_LEVELS: readonly { level: SnowLevel; label: string; intensity:
 export interface Settings {
   refreshMinutes: number;
   snowLevel: SnowLevel;
+  /** Con qué disciplina se valoran las condiciones: esquí o snowboard. */
+  discipline: Discipline;
 }
 
-export const DEFAULT_SETTINGS: Settings = { refreshMinutes: 60, snowLevel: 'normal' };
+export const DEFAULT_SETTINGS: Settings = {
+  refreshMinutes: 60,
+  snowLevel: 'normal',
+  discipline: 'ski',
+};
 
 /** Recupera los ajustes guardados descartando valores que ya no existen. */
 export function parseSettings(raw: unknown): Settings {
@@ -36,6 +43,10 @@ export function parseSettings(raw: unknown): Settings {
   return {
     refreshMinutes: refresh?.minutes ?? DEFAULT_SETTINGS.refreshMinutes,
     snowLevel: snow?.level ?? DEFAULT_SETTINGS.snowLevel,
+    discipline:
+      r['discipline'] === 'snowboard' || r['discipline'] === 'ski'
+        ? r['discipline']
+        : DEFAULT_SETTINGS.discipline,
   };
 }
 
@@ -48,12 +59,13 @@ interface SettingsState extends Settings {
   load: () => Promise<void>;
   setRefreshMinutes: (minutes: number) => void;
   setSnowLevel: (level: SnowLevel) => void;
+  setDiscipline: (discipline: Discipline) => void;
 }
 
 export const useSettings = create<SettingsState>((set, get) => {
   const save = () => {
-    const { refreshMinutes, snowLevel } = get();
-    void storage.set(KEY, { refreshMinutes, snowLevel });
+    const { refreshMinutes, snowLevel, discipline } = get();
+    void storage.set(KEY, { refreshMinutes, snowLevel, discipline });
   };
   return {
     ...DEFAULT_SETTINGS,
@@ -67,6 +79,10 @@ export const useSettings = create<SettingsState>((set, get) => {
     },
     setSnowLevel(snowLevel) {
       set({ snowLevel });
+      save();
+    },
+    setDiscipline(discipline) {
+      set({ discipline });
       save();
     },
   };
