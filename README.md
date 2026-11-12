@@ -10,7 +10,9 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 - Fase 0 completada: entorno y monorepo. Ver [docs/fase-0/README.md](docs/fase-0/README.md).
 - Fase 1a completada: prototipo visual con datos simulados. Ver
   [docs/fase-1a/README.md](docs/fase-1a/README.md).
-- En curso: Fase 1b, datos reales. Progreso en [docs/PROGRESO.md](docs/PROGRESO.md).
+- Fase 1b completada: datos reales de Open-Meteo, buscador y favoritas. Ver
+  [docs/fase-1b/README.md](docs/fase-1b/README.md).
+- En curso: Fase 1c, alertas y sistema. Progreso en [docs/PROGRESO.md](docs/PROGRESO.md).
 
 ## Estructura
 

@@ -65,6 +65,9 @@ normalización, errores), `apps/web` (`src/platform/` adaptadores, `src/ui/` pan
   y al cerrarla se fusiona en `main` con `--no-ff` y se etiqueta (`fase-1b`). Ver `docs/VERSIONES.md`.
 - PowerShell 5.1: no pases textos con comillas a programas nativos en línea (git, por ejemplo); usa un
   archivo temporal (`git commit -F`).
+- El shell de Claude es un sandbox: lo que escribe fuera del proyecto (`npm -g`, `%APPDATA%`) no
+  llega al equipo real. Instalaciones globales y lanzar la app para el usuario: en su terminal. Su
+  PowerShell bloquea los scripts `.ps1`: usar `pnpm.cmd` (o `pnpm` en cmd).
 
 ## Preguntas abiertas
 

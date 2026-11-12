@@ -1,7 +1,6 @@
 import { motion } from 'motion/react';
 import { useRef, type KeyboardEvent } from 'react';
-import { PERIODS, type Period } from '../mock/stations';
-import { useAppStore } from '../state/appStore';
+import { PERIODS, useAppStore, type Period } from '../state/appStore';
 
 /**
  * Selector de periodo (3/7/14 días). Es un grupo de opciones exclusivas, así que usa el patrón ARIA

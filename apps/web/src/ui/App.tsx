@@ -1,24 +1,21 @@
-import { Bell, Mountain, Settings } from 'lucide-react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { Bell, Settings } from 'lucide-react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { SnowCanvas } from './background/SnowCanvas';
+import { queryClient } from './data/forecast';
 import { Sidebar } from './layout/Sidebar';
 import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
 import { HomeScreen } from './screens/HomeScreen';
 import { PlaceholderScreen } from './screens/PlaceholderScreen';
+import { StationsScreen } from './screens/StationsScreen';
 import { useAppStore, type View } from './state/appStore';
+import { useFavorites } from './state/favoritesStore';
 
 const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
-  estaciones: () => (
-    <PlaceholderScreen
-      title="Estaciones"
-      icon={Mountain}
-      description="Aquí podrás buscar estaciones y marcar tus favoritas con la previsión real de Open-Meteo."
-      phase="Llega en la Fase 1b"
-    />
-  ),
+  estaciones: () => <StationsScreen />,
   alertas: () => (
     <PlaceholderScreen
       title="Alertas"
@@ -39,35 +36,42 @@ const SCREENS: Record<View, () => ReactNode> = {
 
 export function App() {
   const view = useAppStore((s) => s.view);
+  const loadFavorites = useFavorites((s) => s.load);
+
+  useEffect(() => {
+    void loadFavorites();
+  }, [loadFavorites]);
 
   return (
-    // reducedMotion="user": todas las animaciones de Motion respetan prefers-reduced-motion.
-    <MotionConfig reducedMotion="user">
-      <div
-        className="relative flex h-full flex-col overflow-hidden"
-        style={{ background: 'var(--sv-background)' }}
-      >
-        <SnowCanvas />
-        <TitleBar />
-        <div className="relative flex min-h-0 flex-1">
-          <Sidebar />
-          <main className="relative min-w-0 flex-1 overflow-y-auto">
-            <AnimatePresence mode="wait">
-              {/* El contenedor no anima nada propio: solo escalona a los paneles (ver reveal.ts). */}
-              <motion.div
-                key={view}
-                className="h-full"
-                variants={screenVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                {SCREENS[view]()}
-              </motion.div>
-            </AnimatePresence>
-          </main>
+    <QueryClientProvider client={queryClient}>
+      {/* reducedMotion="user": todas las animaciones de Motion respetan prefers-reduced-motion. */}
+      <MotionConfig reducedMotion="user">
+        <div
+          className="relative flex h-full flex-col overflow-hidden"
+          style={{ background: 'var(--sv-background)' }}
+        >
+          <SnowCanvas />
+          <TitleBar />
+          <div className="relative flex min-h-0 flex-1">
+            <Sidebar />
+            <main className="relative min-w-0 flex-1 overflow-y-auto">
+              <AnimatePresence mode="wait">
+                {/* El contenedor no anima nada propio: solo escalona a los paneles (ver reveal.ts). */}
+                <motion.div
+                  key={view}
+                  className="h-full"
+                  variants={screenVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                >
+                  {SCREENS[view]()}
+                </motion.div>
+              </AnimatePresence>
+            </main>
+          </div>
         </div>
-      </div>
-    </MotionConfig>
+      </MotionConfig>
+    </QueryClientProvider>
   );
 }
