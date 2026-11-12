@@ -3,7 +3,9 @@
   "compilerOptions": {
     // data/ se ejecuta dentro del WebView: necesita fetch y AbortController del navegador.
     "lib": ["ES2022", "DOM"],
-    "types": []
+    "types": [],
+    // La lista curada de estaciones se importa como JSON desde stations/.
+    "resolveJsonModule": true
   },
   "include": ["src"]
 }

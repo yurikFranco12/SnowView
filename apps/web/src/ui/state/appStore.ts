@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import type { Period } from '../mock/stations';
 
 export type View = 'inicio' | 'estaciones' | 'alertas' | 'ajustes';
+export type Period = 3 | 7 | 14;
+export const PERIODS: readonly Period[] = [3, 7, 14];
 
 interface AppState {
   view: View;
@@ -10,7 +11,7 @@ interface AppState {
   setPeriod: (period: Period) => void;
 }
 
-/** Estado local de la interfaz (Zustand). Los datos remotos irán en TanStack Query (Fase 1b). */
+/** Estado local de la interfaz (Zustand). Los datos remotos van en TanStack Query. */
 export const useAppStore = create<AppState>((set) => ({
   view: 'inicio',
   period: 7,

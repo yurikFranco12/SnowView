@@ -1,68 +1,117 @@
-import { Plus, Star } from 'lucide-react';
+import { getStation } from '@snowview/data';
+import { Mountain, Plus, Star } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PeriodSelector } from '../components/PeriodSelector';
 import { SnowBars } from '../components/SnowBars';
 import { Sparkline } from '../components/Sparkline';
-import {
-  MOCK_RULES,
-  MOCK_STATIONS,
-  MOCK_TODAY,
-  totalSnow,
-  type MockRule,
-  type MockStation,
-} from '../mock/stations';
+import { ErrorView, Skeleton } from '../components/StatusViews';
+import { formatCm, provider, summarize, useStationForecast } from '../data/forecast';
+import { MOCK_RULES, type MockRule } from '../mock/rules';
 import { revealItem } from '../motion/reveal';
+import { useNow } from '../hooks/useNow';
 import { useAppStore } from '../state/appStore';
+import { useFavorites } from '../state/favoritesStore';
 
 const dateFormatter = new Intl.DateTimeFormat('es-ES', {
   weekday: 'long',
   day: 'numeric',
   month: 'long',
 });
+const timeFormatter = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-function MainStationCard({ station }: { station: MockStation }) {
+function MainStationCard({ stationId }: { stationId: string }) {
   const period = useAppStore((s) => s.period);
-  const total = totalSnow(station, period);
+  const now = useNow();
+  const station = getStation(stationId);
+  const query = useStationForecast(stationId);
+  const summary = query.data && station ? summarize(query.data, station, period, now) : undefined;
 
   return (
     <motion.article
       variants={revealItem}
       aria-labelledby="main-station-name"
+      aria-busy={query.isPending}
       className="glass relative flex min-h-0 flex-col overflow-hidden px-[26px] py-6"
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs tracking-[0.14em] text-muted uppercase">Estación principal</p>
-        <span className="rounded-full bg-ice/[0.14] px-2.5 py-1 text-xs text-ice">
-          {station.condition}
-        </span>
+        <p className="text-xs tracking-[0.14em] text-muted uppercase">Estación principal · cima</p>
+        {summary && (
+          <span className="rounded-full bg-ice/[0.14] px-2.5 py-1 text-xs text-ice">
+            {summary.condition}
+          </span>
+        )}
       </div>
       <h2 id="main-station-name" className="mt-1.5 font-display text-[30px] font-semibold">
-        {station.name}
+        {station?.name ?? stationId}
       </h2>
-      <p className="mt-1 flex items-baseline gap-2.5" aria-live="polite">
-        <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span
-            key={total}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-            className="bg-gradient-to-b from-white from-20% to-ice bg-clip-text font-display text-[104px] leading-none font-bold text-transparent"
-          >
-            {total}
-          </motion.span>
-        </AnimatePresence>
-        <span className="font-display text-[32px] text-muted">cm</span>
-        <span className="ml-2 text-sm text-muted">previstos en {period} días</span>
-      </p>
-      <ul className="mt-1.5 flex gap-2.5 text-[13px]" aria-label="Condiciones actuales">
-        <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">{station.temperatureC} °C</li>
-        <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">{station.windKmh} km/h viento</li>
-        <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
-          Base {station.baseElevationM.toLocaleString('es-ES')} m
-        </li>
-      </ul>
-      <SnowBars values={station.dailySnowCm.slice(0, period)} />
+
+      {query.isPending && (
+        <>
+          <Skeleton className="mt-2 h-[104px] w-64" />
+          <div className="mt-2 flex gap-2.5">
+            <Skeleton className="h-8 w-20" />
+            <Skeleton className="h-8 w-28" />
+            <Skeleton className="h-8 w-32" />
+          </div>
+          <Skeleton className="mt-4 flex-1" />
+        </>
+      )}
+
+      {query.isError && (
+        <ErrorView
+          error={query.error}
+          onRetry={() => void query.refetch()}
+          retrying={query.isFetching}
+        />
+      )}
+
+      {summary && station && (
+        <>
+          <p className="mt-1 flex items-baseline gap-2.5" aria-live="polite">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={summary.topTotalCm}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25 }}
+                className="bg-gradient-to-b from-white from-20% to-ice bg-clip-text font-display text-[104px] leading-none font-bold text-transparent"
+              >
+                {formatCm(summary.topTotalCm)}
+              </motion.span>
+            </AnimatePresence>
+            <span className="font-display text-[32px] text-muted">cm</span>
+            <span className="ml-2 text-sm text-muted">
+              previstos en {period} días a {station.topElevationM.toLocaleString('es-ES')} m
+            </span>
+          </p>
+          <ul className="mt-1.5 flex flex-wrap gap-2.5 text-[13px]" aria-label="Condiciones">
+            <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
+              {summary.current?.temperatureC !== null && summary.current?.temperatureC !== undefined
+                ? `${Math.round(summary.current.temperatureC)} °C`
+                : '— °C'}
+            </li>
+            <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
+              {summary.current?.windKmh != null
+                ? `${Math.round(summary.current.windKmh)} km/h viento`
+                : '— km/h'}
+            </li>
+            <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
+              Base {station.baseElevationM.toLocaleString('es-ES')} m:{' '}
+              {formatCm(summary.baseTotalCm)} cm
+            </li>
+            <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
+              Próximas 48 h: {formatCm(summary.next48hCm)} cm
+            </li>
+          </ul>
+          {summary.incomplete && (
+            <p className="mt-2 text-xs text-muted">
+              Faltan datos de algunas horas en este periodo.
+            </p>
+          )}
+          <SnowBars days={summary.days} />
+        </>
+      )}
     </motion.article>
   );
 }
@@ -81,9 +130,12 @@ function RulesPanel() {
       className="glass flex flex-col gap-4 p-[22px]"
     >
       <div className="flex items-center justify-between">
-        <h2 id="rules-title" className="font-display text-xl font-semibold">
-          Reglas activas
-        </h2>
+        <div>
+          <h2 id="rules-title" className="font-display text-xl font-semibold">
+            Reglas activas
+          </h2>
+          <p className="text-xs text-muted">Ejemplo · llegan en la Fase 1c</p>
+        </div>
         <button
           type="button"
           aria-label="Nueva regla"
@@ -128,11 +180,16 @@ function RulesPanel() {
 
 const SPARK_COLORS = ['#7DE3FF', '#A5B4FF', '#9FB3D9'] as const;
 
-function FavoriteCard({ station, index }: { station: MockStation; index: number }) {
+function FavoriteCard({ stationId, index }: { stationId: string; index: number }) {
   const period = useAppStore((s) => s.period);
-  const total = totalSnow(station, period);
+  const now = useNow();
+  const makeMain = useFavorites((s) => s.makeMain);
+  const station = getStation(stationId);
+  const query = useStationForecast(stationId);
+  const summary = query.data && station ? summarize(query.data, station, period, now) : undefined;
   const color = SPARK_COLORS[index % SPARK_COLORS.length] ?? '#7DE3FF';
 
+  if (!station) return null;
   return (
     <li className="flex">
       <motion.button
@@ -140,37 +197,80 @@ function FavoriteCard({ station, index }: { station: MockStation; index: number 
         whileHover={{ y: -3 }}
         whileTap={{ scale: 0.985 }}
         type="button"
-        aria-label={`${station.name}, ${total} cm en ${period} días`}
+        onClick={() => makeMain(stationId)}
+        title="Hacer estación principal"
+        aria-label={
+          summary
+            ? `${station.name}, ${formatCm(summary.topTotalCm)} cm en ${period} días. Hacer principal`
+            : `${station.name}. Hacer principal`
+        }
         className="relative flex flex-1 flex-col gap-1.5 rounded-[18px] border border-white/10 bg-white/[0.05] px-5 py-[18px] text-left backdrop-blur-[14px] transition-colors hover:border-white/20 hover:bg-white/[0.08]"
       >
         <Star
-          className={`absolute top-4 right-4 size-4 ${station.favorite ? 'fill-ice text-ice' : 'text-muted'}`}
+          className="absolute top-4 right-4 size-4 fill-ice text-ice"
           aria-hidden="true"
           strokeWidth={1.6}
         />
         <span className="text-[15px] font-semibold">{station.name}</span>
         <span className="text-xs text-muted">{station.region}</span>
-        <span className="mt-1.5 font-display text-[40px] font-bold">
-          {total}
-          <span className="text-base font-medium text-muted"> cm / {period} días</span>
-        </span>
-        <Sparkline values={station.dailySnowCm.slice(0, period)} color={color} />
+        {query.isPending && (
+          <>
+            <Skeleton className="mt-1.5 h-10 w-36" />
+            <Skeleton className="mt-auto h-11 w-full" />
+          </>
+        )}
+        {query.isError && (
+          <p className="mt-auto text-sm text-muted">No se pudo cargar. Se reintentará.</p>
+        )}
+        {summary && (
+          <>
+            <span className="mt-1.5 font-display text-[40px] font-bold">
+              {formatCm(summary.topTotalCm)}
+              <span className="text-base font-medium text-muted"> cm / {period} días</span>
+            </span>
+            <Sparkline values={summary.days.map((d) => d.totalCm)} color={color} />
+          </>
+        )}
       </motion.button>
     </li>
   );
 }
 
+function EmptyFavorites() {
+  const setView = useAppStore((s) => s.setView);
+  return (
+    <motion.div
+      variants={revealItem}
+      className="glass col-span-2 flex flex-col items-center justify-center gap-4 p-10 text-center"
+    >
+      <div className="grid size-16 place-items-center rounded-2xl bg-ice/[0.12]">
+        <Mountain className="size-8 text-ice" aria-hidden="true" strokeWidth={1.6} />
+      </div>
+      <p className="text-base">Todavía no tienes estaciones favoritas.</p>
+      <button
+        type="button"
+        onClick={() => setView('estaciones')}
+        className="rounded-xl bg-gradient-to-br from-ice to-indigo px-4 py-2 text-sm font-semibold text-bg-start"
+      >
+        Elegir estaciones
+      </button>
+    </motion.div>
+  );
+}
+
 export function HomeScreen() {
-  const [main, ...rest] = MOCK_STATIONS;
-  const favorites = rest.filter((s) => s.favorite).concat(rest.filter((s) => !s.favorite));
-  if (!main) return null;
+  const now = useNow();
+  const ids = useFavorites((s) => s.ids);
+  const loaded = useFavorites((s) => s.loaded);
+  const [mainId, ...rest] = ids;
+  const mainQuery = useStationForecast(mainId);
 
   return (
     <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
       <motion.header variants={revealItem} className="flex items-end justify-between">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
-            {dateFormatter.format(MOCK_TODAY)} · Datos de ejemplo
+            {dateFormatter.format(now)}
           </p>
           <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">
             Mis estaciones
@@ -180,23 +280,41 @@ export function HomeScreen() {
       </motion.header>
 
       <section className="grid h-[380px] shrink-0 grid-cols-[1.6fr_1fr] gap-5">
-        <MainStationCard station={main} />
-        <RulesPanel />
+        {loaded && mainId ? (
+          <MainStationCard stationId={mainId} />
+        ) : loaded ? (
+          <EmptyFavorites />
+        ) : (
+          <div />
+        )}
+        {(!loaded || mainId) && <RulesPanel />}
       </section>
 
       <section aria-labelledby="favorites-title" className="flex min-h-0 flex-1 flex-col gap-3">
-        <motion.h2
-          variants={revealItem}
-          id="favorites-title"
-          className="font-display text-xl font-semibold"
-        >
-          Favoritas
-        </motion.h2>
-        <ul className="grid flex-1 grid-cols-3 gap-4">
-          {favorites.slice(0, 3).map((station, i) => (
-            <FavoriteCard key={station.id} station={station} index={i} />
-          ))}
-        </ul>
+        <motion.div variants={revealItem} className="flex items-baseline justify-between">
+          <h2 id="favorites-title" className="font-display text-xl font-semibold">
+            Favoritas
+          </h2>
+          <p className="text-xs text-muted">
+            {provider.attribution}
+            {mainQuery.dataUpdatedAt > 0 &&
+              ` · actualizado a las ${timeFormatter.format(mainQuery.dataUpdatedAt)}`}
+          </p>
+        </motion.div>
+        {rest.length > 0 ? (
+          <ul className="grid flex-1 grid-cols-3 gap-4">
+            {rest.slice(0, 3).map((id, i) => (
+              <FavoriteCard key={id} stationId={id} index={i} />
+            ))}
+          </ul>
+        ) : (
+          loaded &&
+          mainId && (
+            <motion.p variants={revealItem} className="text-sm text-muted">
+              Añade más favoritas desde Estaciones para compararlas aquí.
+            </motion.p>
+          )
+        )}
       </section>
     </div>
   );

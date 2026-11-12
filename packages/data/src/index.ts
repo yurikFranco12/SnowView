@@ -1,19 +1,16 @@
 /**
- * @snowview/data — clientes de API, caché, normalización y errores (Fase 1b).
+ * @snowview/data — previsión, estaciones, errores y límite de peticiones.
  *
  * La UI solo depende de este paquete, nunca de un proveedor concreto, para poder cambiar de
  * proveedor de previsión sin tocar las pantallas.
+ *
+ * Proveedor actual: Open-Meteo (https://open-meteo.com), sin clave de API.
+ * LICENCIA: uso gratuito solo no comercial; datos CC BY 4.0, hay que citar la fuente en la app.
+ * Si SnowView se distribuye con fines comerciales, hay que contratar un plan o cambiar de
+ * proveedor. Ver README.md.
  */
 import { SNOW_UNIT } from '@snowview/core';
 
-/**
- * Proveedor de previsión: Open-Meteo (https://open-meteo.com), sin clave de API.
- *
- * LICENCIA: el uso gratuito de la API de Open-Meteo es solo para fines no comerciales.
- * Los datos se publican bajo CC BY 4.0 y hay que citar la fuente en la app.
- * Si SnowView se distribuye con fines comerciales, hay que contratar un plan de pago o cambiar de
- * proveedor. Ver README.md.
- */
 export const FORECAST_PROVIDER = {
   id: 'open-meteo',
   name: 'Open-Meteo',
@@ -24,3 +21,22 @@ export const FORECAST_PROVIDER = {
 
 /** Unidad a la que data/ normaliza toda la nieve antes de entregarla. */
 export const NORMALIZED_SNOW_UNIT = SNOW_UNIT;
+
+export { ForecastError, isForecastError, type ForecastErrorKind } from './errors';
+export { RateLimiter } from './rateLimiter';
+export type { ForecastProvider, ForecastRequestOptions } from './provider';
+export {
+  FORECAST_DAYS,
+  OPEN_METEO_ATTRIBUTION,
+  buildForecastUrl,
+  createOpenMeteoProvider,
+  parseForecastResponse,
+  type OpenMeteoOptions,
+} from './openMeteo';
+export {
+  STATIONS,
+  getStation,
+  parseStations,
+  searchStations,
+  type CuratedStation,
+} from './stations';

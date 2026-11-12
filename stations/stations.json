@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "updated": "2026-11-12",
+  "sources": {
+    "coordinates": "Open-Meteo Geocoding API (datos de GeoNames, CC BY 4.0), consultada el 2026-11-12. Son las coordenadas del núcleo de la estación, junto a la base.",
+    "elevations": "Cotas de base y cima publicadas por cada estación. Pendientes de verificar una a una (campo elevationsVerified)."
+  },
+  "stations": [
+    {
+      "id": "baqueira-beret",
+      "name": "Baqueira-Beret",
+      "region": "Lleida · Pirineo",
+      "country": "ES",
+      "latitude": 42.6996,
+      "longitude": 0.93165,
+      "baseElevationM": 1500,
+      "topElevationM": 2610,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    },
+    {
+      "id": "formigal",
+      "name": "Formigal",
+      "region": "Huesca · Pirineo",
+      "country": "ES",
+      "latitude": 42.77713,
+      "longitude": -0.35929,
+      "baseElevationM": 1500,
+      "topElevationM": 2250,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    },
+    {
+      "id": "cerler",
+      "name": "Cerler",
+      "region": "Huesca · Pirineo",
+      "country": "ES",
+      "latitude": 42.59341,
+      "longitude": 0.53833,
+      "baseElevationM": 1500,
+      "topElevationM": 2630,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    },
+    {
+      "id": "candanchu",
+      "name": "Candanchú",
+      "region": "Huesca · Pirineo",
+      "country": "ES",
+      "latitude": 42.78778,
+      "longitude": -0.5288,
+      "baseElevationM": 1530,
+      "topElevationM": 2400,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    },
+    {
+      "id": "la-molina",
+      "name": "La Molina",
+      "region": "Girona · Pirineo",
+      "country": "ES",
+      "latitude": 42.34478,
+      "longitude": 1.95625,
+      "baseElevationM": 1700,
+      "topElevationM": 2537,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    },
+    {
+      "id": "masella",
+      "name": "Masella",
+      "region": "Girona · Pirineo",
+      "country": "ES",
+      "latitude": 42.35074,
+      "longitude": 1.90149,
+      "baseElevationM": 1600,
+      "topElevationM": 2535,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    },
+    {
+      "id": "grandvalira",
+      "name": "Grandvalira",
+      "region": "Andorra",
+      "country": "AD",
+      "latitude": 42.54277,
+      "longitude": 1.73361,
+      "baseElevationM": 1710,
+      "topElevationM": 2640,
+      "timeZone": "Europe/Andorra",
+      "elevationsVerified": false
+    },
+    {
+      "id": "sierra-nevada",
+      "name": "Sierra Nevada",
+      "region": "Granada · Andalucía",
+      "country": "ES",
+      "latitude": 37.09445,
+      "longitude": -3.3995,
+      "baseElevationM": 2100,
+      "topElevationM": 3300,
+      "timeZone": "Europe/Madrid",
+      "elevationsVerified": false
+    }
+  ]
+}
