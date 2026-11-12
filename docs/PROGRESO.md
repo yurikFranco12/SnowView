@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 5d (repositorio en GitHub); app 0.7.1.
+- **Fase actual:** ninguna en curso. Hecha la 6 (relieve y provincias en el mapa); app 0.8.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,14 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 6 — tareas
+
+- [x] Provincias, departamentos y parroquias en el mapa (Natural Earth, malla interior)
+- [x] Relieve sombreado en tonos de la app con más detalle donde hay estaciones y curvas de nivel
+      cada 500 m (Terrain Tiles; ADR 0010)
+- [x] Leyenda y atribución; capas generadas por `scripts/build-map-relief.mjs`
+- [x] Instalador 0.8.0, fusión en `main`, etiquetas `fase-6` y `v0.8.0`, push y claude.ai
 
 ## Fase 5d — tareas
 

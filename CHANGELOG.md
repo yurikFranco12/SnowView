@@ -7,8 +7,25 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
-Nada todavía. El repositorio está publicado en GitHub desde el 2026-11-12 (`main` y todas las
-etiquetas); no cambia el código, así que no hay versión nueva de la app.
+Nada todavía.
+
+## [0.8.0] - 2026-11-12 · fase 6
+
+### Añadido
+
+- Mapa: líneas de provincias (España), departamentos (sur de Francia) y parroquias (Andorra).
+- Mapa: relieve sombreado en tonos fríos del estilo de la app, con más detalle donde hay
+  estaciones, y curvas de nivel cada 500 m al acercar. Todo dentro de la app, sin conexión
+  (ADR 0010).
+- Leyenda del mapa con las nuevas capas y la atribución de los datos (Terrain Tiles y Natural Earth).
+
+### Cambiado
+
+- El instalador crece unos 1,5 MB por las imágenes de relieve.
+
+## Fase 5d - 2026-11-12 (sin versión)
+
+- Repositorio publicado en GitHub (`main` y todas las etiquetas). No cambia el código.
 
 ## [0.7.1] - 2026-11-12 · fase 5c
 
