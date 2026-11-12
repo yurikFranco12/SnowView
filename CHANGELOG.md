@@ -7,6 +7,21 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.11.0] - 2026-11-12 · fase 9
+
+### Añadido
+
+- Mapa de pistas de cada estación en un cuadro con el estilo de la app: pistas por dificultad
+  (verde, azul, roja, negra, fuera de pista), remontes, zoom, arrastre, teclado y capas que se
+  pueden ocultar. Se abre desde «Ver mapa de la estación» (al pasar por un pin) y desde «Mapa de
+  pistas» en el detalle de la estación (ADR 0012).
+- Datos de pistas y remontes de las 10 estaciones, de OpenStreetMap (ODbL), dentro de la app y sin
+  conexión; se regeneran con `scripts/build-pistes.mjs`.
+
+### Cambiado
+
+- «Ver mapa de la estación» ahora abre el mapa de pistas además de acercar el mapa de España.
+
 ## [0.10.0] - 2026-11-12 · fase 8
 
 ### Añadido
