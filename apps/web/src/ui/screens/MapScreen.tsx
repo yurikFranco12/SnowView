@@ -29,6 +29,7 @@ import { storage } from '../../platform/storage';
 import { Skeleton } from '../components/StatusViews';
 import { useStationRoutes, type RouteState } from '../data/routes';
 import { MapView, type HoverInfo } from '../map/MapView';
+import { PisteMapDialog } from '../map/PisteMap';
 import { PlaceSearch } from '../map/PlaceSearch';
 import { SPAIN_VIEW, fitView, stationView, type View } from '../map/projection';
 import { useUserLocation, type UserLocation } from '../map/useUserLocation';
@@ -225,12 +226,14 @@ function StationDetail({
   onFocusRoute,
   routeFocused,
   onFocusStation,
+  onOpenPisteMap,
 }: {
   station: CuratedStation;
   location: UserLocation;
   onFocusRoute: () => void;
   routeFocused: boolean;
   onFocusStation: () => void;
+  onOpenPisteMap: () => void;
 }) {
   const setView = useAppStore((s) => s.setView);
   const hasKey = useRoutesKey((s) => !!s.apiKey);
@@ -271,6 +274,13 @@ function StationDetail({
           className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs transition-colors disabled:opacity-40 ${routeFocused ? 'bg-ice/[0.18] font-semibold text-ice' : 'bg-white/[0.06] hover:bg-white/[0.12]'}`}
         >
           <RouteIcon className="size-3.5" aria-hidden="true" /> Ver ruta completa
+        </button>
+        <button
+          type="button"
+          onClick={onOpenPisteMap}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-1.5 text-xs transition-colors hover:bg-white/[0.12]"
+        >
+          <MapIcon className="size-3.5" aria-hidden="true" /> Mapa de pistas
         </button>
       </div>
 
@@ -545,6 +555,7 @@ export function MapScreen() {
   const [pickMode, setPickMode] = useState(false);
   const [focusToken, setFocusToken] = useState(0);
   const [hover, setHover] = useState<HoverInfo | undefined>(undefined);
+  const [pisteMapId, setPisteMapId] = useState<string | undefined>(undefined);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setManual = useManualLocation((s) => s.set);
   const selected = STATIONS.find((s) => s.id === selectedId);
@@ -581,6 +592,7 @@ export function MapScreen() {
       scheduleHoverClose();
     }
   };
+  const pisteStation = pisteMapId ? STATIONS.find((st) => st.id === pisteMapId) : undefined;
   const hoveredStation = hover ? STATIONS.find((st) => st.id === hover.id) : undefined;
 
   const back = () => {
@@ -649,6 +661,7 @@ export function MapScreen() {
               onOpen={() => {
                 setHover(undefined);
                 select(hoveredStation.id);
+                setPisteMapId(hoveredStation.id);
               }}
               onEnter={cancelHoverClose}
               onLeave={scheduleHoverClose}
@@ -738,6 +751,7 @@ export function MapScreen() {
                 setRouteFocus(false);
                 setFocusToken((t) => t + 1);
               }}
+              onOpenPisteMap={() => setPisteMapId(selected.id)}
             />
           ) : (
             <p className="text-xs text-muted">
@@ -746,6 +760,9 @@ export function MapScreen() {
           )}
         </motion.aside>
       </div>
+      {pisteStation && (
+        <PisteMapDialog station={pisteStation} onClose={() => setPisteMapId(undefined)} />
+      )}
     </div>
   );
 }

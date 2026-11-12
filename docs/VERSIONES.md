@@ -134,6 +134,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-6`  | v0.8.0  | 2026-11-12 | `git show`       | Relieve y provincias en el mapa                        |
 | `fase-7`  | v0.9.0  | 2026-11-12 | `git show`       | Mapa acotado y buscador de pueblos                     |
 | `fase-8`  | v0.10.0 | 2026-11-12 | `git show`       | Ficha al pasar por un pin y leyenda sobre el mapa      |
+| `fase-9`  | v0.11.0 | 2026-11-12 | `git show`       | Mapa de pistas de cada estación                        |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).

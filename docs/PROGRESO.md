@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 8 (ficha al pasar por un pin y leyenda sobre el mapa); app 0.10.0.
+- **Fase actual:** ninguna en curso. Hecha la 9 (mapa de pistas de cada estación); app 0.11.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,13 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 9 — tareas
+
+- [x] Descargar pistas y remontes de las 10 estaciones de OpenStreetMap (`scripts/build-pistes.mjs`)
+- [x] Cuadro con el mapa de pistas con el estilo de la app (dificultades, remontes, zoom, capas)
+- [x] Abrirlo desde la ficha del pin y desde el detalle de la estación; test de los datos
+- [x] Instalador 0.11.0, fusión en `main`, etiquetas `fase-9` y `v0.11.0`, push y claude.ai
 
 ## Fase 8 — tareas
 
