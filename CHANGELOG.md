@@ -7,7 +7,9 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
-Nada todavía.
+### Cambiado
+
+- El ejemplo del buscador de pueblos ahora es «Madrid, España».
 
 ## [0.9.0] - 2026-11-12 · fase 7
 

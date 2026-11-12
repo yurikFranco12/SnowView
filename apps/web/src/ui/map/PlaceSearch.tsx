@@ -106,7 +106,7 @@ export function PlaceSearch({
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Guriezo, Cantabria"
+          placeholder="Madrid, España"
           autoComplete="off"
           spellCheck={false}
           className="w-full rounded-[10px] border border-white/10 bg-white/[0.06] py-1.5 pr-2.5 pl-8 text-xs text-text placeholder:text-muted focus:border-ice/50 focus:outline-none"
