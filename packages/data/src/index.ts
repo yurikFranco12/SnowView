@@ -34,6 +34,14 @@ export {
   type OpenMeteoOptions,
 } from './openMeteo';
 export {
+  ARCHIVE_DELAY_DAYS,
+  buildHistoryUrl,
+  createOpenMeteoHistory,
+  parseHistoryResponse,
+  type HistoryProvider,
+  type OpenMeteoHistoryOptions,
+} from './history';
+export {
   STATIONS,
   getStation,
   parseStations,
