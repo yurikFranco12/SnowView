@@ -1,29 +1,25 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Bell, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useEffect, type ReactNode } from 'react';
 import { SnowCanvas } from './background/SnowCanvas';
 import { queryClient } from './data/forecast';
+import { useRuleMonitor } from './data/rules';
 import { Sidebar } from './layout/Sidebar';
 import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
+import { AlertsScreen } from './screens/AlertsScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { PlaceholderScreen } from './screens/PlaceholderScreen';
 import { StationsScreen } from './screens/StationsScreen';
 import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
+import { useRules } from './state/rulesStore';
 
 const SCREENS: Record<View, () => ReactNode> = {
   inicio: () => <HomeScreen />,
   estaciones: () => <StationsScreen />,
-  alertas: () => (
-    <PlaceholderScreen
-      title="Alertas"
-      icon={Bell}
-      description="Aquí crearás reglas como «más de 15 cm en 48 h» y recibirás un aviso de Windows cuando se cumplan."
-      phase="Llega en la Fase 1c"
-    />
-  ),
+  alertas: () => <AlertsScreen />,
   ajustes: () => (
     <PlaceholderScreen
       title="Ajustes"
@@ -34,16 +30,25 @@ const SCREENS: Record<View, () => ReactNode> = {
   ),
 };
 
+/** Vigila las reglas mientras la app está abierta. Va dentro del QueryClientProvider. */
+function RuleMonitor() {
+  useRuleMonitor();
+  return null;
+}
+
 export function App() {
   const view = useAppStore((s) => s.view);
   const loadFavorites = useFavorites((s) => s.load);
+  const loadRules = useRules((s) => s.load);
 
   useEffect(() => {
     void loadFavorites();
-  }, [loadFavorites]);
+    void loadRules();
+  }, [loadFavorites, loadRules]);
 
   return (
     <QueryClientProvider client={queryClient}>
+      <RuleMonitor />
       {/* reducedMotion="user": todas las animaciones de Motion respetan prefers-reduced-motion. */}
       <MotionConfig reducedMotion="user">
         <div

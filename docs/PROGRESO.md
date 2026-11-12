@@ -15,11 +15,12 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Fase 1c — tareas
 
-- [ ] `core/`: reglas del usuario (por ejemplo, más de 15 cm en las próximas 48 h) con tests
+- [x] `core/`: reglas del usuario (más de 15 cm en las próximas 48 h, viento y temperatura
+      opcionales), episodios de nieve y registro de avisos sin repetir (23 tests)
 - [ ] Notificaciones sin repetir (plugin de notificaciones de Tauri)
 - [ ] Bandeja del sistema (Rust)
 - [ ] Arranque con Windows (plugin autostart)
-- [ ] Pantalla de reglas conectada a datos reales (sustituye las reglas de ejemplo del inicio)
+- [x] Pantalla de Alertas (crear, editar, activar, borrar) y panel del inicio con datos reales
 - [ ] Pulido de animaciones y `prefers-reduced-motion`
 - [ ] Accesibilidad: contraste AA, ARIA y teclado
 - [ ] README de la Fase 1c
