@@ -6,7 +6,8 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. La Fase 3 está completa (3a, 3b y 3c); app 0.4.0.
+- **Fase actual:** ninguna en curso. Hechas 4a (más estaciones) y 4b (condiciones para esquiar y
+  snowboard); app 0.5.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +15,15 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 4 — tareas
+
+- [x] 4a: estaciones Alto Campoo (cotas verificadas) y Cauterets (cotas sin verificar)
+- [x] 4b: nota de condiciones de 0 a 100 para esquí y snowboard en `core/` (ADR 0007, 21 tests)
+- [x] 4b: valoración de hoy en el inicio (principal y favoritas)
+- [x] 4b: pantalla Calendario de 3, 7 y 14 días con las mejores estaciones y días para ir
+- [x] Cerrar: instalador 0.5.0, fusión en `main`, etiquetas `fase-4a` y `fase-4b`, claude.ai
+- [ ] Pendiente: verificar las cotas de Cauterets con una fuente oficial
 
 ## Fase 3c — tareas
 
@@ -91,5 +101,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
-2. Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.
+1. Verificar las cotas de Cauterets con una fuente oficial.
+2. Ajustar los pesos de la nota de condiciones con el uso real en invierno (ADR 0007).
+3. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
+4. Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.

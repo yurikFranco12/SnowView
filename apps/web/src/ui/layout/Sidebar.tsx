@@ -1,4 +1,13 @@
-import { Bell, ChartColumn, House, Mountain, Scale, Settings, type LucideIcon } from 'lucide-react';
+import {
+  Bell,
+  CalendarDays,
+  ChartColumn,
+  House,
+  Mountain,
+  Scale,
+  Settings,
+  type LucideIcon,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAppStore, type View } from '../state/appStore';
 
@@ -12,6 +21,7 @@ const MAIN_ITEMS: readonly NavItem[] = [
   { view: 'inicio', label: 'Inicio', icon: House },
   { view: 'estaciones', label: 'Estaciones', icon: Mountain },
   { view: 'comparar', label: 'Comparar', icon: Scale },
+  { view: 'calendario', label: 'Calendario', icon: CalendarDays },
   { view: 'historial', label: 'Historial', icon: ChartColumn },
   { view: 'alertas', label: 'Alertas', icon: Bell },
 ];

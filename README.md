@@ -14,6 +14,8 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
   [docs/fase-1b/README.md](docs/fase-1b/README.md).
 - Fase 1c completada: reglas, avisos de Windows, bandeja y arranque con el sistema. Ver
   [docs/fase-1c/README.md](docs/fase-1c/README.md).
+- Fase 4 completada: estaciones Alto Campoo y Cauterets, y valoración de las condiciones para esquiar
+  y hacer snowboard con un calendario de los próximos días.
 - Fase 3 completada: ajustes y modo sin conexión (3a), comparador (3b) e historial (3c). Progreso en
   [docs/PROGRESO.md](docs/PROGRESO.md).
 

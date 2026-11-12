@@ -11,6 +11,20 @@ export type { Station, HourlyPoint, ElevationForecast, StationForecast } from '.
 export { parseLengthUnit, toCm, type LengthUnit } from './units';
 export { describeWeatherCode, isSnowCode } from './weather';
 export {
+  LIFT_HOURS,
+  RATING_LABEL,
+  RATING_LIMITS,
+  RECENT_SNOW_HOURS,
+  dayConditions,
+  localHour,
+  rateDay,
+  ratingOf,
+  type DayConditions,
+  type DayRating,
+  type Discipline,
+  type Rating,
+} from './conditions';
+export {
   SEASON_END,
   SEASON_MONTHS,
   SEASON_START,

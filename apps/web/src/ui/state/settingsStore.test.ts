@@ -8,14 +8,15 @@ describe('parseSettings', () => {
   });
 
   it('acepta valores válidos', () => {
-    expect(parseSettings({ refreshMinutes: 15, snowLevel: 'high' })).toEqual({
-      refreshMinutes: 15,
-      snowLevel: 'high',
-    });
+    expect(
+      parseSettings({ refreshMinutes: 15, snowLevel: 'high', discipline: 'snowboard' }),
+    ).toEqual({ refreshMinutes: 15, snowLevel: 'high', discipline: 'snowboard' });
   });
 
   it('descarta opciones que ya no existen', () => {
-    expect(parseSettings({ refreshMinutes: 7, snowLevel: 'tormenta' })).toEqual(DEFAULT_SETTINGS);
+    expect(
+      parseSettings({ refreshMinutes: 7, snowLevel: 'tormenta', discipline: 'parapente' }),
+    ).toEqual(DEFAULT_SETTINGS);
   });
 });
 
