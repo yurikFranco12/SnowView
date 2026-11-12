@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type View = 'inicio' | 'estaciones' | 'alertas' | 'ajustes';
+export type View = 'inicio' | 'estaciones' | 'comparar' | 'alertas' | 'ajustes';
 export type Period = 3 | 7 | 14;
 export const PERIODS: readonly Period[] = [3, 7, 14];
 
