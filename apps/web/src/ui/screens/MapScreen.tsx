@@ -625,7 +625,22 @@ export function MapScreen() {
                 <span className="w-4 border-t-2 border-dashed border-indigo" aria-hidden="true" />{' '}
                 Ruta en autobús
               </li>
+              <li className="flex items-center gap-2">
+                <span
+                  className="w-4 border-t border-dashed border-[rgba(190,210,245,0.8)]"
+                  aria-hidden="true"
+                />{' '}
+                Provincias
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-px w-4 bg-[rgba(165,180,255,0.7)]" aria-hidden="true" /> Curvas
+                de nivel (cada 500 m, al acercar)
+              </li>
             </ul>
+            <p className="mt-2 text-[10px] leading-snug text-muted">
+              Relieve: Terrain Tiles (SRTM, EU-DEM de Copernicus y otras fuentes). Provincias y
+              fronteras: Natural Earth.
+            </p>
           </section>
 
           {selected ? (

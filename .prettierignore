@@ -6,3 +6,4 @@ src-tauri/gen
 pnpm-lock.yaml
 CONTEXTO_CONVERSACION_INICIAL.md
 docs/diseno/mockup-inicio.html
+apps/web/src/ui/map/data/

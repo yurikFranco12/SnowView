@@ -12,6 +12,13 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import southwest from './data/southwest-europe.json';
 import { PLACES } from './places';
 import {
+  PROVINCES_PATH,
+  RELIEF_COARSE,
+  RELIEF_DETAILS,
+  loadContourPaths,
+  type ContourPaths,
+} from './reliefLayers';
+import {
   MAP_H,
   MAP_W,
   MAX_ZOOM,
@@ -142,6 +149,24 @@ export function MapView({
   const [hovered, setHovered] = useState<string | undefined>(undefined);
 
   const worldOpacity = useTransform(lnZoom, (l) => 1 - layerOpacity(Math.exp(l), 5, 14));
+  // Capas de detalle: las provincias aparecen al acercarse a España; las curvas, ya sobre la zona.
+  const provincesOpacity = useTransform(lnZoom, (l) => layerOpacity(Math.exp(l), 6, 16));
+  const contoursOpacity = useTransform(lnZoom, (l) => layerOpacity(Math.exp(l), 10, 40));
+  const detailOpacity = useTransform(lnZoom, (l) => 0.8 * layerOpacity(Math.exp(l), 30, 80));
+  // El relieve general se atenúa al acercarse, cuando toma el relevo el de resolución completa.
+  const reliefOpacity = useTransform(lnZoom, (l) => {
+    const k = Math.exp(l);
+    return (0.25 + 0.75 * layerOpacity(k, 4, 12)) * (1 - 0.65 * layerOpacity(k, 30, 80));
+  });
+
+  const [contours, setContours] = useState<ContourPaths | undefined>(undefined);
+  useEffect(() => {
+    let alive = true;
+    void loadContourPaths().then((c) => alive && setContours(c));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // La escena se mueve con el atributo `transform` del SVG (origen en 0,0 del lienzo). Los grupos
   // marcados con data-inv se encogen 1/k para que pines y etiquetas midan siempre lo mismo en pantalla.
@@ -309,19 +334,84 @@ export function MapView({
             vectorEffect="non-scaling-stroke"
             style={{ opacity: worldOpacity }}
           />
+          <path d={PATHS.land} fill="rgba(159,179,217,0.14)" />
+          <path d={PATHS.focus} fill="rgba(125,227,255,0.1)" />
+
+          {/* Relieve sombreado: luz desde el noroeste, tonos fríos de la app; el mar queda transparente. */}
+          <motion.image
+            href={RELIEF_COARSE.url}
+            x={RELIEF_COARSE.x}
+            y={RELIEF_COARSE.y}
+            width={RELIEF_COARSE.width}
+            height={RELIEF_COARSE.height}
+            preserveAspectRatio="none"
+            style={{ opacity: reliefOpacity }}
+            aria-hidden="true"
+          />
+          {RELIEF_DETAILS.map((img) => (
+            <motion.image
+              key={img.url}
+              href={img.url}
+              x={img.x}
+              y={img.y}
+              width={img.width}
+              height={img.height}
+              preserveAspectRatio="none"
+              style={{ opacity: detailOpacity }}
+              aria-hidden="true"
+            />
+          ))}
+
+          {contours && (
+            <motion.g
+              style={{ opacity: contoursOpacity }}
+              fill="none"
+              stroke="rgba(165,180,255,1)"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d={contours.minor}
+                strokeWidth="0.5"
+                strokeOpacity="0.2"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d={contours.major}
+                strokeWidth="0.8"
+                strokeOpacity="0.34"
+                vectorEffect="non-scaling-stroke"
+              />
+            </motion.g>
+          )}
+
+          {/* Provincias, departamentos y parroquias: líneas finas y discontinuas, más suaves que las fronteras. */}
+          <motion.path
+            d={PROVINCES_PATH}
+            fill="none"
+            stroke="rgba(190,210,245,0.5)"
+            strokeWidth="0.7"
+            strokeDasharray="3 3"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            style={{ opacity: provincesOpacity }}
+            aria-hidden="true"
+          />
+
+          {/* Fronteras de país y costas, por encima del relieve. */}
           <path
             d={PATHS.land}
-            fill="rgba(159,179,217,0.14)"
-            stroke="rgba(159,179,217,0.4)"
-            strokeWidth="0.7"
+            fill="none"
+            stroke="rgba(159,179,217,0.45)"
+            strokeWidth="0.8"
             vectorEffect="non-scaling-stroke"
             strokeLinejoin="round"
           />
           <path
             d={PATHS.focus}
-            fill="rgba(125,227,255,0.1)"
-            stroke="rgba(125,227,255,0.55)"
-            strokeWidth="0.9"
+            fill="none"
+            stroke="rgba(125,227,255,0.6)"
+            strokeWidth="1"
             vectorEffect="non-scaling-stroke"
             strokeLinejoin="round"
           />

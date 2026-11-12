@@ -131,6 +131,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-5b` | v0.7.0  | 2026-11-12 | `git show`       | Control de versiones documentado y mapa de estaciones  |
 | `fase-5c` | v0.7.1  | 2026-11-12 | `git show`       | Ubicación a mano y mapa interactivo                    |
 | `fase-5d` | —       | 2026-11-12 | `git show`       | Repositorio publicado en GitHub                        |
+| `fase-6`  | v0.8.0  | 2026-11-12 | `git show`       | Relieve y provincias en el mapa                        |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).
