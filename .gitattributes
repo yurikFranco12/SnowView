@@ -1,0 +1,9 @@
+# Finales de línea LF en el repositorio y en disco, igual que exige Prettier ("endOfLine": "lf").
+* text=auto eol=lf
+
+# Binarios
+*.png binary
+*.jpg binary
+*.ico binary
+*.icns binary
+*.woff2 binary

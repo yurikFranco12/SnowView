@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Sin "DOM" ni tipos de Node: core/ no puede usar APIs del navegador ni de la plataforma.
+    "lib": ["ES2022"],
+    "types": []
+  },
+  "include": ["src"]
+}

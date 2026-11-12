@@ -1,0 +1,33 @@
+/*
+ * Tokens de diseño de SnowView — dirección A, "Aurora nocturna".
+ * Mismos valores que tokens.ts. En la Fase 1a se conectarán a Tailwind v4 con @theme.
+ */
+:root {
+  color-scheme: dark;
+
+  --sv-bg-start: #0a0e2a;
+  --sv-bg-mid: #111847;
+  --sv-bg-end: #0b1032;
+  --sv-glow-top-right: #2b3aa0;
+  --sv-glow-bottom-left: #0e6486;
+
+  --sv-accent-ice: #7de3ff;
+  --sv-accent-indigo: #a5b4ff;
+
+  --sv-text-primary: #eaf2ff;
+  --sv-text-secondary: #9fb3d9;
+
+  --sv-glass-bg: rgba(255, 255, 255, 0.06);
+  --sv-glass-border: rgba(255, 255, 255, 0.12);
+  --sv-glass-blur: 18px;
+  --sv-glass-radius: 20px;
+  --sv-glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+
+  --sv-font-display: 'Space Grotesk', system-ui, sans-serif;
+  --sv-font-body: Inter, system-ui, sans-serif;
+
+  --sv-background:
+    radial-gradient(1000px 640px at 85% -15%, var(--sv-glow-top-right) 0%, transparent 60%),
+    radial-gradient(860px 600px at -10% 115%, var(--sv-glow-bottom-left) 0%, transparent 58%),
+    linear-gradient(160deg, var(--sv-bg-start) 0%, var(--sv-bg-mid) 55%, var(--sv-bg-end) 100%);
+}

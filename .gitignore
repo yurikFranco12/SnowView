@@ -1,0 +1,22 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+# Rust / Tauri
+target/
+
+# Variables de entorno reales (solo se versiona .env.example)
+.env
+.env.*
+!.env.example
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Permisos locales de Claude Code (personales de cada equipo)
+.claude/settings.local.json
