@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 5b (control de versiones y mapa); app 0.7.0.
+- **Fase actual:** ninguna en curso. Hecha la 5c (ubicación a mano y mapa interactivo); app 0.7.1.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,13 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 5c — tareas
+
+- [x] Ubicación a mano: pulsar en el mapa o escribir coordenadas; manda sobre la del equipo
+- [x] Precisión de la ubicación del equipo visible, con aviso y círculo en el mapa
+- [x] Mapa interactivo: rueda, arrastrar y botones + y −
+- [x] Instalador 0.7.1, fusión en `main`, etiquetas `fase-5c` y `v0.7.1`, claude.ai sincronizado
 
 ## Fase 5b — tareas
 

@@ -1,4 +1,10 @@
-import { formatDistanceKm, formatDuration, haversineKm, type LatLng } from '@snowview/core';
+import {
+  formatDistanceKm,
+  formatDuration,
+  haversineKm,
+  parseLatLng,
+  type LatLng,
+} from '@snowview/core';
 import {
   isForecastError,
   searchStations,
@@ -12,6 +18,7 @@ import {
   ArrowLeft,
   Bus,
   Car,
+  Crosshair,
   KeyRound,
   LocateFixed,
   MapPinOff,
@@ -20,7 +27,7 @@ import {
   X,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { storage } from '../../platform/storage';
 import { Skeleton } from '../components/StatusViews';
 import { useStationRoutes, type RouteState } from '../data/routes';
@@ -29,6 +36,7 @@ import { SPAIN_VIEW, fitView, stationView, type View } from '../map/projection';
 import { useUserLocation, type UserLocation } from '../map/useUserLocation';
 import { revealItem } from '../motion/reveal';
 import { useAppStore } from '../state/appStore';
+import { useManualLocation } from '../state/manualLocationStore';
 import { useRoutesKey } from '../state/routesKeyStore';
 
 const STATIONS = searchStations('');
@@ -324,10 +332,139 @@ function StationDetail({
   );
 }
 
+function formatAccuracy(meters: number): string {
+  return meters >= 1000 ? `±${Math.round(meters / 1000)} km` : `±${Math.round(meters)} m`;
+}
+
+const roundTo4 = (n: number) => Math.round(n * 1e4) / 1e4;
+
+/** Dónde estás: la del equipo con su precisión, o la que fijas a mano si Windows se equivoca. */
+function LocationPanel({
+  location,
+  pickMode,
+  onTogglePick,
+}: {
+  location: UserLocation;
+  pickMode: boolean;
+  onTogglePick: () => void;
+}) {
+  const setManual = useManualLocation((s) => s.set);
+  const clearManual = useManualLocation((s) => s.clear);
+  const [typing, setTyping] = useState(false);
+  const [text, setText] = useState('');
+  const [error, setError] = useState(false);
+  const inputId = useId();
+  const { position, source, accuracyM } = location;
+  const imprecise = source === 'device' && accuracyM !== undefined && accuracyM > 5000;
+
+  return (
+    <section
+      aria-labelledby="mylocation-title"
+      className="flex flex-col gap-2 border-b border-white/[0.08] pb-4"
+    >
+      <h2 id="mylocation-title" className="text-sm font-semibold">
+        Tu ubicación
+      </h2>
+      <p className="text-xs" aria-live="polite">
+        {!position
+          ? 'Sin ubicación todavía.'
+          : source === 'manual'
+            ? `Fijada a mano (${roundTo4(position.latitude)}, ${roundTo4(position.longitude)}).`
+            : `La del equipo${accuracyM !== undefined ? `, ${formatAccuracy(accuracyM)}` : ''}.`}
+      </p>
+      {imprecise && (
+        <p className="text-[11px] leading-snug text-amber-200">
+          Windows la calcula por la red y puede errar varios kilómetros. Si no es donde estás,
+          corrígela.
+        </p>
+      )}
+      <div className="flex flex-wrap gap-1.5">
+        <button
+          type="button"
+          onClick={onTogglePick}
+          aria-pressed={pickMode}
+          className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${pickMode ? 'bg-ice/[0.18] font-semibold text-ice' : 'bg-white/[0.06] hover:bg-white/[0.12]'}`}
+        >
+          <Crosshair className="size-3.5" aria-hidden="true" /> Fijar en el mapa
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setTyping((v) => !v);
+            setError(false);
+          }}
+          aria-expanded={typing}
+          className="rounded-xl bg-white/[0.06] px-2.5 py-1.5 text-xs transition-colors hover:bg-white/[0.12]"
+        >
+          Escribir coordenadas
+        </button>
+        {source === 'manual' && (
+          <button
+            type="button"
+            onClick={() => {
+              clearManual();
+              location.request();
+            }}
+            className="rounded-xl bg-white/[0.06] px-2.5 py-1.5 text-xs transition-colors hover:bg-white/[0.12]"
+          >
+            Usar la del equipo
+          </button>
+        )}
+      </div>
+      {typing && (
+        <form
+          className="flex flex-col gap-1.5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const point = parseLatLng(text);
+            if (!point) {
+              setError(true);
+              return;
+            }
+            setManual(point);
+            setTyping(false);
+            setText('');
+            setError(false);
+          }}
+        >
+          <label htmlFor={inputId} className="text-[11px] text-muted">
+            Latitud y longitud, como las da Google Maps al pulsar con el botón derecho
+          </label>
+          <div className="flex gap-1.5">
+            <input
+              id={inputId}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="43.3167, -3.3667"
+              autoComplete="off"
+              aria-invalid={error}
+              className="min-w-0 flex-1 rounded-[10px] border border-white/10 bg-white/[0.06] px-2.5 py-1.5 text-xs text-text placeholder:text-muted focus:border-ice/50 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="rounded-xl bg-ice/[0.16] px-3 py-1.5 text-xs text-ice transition-colors hover:bg-ice/25"
+            >
+              Usar
+            </button>
+          </div>
+          {error && (
+            <p role="alert" className="text-[11px] text-[#FFB4A8]">
+              No entiendo esas coordenadas. Ejemplo: 43.3167, -3.3667
+            </p>
+          )}
+        </form>
+      )}
+    </section>
+  );
+}
+
 export function MapScreen() {
   const location = useUserLocation();
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [routeFocus, setRouteFocus] = useState(false);
+  const [pickMode, setPickMode] = useState(false);
+  const [focusToken, setFocusToken] = useState(0);
+  const setManual = useManualLocation((s) => s.set);
   const selected = STATIONS.find((s) => s.id === selectedId);
   const { drive, bus } = useStationRoutes(selected, location.position);
 
@@ -347,6 +484,7 @@ export function MapScreen() {
   const back = () => {
     setSelectedId(undefined);
     setRouteFocus(false);
+    setFocusToken((t) => t + 1);
   };
 
   const paths = useMemo(
@@ -389,8 +527,31 @@ export function MapScreen() {
             onSelect={select}
             target={target}
             user={location.position}
+            userAccuracyM={location.accuracyM}
+            pickMode={pickMode}
+            onPick={(point) => {
+              setManual(point);
+              setPickMode(false);
+            }}
+            focusToken={focusToken}
             routes={paths}
           />
+          {pickMode && (
+            <div
+              role="status"
+              className="absolute top-3 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-ice/40 bg-[#0d1340]/95 px-4 py-2 text-xs backdrop-blur-md"
+            >
+              <Crosshair className="size-4 text-ice" aria-hidden="true" />
+              Pulsa en el mapa donde estás. Puedes acercar con la rueda y arrastrar.
+              <button
+                type="button"
+                onClick={() => setPickMode(false)}
+                className="rounded-lg bg-white/[0.1] px-2 py-0.5 transition-colors hover:bg-white/[0.18]"
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
           {selected && (
             <button
               type="button"
@@ -408,6 +569,11 @@ export function MapScreen() {
           aria-label="Estaciones"
           className="glass flex min-h-0 flex-col gap-4 overflow-y-auto p-4"
         >
+          <LocationPanel
+            location={location}
+            pickMode={pickMode}
+            onTogglePick={() => setPickMode((v) => !v)}
+          />
           <section aria-labelledby="legend-title">
             <h2 id="legend-title" className="mb-2 text-sm font-semibold">
               Estaciones
@@ -468,7 +634,10 @@ export function MapScreen() {
               location={location}
               routeFocused={routeFocus}
               onFocusRoute={() => setRouteFocus(true)}
-              onFocusStation={() => setRouteFocus(false)}
+              onFocusStation={() => {
+                setRouteFocus(false);
+                setFocusToken((t) => t + 1);
+              }}
             />
           ) : (
             <p className="text-xs text-muted">

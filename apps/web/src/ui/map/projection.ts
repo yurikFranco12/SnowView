@@ -91,3 +91,28 @@ export function layerOpacity(zoom: number, from: number, to: number): number {
   const t = (Math.log(zoom) - Math.log(from)) / (Math.log(to) - Math.log(from));
   return Math.min(1, Math.max(0, t));
 }
+
+/**
+ * Metros que mide una unidad del lienzo base a una latitud. El mundo mide 1000 unidades de ancho
+ * (la circunferencia de la Tierra) y Mercator ensancha las unidades con 1/cos(latitud).
+ */
+export function metersPerUnit(latitude: number): number {
+  return (40_075_017 / MAP_W) * Math.cos((latitude * Math.PI) / 180);
+}
+
+/** Radio, en unidades del lienzo base, de una distancia en metros a esa latitud. */
+export function metersToUnits(meters: number, latitude: number): number {
+  return meters / metersPerUnit(latitude);
+}
+
+/** Punto del lienzo base → longitud y latitud. */
+export function unproject(x: number, y: number): { longitude: number; latitude: number } | null {
+  const p = projection.invert?.([x, y]);
+  return p ? { longitude: p[0], latitude: p[1] } : null;
+}
+
+/** Punto de la pantalla del lienzo (0..1000, 0..600) → punto del lienzo base, según la vista. */
+export function screenToBase(point: Point, view: View): Point {
+  const { tx, ty } = translateFor(view);
+  return [(point[0] - tx) / view.zoom, (point[1] - ty) / view.zoom];
+}

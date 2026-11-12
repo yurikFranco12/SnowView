@@ -6,7 +6,10 @@ import {
   SPAIN_VIEW,
   fitView,
   layerOpacity,
+  metersToUnits,
   project,
+  screenToBase,
+  unproject,
   stationView,
   toScreen,
   zoomForSpan,
@@ -85,5 +88,45 @@ describe('layerOpacity', () => {
   it('también sirve para desvanecer (from mayor que to)', () => {
     expect(layerOpacity(2, 8, 2)).toBe(1);
     expect(layerOpacity(100, 8, 2)).toBe(0);
+  });
+});
+
+describe('metros y unidades', () => {
+  it('a mayor latitud, la misma distancia ocupa más unidades', () => {
+    expect(metersToUnits(10_000, 60)).toBeGreaterThan(metersToUnits(10_000, 0));
+    // cos(60°) = 0,5: el doble de unidades
+    expect(metersToUnits(10_000, 60) / metersToUnits(10_000, 0)).toBeCloseTo(2, 6);
+  });
+
+  it('el ecuador mide 40.075 m por unidad', () => {
+    expect(metersToUnits(40_075, 0)).toBeCloseTo(1, 2);
+  });
+});
+
+describe('unproject y screenToBase', () => {
+  it('unproject deshace a project', () => {
+    const [x, y] = project(-3.3667, 43.3167);
+    const back = unproject(x, y);
+    expect(back?.longitude).toBeCloseTo(-3.3667, 6);
+    expect(back?.latitude).toBeCloseTo(43.3167, 6);
+  });
+
+  it('un clic en el centro de la pantalla es el centro de la vista', () => {
+    const view = stationView(-3.3667, 43.3167);
+    const [bx, by] = screenToBase([MAP_W / 2, MAP_H / 2], view);
+    expect(bx).toBeCloseTo(view.x, 6);
+    expect(by).toBeCloseTo(view.y, 6);
+  });
+
+  it('screenToBase y toScreen son inversas', () => {
+    const view = fitView([
+      { latitude: 40, longitude: -3 },
+      { latitude: 43, longitude: 1 },
+    ]);
+    const base: [number, number] = [510, 130];
+    const [sx, sy] = toScreen(base, view);
+    const [bx, by] = screenToBase([sx, sy], view);
+    expect(bx).toBeCloseTo(base[0], 6);
+    expect(by).toBeCloseTo(base[1], 6);
   });
 });
