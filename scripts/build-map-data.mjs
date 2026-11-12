@@ -14,7 +14,7 @@ const topology = JSON.parse(
   readFileSync(require.resolve('world-atlas/countries-10m.json'), 'utf8'),
 );
 
-const BOX = { west: -11.5, east: 10, south: 34.5, north: 48.8 };
+const BOX = { west: -17, east: 17, south: 28, north: 53 }; // cobertura del mapa: ver COVERAGE en projection.ts
 const TOLERANCE = 0.002; // grados (~200 m)
 
 const intersects = (ring) => {

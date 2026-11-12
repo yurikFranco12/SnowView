@@ -9,6 +9,25 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 Nada todavía.
 
+## [0.9.0] - 2026-11-12 · fase 7
+
+### Añadido
+
+- Buscador de pueblos con autocompletado para fijar tu ubicación («Guriezo, Cantabria»), con
+  Photon y datos de OpenStreetMap (ADR 0011).
+- Mapa acotado: zoom mínimo y límites por los cuatro lados; el mapa base cubre de 17° O a 17° E y
+  de 28° N a 53° N.
+
+### Cambiado
+
+- El mapa base es más ancho para que nunca se vea cortado al alejar.
+- Fijar la ubicación ya no pide escribir coordenadas.
+
+### Eliminado
+
+- Relieve sombreado y curvas de nivel del mapa (ADR 0010); se conservan las provincias.
+- Lectura de coordenadas escritas a mano.
+
 ## [0.8.0] - 2026-11-12 · fase 6
 
 ### Añadido
