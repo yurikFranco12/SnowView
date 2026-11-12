@@ -21,6 +21,7 @@ import {
   metersToUnits,
   project,
   screenToBase,
+  toScreen,
   unproject,
   type View,
 } from './projection';
@@ -98,6 +99,19 @@ function StationPin({ label, selected }: { label: string; selected: boolean }) {
   );
 }
 
+/** Dónde está un pin en pantalla, en píxeles relativos al mapa. Sirve para colgarle una ficha. */
+export interface HoverInfo {
+  id: string;
+  /** Centro horizontal del pin. */
+  x: number;
+  /** Parte de arriba del pin. */
+  top: number;
+  /** Punta del pin (el lugar exacto de la estación). */
+  bottom: number;
+  boxWidth: number;
+  boxHeight: number;
+}
+
 interface MapViewProps {
   stations: readonly CuratedStation[];
   selectedId: string | undefined;
@@ -112,6 +126,8 @@ interface MapViewProps {
   onPick?: (point: LatLng) => void;
   /** Cambia para volver a centrar el mapa en `target` aunque el encuadre no haya cambiado. */
   focusToken?: number;
+  /** Se llama al pasar por un pin (con su posición) y al salir (sin argumento). */
+  onHover?: (info: HoverInfo | undefined, immediate?: boolean) => void;
   routes: { drive?: readonly LatLng[]; bus?: readonly LatLng[] } | undefined;
 }
 
@@ -125,6 +141,7 @@ export function MapView({
   pickMode = false,
   onPick,
   focusToken = 0,
+  onHover,
   routes,
 }: MapViewProps) {
   const reduced = usePrefersReducedMotion();
@@ -132,6 +149,9 @@ export function MapView({
   const cx = useMotionValue(WORLD_VIEW.x);
   const cy = useMotionValue(WORLD_VIEW.y);
   const sceneRef = useRef<SVGGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const onHoverRef = useRef(onHover);
+  const hoverEmitted = useRef(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const controlsRef = useRef<{ stop: () => void }[]>([]);
   const drag = useRef<{ x: number; y: number; cx: number; cy: number; moved: boolean } | null>(
@@ -160,10 +180,18 @@ export function MapView({
   };
   useLayoutEffect(applyTransform);
   useEffect(() => {
+    const onViewChange = () => {
+      applyTransform();
+      // Si el mapa se mueve, la ficha ya no estaría junto a su pin: se cierra.
+      if (hoverEmitted.current) {
+        hoverEmitted.current = false;
+        onHoverRef.current?.(undefined, true);
+      }
+    };
     const stops = [
-      lnZoom.on('change', applyTransform),
-      cx.on('change', applyTransform),
-      cy.on('change', applyTransform),
+      lnZoom.on('change', onViewChange),
+      cx.on('change', onViewChange),
+      cy.on('change', onViewChange),
     ];
     return () => stops.forEach((stop) => stop());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -203,6 +231,38 @@ export function MapView({
       e.preventDefault();
       onSelect(id);
     }
+  };
+
+  useEffect(() => {
+    onHoverRef.current = onHover;
+  });
+
+  const enterPin = (station: CuratedStation) => {
+    setHovered(station.id);
+    const box = containerRef.current?.getBoundingClientRect();
+    const svg = svgRef.current;
+    const ctm = svg?.getScreenCTM();
+    if (!box || !svg || !ctm || !onHover) return;
+    // Posición real del pin: se proyecta la estación con la vista actual (no el cuadro del grupo,
+    // que incluye la etiqueta con el nombre).
+    const [sx, sy] = toScreen(project(station.longitude, station.latitude), currentView());
+    const tip = svg.createSVGPoint();
+    tip.x = sx;
+    tip.y = sy;
+    const client = tip.matrixTransform(ctm);
+    hoverEmitted.current = true;
+    onHover({
+      id: station.id,
+      x: client.x - box.x,
+      bottom: client.y - box.y,
+      top: client.y - box.y - 22 * ctm.d,
+      boxWidth: box.width,
+      boxHeight: box.height,
+    });
+  };
+  const leavePin = () => {
+    setHovered(undefined);
+    onHover?.(undefined);
   };
 
   const stopAnimations = () => controlsRef.current.forEach((c) => c.stop());
@@ -294,7 +354,7 @@ export function MapView({
   };
 
   return (
-    <div className="relative size-full">
+    <div ref={containerRef} className="relative size-full">
       <svg
         ref={svgRef}
         onPointerDown={onPointerDown}
@@ -397,49 +457,55 @@ export function MapView({
             );
           })}
 
-          {stationPoints.map(({ station, point }) => {
-            const selected = station.id === selectedId;
-            const showLabel = selected || hovered === station.id || showAllLabels;
-            return (
-              <g
-                key={station.id}
-                transform={`translate(${point[0]} ${point[1]})`}
-                role="button"
-                tabIndex={0}
-                aria-label={`${station.name}, ${station.region}`}
-                aria-pressed={selected}
-                onClick={() => {
-                  if (!pickMode && !dragged.current) onSelect(station.id);
-                }}
-                onKeyDown={(e) => onKey(e, station.id)}
-                onPointerEnter={() => setHovered(station.id)}
-                onPointerLeave={() => setHovered(undefined)}
-                onFocus={() => setHovered(station.id)}
-                onBlur={() => setHovered(undefined)}
-                style={{ pointerEvents: pickMode ? 'none' : 'auto' }}
-                className="cursor-pointer outline-none focus-visible:[&_path]:stroke-ice"
-              >
-                <g data-inv="">
-                  <StationPin label={`${station.name} · ${station.region}`} selected={selected} />
-                  {showLabel && (
-                    <text
-                      x="0"
-                      y="-30"
-                      textAnchor="middle"
-                      fontSize="11.5"
-                      fontWeight="600"
-                      fill="#eaf2ff"
-                      stroke="rgba(10,14,42,0.9)"
-                      strokeWidth="3"
-                      paintOrder="stroke"
-                    >
-                      {station.name}
-                    </text>
-                  )}
+          {[...stationPoints]
+            .sort(
+              (a, b) =>
+                Number(a.station.id === hovered || a.station.id === selectedId) -
+                Number(b.station.id === hovered || b.station.id === selectedId),
+            )
+            .map(({ station, point }) => {
+              const selected = station.id === selectedId;
+              const showLabel = selected || hovered === station.id || showAllLabels;
+              return (
+                <g
+                  key={station.id}
+                  transform={`translate(${point[0]} ${point[1]})`}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${station.name}, ${station.region}`}
+                  aria-pressed={selected}
+                  onClick={() => {
+                    if (!pickMode && !dragged.current) onSelect(station.id);
+                  }}
+                  onKeyDown={(e) => onKey(e, station.id)}
+                  onPointerEnter={() => enterPin(station)}
+                  onPointerLeave={leavePin}
+                  onFocus={() => enterPin(station)}
+                  onBlur={leavePin}
+                  style={{ pointerEvents: pickMode ? 'none' : 'auto' }}
+                  className="cursor-pointer outline-none focus-visible:[&_path]:stroke-ice"
+                >
+                  <g data-inv="">
+                    <StationPin label={`${station.name} · ${station.region}`} selected={selected} />
+                    {showLabel && (
+                      <text
+                        x="0"
+                        y="-30"
+                        textAnchor="middle"
+                        fontSize="11.5"
+                        fontWeight="600"
+                        fill="#eaf2ff"
+                        stroke="rgba(10,14,42,0.9)"
+                        strokeWidth="3"
+                        paintOrder="stroke"
+                      >
+                        {station.name}
+                      </text>
+                    )}
+                  </g>
                 </g>
-              </g>
-            );
-          })}
+              );
+            })}
 
           {user && userAccuracyM !== undefined && userAccuracyM >= 300 && (
             <circle

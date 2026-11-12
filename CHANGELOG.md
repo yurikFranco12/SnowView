@@ -7,8 +7,19 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.10.0] - 2026-11-12 · fase 8
+
+### Añadido
+
+- Al pasar el ratón (o el foco del teclado) por un pin del mapa sale una ficha con el nombre, la
+  región, las cotas, la distancia y el botón «Ver mapa de la estación».
+- Leyenda plegable sobre el mapa, la misma en el mapa de España y en el de cada estación.
+
 ### Cambiado
 
+- El pin señalado se dibuja encima de los demás (hay estaciones del Pirineo muy juntas).
+- La leyenda sale del panel lateral y pasa al mapa, abajo a la izquierda, con el estilo de las
+  fichas de la app.
 - El ejemplo del buscador de pueblos ahora es «Madrid, España».
 
 ## [0.9.0] - 2026-11-12 · fase 7

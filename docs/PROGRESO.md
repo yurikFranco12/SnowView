@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 7 (mapa acotado y buscador de pueblos); app 0.9.0.
+- **Fase actual:** ninguna en curso. Hecha la 8 (ficha al pasar por un pin y leyenda sobre el mapa); app 0.10.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,12 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 8 — tareas
+
+- [x] Ficha al pasar el ratón por un pin con el botón «Ver mapa de la estación»
+- [x] Leyenda plegable sobre el mapa, con el estilo de las fichas, en todos los mapas
+- [x] Instalador 0.10.0, fusión en `main`, etiquetas `fase-8` y `v0.10.0`, push y claude.ai
 
 ## Fase 7 — tareas
 

@@ -14,7 +14,9 @@ import {
   Car,
   Crosshair,
   KeyRound,
+  Layers,
   LocateFixed,
+  Map as MapIcon,
   MapPinOff,
   Route as RouteIcon,
   RotateCw,
@@ -22,11 +24,11 @@ import {
   X,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { storage } from '../../platform/storage';
 import { Skeleton } from '../components/StatusViews';
 import { useStationRoutes, type RouteState } from '../data/routes';
-import { MapView } from '../map/MapView';
+import { MapView, type HoverInfo } from '../map/MapView';
 import { PlaceSearch } from '../map/PlaceSearch';
 import { SPAIN_VIEW, fitView, stationView, type View } from '../map/projection';
 import { useUserLocation, type UserLocation } from '../map/useUserLocation';
@@ -93,7 +95,7 @@ function LocationAlert({ location }: { location: UserLocation }) {
   return (
     <div
       role="status"
-      className="absolute bottom-3 left-3 flex max-w-[min(430px,calc(100%-24px))] items-center gap-3 rounded-2xl border border-white/10 bg-[#0d1340]/90 px-3.5 py-2.5 text-xs backdrop-blur-md"
+      className="flex max-w-[min(430px,calc(100%-24px))] items-center gap-3 rounded-2xl border border-white/10 bg-[#0d1340]/90 px-3.5 py-2.5 text-xs backdrop-blur-md"
     >
       <MapPinOff className="size-4 shrink-0 text-muted" aria-hidden="true" />
       <p className="min-w-0 flex-1">{text}</p>
@@ -412,12 +414,138 @@ function LocationPanel({
   );
 }
 
+/** Leyenda sobre el mapa: la misma, con el mismo formato, en el mapa de España y en el de cada estación. */
+function MapLegend() {
+  const [open, setOpen] = useState(true);
+  return (
+    <div className="w-[210px] rounded-2xl border border-white/10 bg-[#0d1340]/90 text-[11px] backdrop-blur-md">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-semibold"
+      >
+        <Layers className="size-3.5 text-ice" aria-hidden="true" /> Leyenda
+      </button>
+      {open && (
+        <div className="border-t border-white/[0.08] px-3 pt-2 pb-2.5">
+          <ul className="flex flex-col gap-1.5 text-muted" aria-label="Leyenda del mapa">
+            <li className="flex items-center gap-2">
+              <PinIcon className="size-4" /> Estación
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="grid size-4 place-items-center" aria-hidden="true">
+                <span className="size-2.5 rounded-full border-2 border-white bg-[#4aa8ff]" />
+              </span>
+              Tu ubicación
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="h-0.5 w-4 rounded bg-ice" aria-hidden="true" /> Ruta en coche
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-4 border-t-2 border-dashed border-indigo" aria-hidden="true" />{' '}
+              Ruta en autobús
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="h-px w-4 bg-[rgba(125,227,255,0.8)]" aria-hidden="true" /> Fronteras
+              de país
+            </li>
+            <li className="flex items-center gap-2">
+              <span
+                className="w-4 border-t border-dashed border-[rgba(190,210,245,0.8)]"
+                aria-hidden="true"
+              />{' '}
+              Provincias
+            </li>
+          </ul>
+          <p className="mt-2 text-[10px] leading-snug text-muted">
+            Fronteras y provincias: Natural Earth.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Ficha que sale al pasar el ratón por un pin: resumen de la estación y el botón para abrir su mapa.
+ * Se queda abierta mientras el puntero está en el pin o en la ficha, para poder pulsar el botón.
+ */
+function StationHoverCard({
+  station,
+  info,
+  distanceKm,
+  onOpen,
+  onEnter,
+  onLeave,
+}: {
+  station: CuratedStation;
+  info: HoverInfo;
+  distanceKm: number | undefined;
+  onOpen: () => void;
+  onEnter: () => void;
+  onLeave: () => void;
+}) {
+  const WIDTH = 250;
+  const left = Math.min(
+    Math.max(info.x, WIDTH / 2 + 8),
+    Math.max(WIDTH / 2 + 8, info.boxWidth - WIDTH / 2 - 8),
+  );
+  // Encima del pin si cabe; si no, debajo.
+  const above = info.top > 200;
+  return (
+    <div
+      role="group"
+      aria-label={`Resumen de ${station.name}`}
+      onPointerEnter={onEnter}
+      onPointerLeave={onLeave}
+      style={{
+        width: WIDTH,
+        left,
+        top: above ? info.top - 10 : info.bottom + 10,
+        transform: above ? 'translate(-50%, -100%)' : 'translate(-50%, 0)',
+      }}
+      className="absolute z-10 flex flex-col gap-2.5 rounded-2xl border border-white/15 bg-[#0d1340]/95 p-3.5 shadow-xl backdrop-blur-md"
+    >
+      <div className="flex items-start gap-2.5">
+        <PinIcon className="mt-0.5 size-5 shrink-0" />
+        <div className="min-w-0">
+          <p className="font-display text-lg leading-tight font-semibold">{station.name}</p>
+          <p className="text-xs text-muted">{station.region}</p>
+        </div>
+      </div>
+      <ul className="flex flex-wrap gap-1.5 text-[11px]">
+        <li className="rounded-lg bg-white/[0.07] px-2 py-1">
+          Base {station.baseElevationM.toLocaleString('es-ES')} m
+        </li>
+        <li className="rounded-lg bg-white/[0.07] px-2 py-1">
+          Cima {station.topElevationM.toLocaleString('es-ES')} m
+        </li>
+        {distanceKm !== undefined && (
+          <li className="rounded-lg bg-white/[0.07] px-2 py-1">
+            A {formatDistanceKm(distanceKm)} en línea recta
+          </li>
+        )}
+      </ul>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-ice to-indigo px-3 py-2 text-xs font-semibold text-bg-start"
+      >
+        <MapIcon className="size-3.5" aria-hidden="true" /> Ver mapa de la estación
+      </button>
+    </div>
+  );
+}
+
 export function MapScreen() {
   const location = useUserLocation();
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [routeFocus, setRouteFocus] = useState(false);
   const [pickMode, setPickMode] = useState(false);
   const [focusToken, setFocusToken] = useState(0);
+  const [hover, setHover] = useState<HoverInfo | undefined>(undefined);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setManual = useManualLocation((s) => s.set);
   const selected = STATIONS.find((s) => s.id === selectedId);
   const { drive, bus } = useStationRoutes(selected, location.position);
@@ -435,6 +563,26 @@ export function MapScreen() {
     setSelectedId(id);
     setRouteFocus(false);
   };
+  // La ficha del pin sigue abierta un instante al salir, para poder llegar a ella con el ratón.
+  const cancelHoverClose = () => clearTimeout(hoverTimer.current);
+  const scheduleHoverClose = () => {
+    cancelHoverClose();
+    hoverTimer.current = setTimeout(() => setHover(undefined), 250);
+  };
+  useEffect(() => () => clearTimeout(hoverTimer.current), []);
+  const onHover = (info: HoverInfo | undefined, immediate?: boolean) => {
+    if (info) {
+      cancelHoverClose();
+      setHover(info);
+    } else if (immediate) {
+      cancelHoverClose();
+      setHover(undefined);
+    } else {
+      scheduleHoverClose();
+    }
+  };
+  const hoveredStation = hover ? STATIONS.find((st) => st.id === hover.id) : undefined;
+
   const back = () => {
     setSelectedId(undefined);
     setRouteFocus(false);
@@ -488,8 +636,24 @@ export function MapScreen() {
               setPickMode(false);
             }}
             focusToken={focusToken}
+            onHover={onHover}
             routes={paths}
           />
+          {hover && hoveredStation && !pickMode && (
+            <StationHoverCard
+              station={hoveredStation}
+              info={hover}
+              distanceKm={
+                location.position ? haversineKm(location.position, hoveredStation) : undefined
+              }
+              onOpen={() => {
+                setHover(undefined);
+                select(hoveredStation.id);
+              }}
+              onEnter={cancelHoverClose}
+              onLeave={scheduleHoverClose}
+            />
+          )}
           {pickMode && (
             <div
               role="status"
@@ -515,7 +679,10 @@ export function MapScreen() {
               <ArrowLeft className="size-3.5" aria-hidden="true" /> Volver al mapa de España
             </button>
           )}
-          <LocationAlert location={location} />
+          <div className="absolute bottom-3 left-3 flex flex-col items-start gap-2">
+            <MapLegend />
+            <LocationAlert location={location} />
+          </div>
         </motion.div>
 
         <motion.aside
@@ -559,37 +726,6 @@ export function MapScreen() {
                 );
               })}
             </ul>
-            <ul
-              className="mt-3 flex flex-col gap-1 border-t border-white/[0.08] pt-3 text-[11px] text-muted"
-              aria-label="Leyenda"
-            >
-              <li className="flex items-center gap-2">
-                <PinIcon className="size-4" /> Estación
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="grid size-4 place-items-center" aria-hidden="true">
-                  <span className="size-2.5 rounded-full border-2 border-white bg-[#4aa8ff]" />
-                </span>
-                Tu ubicación
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="h-0.5 w-4 rounded bg-ice" aria-hidden="true" /> Ruta en coche
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-4 border-t-2 border-dashed border-indigo" aria-hidden="true" />{' '}
-                Ruta en autobús
-              </li>
-              <li className="flex items-center gap-2">
-                <span
-                  className="w-4 border-t border-dashed border-[rgba(190,210,245,0.8)]"
-                  aria-hidden="true"
-                />{' '}
-                Provincias
-              </li>
-            </ul>
-            <p className="mt-2 text-[10px] leading-snug text-muted">
-              Fronteras y provincias: Natural Earth.
-            </p>
           </section>
 
           {selected ? (
