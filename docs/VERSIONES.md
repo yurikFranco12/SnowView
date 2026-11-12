@@ -91,29 +91,25 @@ Las fusiones se llaman `Fusionar fase-<n>: <qué trae>`.
 
 ## GitHub
 
-El repositorio local no tiene remoto hasta que el usuario facilite la URL del repositorio de GitHub.
-Cuando exista, se conecta una sola vez:
+El repositorio está en <https://github.com/yurikFranco12/SnowView> y el remoto local se llama
+`origin`. Desde el 2026-11-12 `main` y todas las etiquetas están publicados. Para ver el estado:
 
 ```bash
-git remote add origin <URL-del-repositorio>
+git status -sb
 ```
 
-La primera subida lleva `main`, la rama en curso y todas las etiquetas:
+Tras cerrar cada fase (fusionada, etiquetada y con la rama borrada) se publica con:
 
 ```bash
-git push -u origin main
+git push origin main --follow-tags
 ```
 
-```bash
-git push -u origin fase-5b
-```
+Una rama de fase solo se sube si hay que compartirla o respaldarla antes de cerrarla
+(`git push -u origin fase-<n>`); al cerrarla se borra también del remoto con
+`git push origin --delete fase-<n>`. Las ramas de fase ya cerradas no se suben.
 
-```bash
-git push origin --tags
-```
-
-Después, tras cerrar cada fase: `git push origin main --follow-tags` y la rama nueva con
-`git push -u origin fase-<n>`. Las ramas de fase ya cerradas no se suben (se borran al cerrarlas).
+Si la ficha del repositorio en GitHub se quiere dejar al día, los instaladores se pueden adjuntar a
+una «release» de la etiqueta `v<x.y.z>` correspondiente (no van en git: `target/` está ignorado).
 
 Nunca se reescribe el historial publicado (`push --force`, `rebase` de commits ya subidos). Si algo
 se subió por error, se corrige con un commit nuevo.
@@ -134,6 +130,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-5a` | v0.6.0  | 2026-11-12 | `5667031`        | Webcams de las estaciones dentro de la app             |
 | `fase-5b` | v0.7.0  | 2026-11-12 | `git show`       | Control de versiones documentado y mapa de estaciones  |
 | `fase-5c` | v0.7.1  | 2026-11-12 | `git show`       | Ubicación a mano y mapa interactivo                    |
+| `fase-5d` | —       | 2026-11-12 | `git show`       | Repositorio publicado en GitHub                        |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).

@@ -7,7 +7,8 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
-Nada todavía.
+Nada todavía. El repositorio está publicado en GitHub desde el 2026-11-12 (`main` y todas las
+etiquetas); no cambia el código, así que no hay versión nueva de la app.
 
 ## [0.7.1] - 2026-11-12 · fase 5c
 
