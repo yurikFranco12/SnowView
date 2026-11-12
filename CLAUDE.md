@@ -61,6 +61,8 @@ normalización, errores), `apps/web` (`src/platform/` adaptadores, `src/ui/` pan
 - Criterio de salida de cada fase: `pnpm check` en verde, build compilando, README de la fase y
   `docs/PROGRESO.md` al día, y documento de claude.ai sincronizado.
 - Un ADR en `docs/adr/` por cada decisión técnica importante.
+- Ramas: `main` solo tiene fases terminadas. Cada fase se trabaja en su rama (`fase-1b`, `fase-1c`…)
+  y al cerrarla se fusiona en `main` con `--no-ff` y se etiqueta (`fase-1b`). Ver `docs/VERSIONES.md`.
 - PowerShell 5.1: no pases textos con comillas a programas nativos en línea (git, por ejemplo); usa un
   archivo temporal (`git commit -F`).
 

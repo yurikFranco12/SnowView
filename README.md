@@ -7,14 +7,18 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 
 ## Estado
 
-Fase 0 completada: entorno y monorepo. Ver [docs/fase-0/README.md](docs/fase-0/README.md).
+- Fase 0 completada: entorno y monorepo. Ver [docs/fase-0/README.md](docs/fase-0/README.md).
+- Fase 1a completada: prototipo visual con datos simulados. Ver
+  [docs/fase-1a/README.md](docs/fase-1a/README.md).
+- En curso: Fase 1b, datos reales. Progreso en [docs/PROGRESO.md](docs/PROGRESO.md).
 
 ## Estructura
 
 ```
 packages/core   Lógica pura: modelos, acumulados y reglas (sin UI ni plataforma)
 packages/data   Clientes de API, caché y normalización
-apps/web        Interfaz (por ahora, solo los tokens de diseño)
+apps/web        Interfaz: React, Vite, Tailwind y Motion
+src-tauri       App de escritorio (Tauri 2, Rust)
 docs/           Decisiones técnicas (ADR) y un README por fase
 ```
 
@@ -25,8 +29,15 @@ pnpm install
 ```
 
 ```bash
+pnpm dev
+```
+
+```bash
 pnpm check
 ```
+
+`pnpm dev` abre la app de escritorio; `pnpm build` genera los instaladores. Ramas y versiones en
+[docs/VERSIONES.md](docs/VERSIONES.md).
 
 ## Datos meteorológicos y licencia
 

@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+@import './ui/tokens/tokens.css';
+
+/*
+ * Los tokens viven en tokens.css como variables --sv-*. Aquí se exponen a Tailwind, de modo que
+ * clases como `text-ice`, `bg-glass` o `font-display` usan los mismos valores.
+ */
+@theme inline {
+  --color-bg-start: var(--sv-bg-start);
+  --color-bg-mid: var(--sv-bg-mid);
+  --color-bg-end: var(--sv-bg-end);
+  --color-ice: var(--sv-accent-ice);
+  --color-indigo: var(--sv-accent-indigo);
+  --color-text: var(--sv-text-primary);
+  --color-muted: var(--sv-text-secondary);
+  --color-glass: var(--sv-glass-bg);
+  --color-glass-border: var(--sv-glass-border);
+
+  --font-display: var(--sv-font-display);
+  --font-body: var(--sv-font-body);
+
+  --radius-glass: var(--sv-glass-radius);
+  --shadow-glass: var(--sv-glass-shadow);
+  --blur-glass: var(--sv-glass-blur);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--sv-bg-start);
+    color: var(--sv-text-primary);
+    font-family: var(--sv-font-body);
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+
+  /* Foco visible y coherente con el acento hielo en toda la app (navegación por teclado). */
+  :focus-visible {
+    outline: 2px solid var(--sv-accent-ice);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Panel de cristal: el componente base de la dirección "Aurora nocturna". */
+  .glass {
+    background: var(--sv-glass-bg);
+    border: 1px solid var(--sv-glass-border);
+    border-radius: var(--sv-glass-radius);
+    box-shadow:
+      var(--sv-glass-shadow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(var(--sv-glass-blur));
+  }
+}

@@ -2,6 +2,7 @@ node_modules
 dist
 coverage
 target
+src-tauri/gen
 pnpm-lock.yaml
 CONTEXTO_CONVERSACION_INICIAL.md
 docs/diseno/mockup-inicio.html
