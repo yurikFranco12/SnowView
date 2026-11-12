@@ -4,3 +4,4 @@ coverage
 target
 pnpm-lock.yaml
 CONTEXTO_CONVERSACION_INICIAL.md
+docs/diseno/mockup-inicio.html

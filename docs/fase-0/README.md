@@ -15,6 +15,27 @@ Estado: completada el 2026-11-12.
 | winget                         | 1.29.380                                 |
 | Git                            | 2.56.0                                   |
 
+### Preparar otro equipo con Windows
+
+```bash
+winget install OpenJS.NodeJS.LTS
+```
+
+```bash
+winget install Rustlang.Rustup
+```
+
+```bash
+winget install Microsoft.VisualStudio.2022.BuildTools --override "--wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+```
+
+```bash
+npm install -g pnpm
+```
+
+Si después `pnpm` no se reconoce, añade `%APPDATA%\npm` al PATH del usuario y abre una terminal
+nueva.
+
 ## Qué incluye
 
 - Monorepo con pnpm workspaces: `packages/core`, `packages/data`, `apps/web`.

@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm check)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm format)",
+      "Bash(pnpm format:check)",
+      "Bash(pnpm -r typecheck)",
+      "Bash(pnpm -r test)",
+      "Bash(pnpm --filter:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(pnpm exec eslint:*)",
+      "Bash(pnpm exec vitest:*)",
+      "Bash(pnpm peers check)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "PowerShell(pnpm check)",
+      "PowerShell(pnpm typecheck)",
+      "PowerShell(pnpm lint)",
+      "PowerShell(pnpm test)",
+      "PowerShell(pnpm test:*)",
+      "PowerShell(pnpm format)",
+      "PowerShell(pnpm format:check)",
+      "PowerShell(pnpm -r typecheck)",
+      "PowerShell(pnpm -r test)",
+      "PowerShell(pnpm --filter:*)",
+      "PowerShell(pnpm exec tsc:*)",
+      "PowerShell(pnpm exec eslint:*)",
+      "PowerShell(pnpm exec vitest:*)",
+      "PowerShell(pnpm peers check)",
+      "PowerShell(git status:*)",
+      "PowerShell(git diff:*)",
+      "PowerShell(git log:*)",
+      "PowerShell(git show:*)"
+    ]
+  }
+}
