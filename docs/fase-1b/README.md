@@ -1,6 +1,6 @@
 # Fase 1b — Datos reales
 
-Estado: en curso en la rama `fase-1b` (2026-11-12). Decisiones en
+Estado: **completada** el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Decisiones en
 [ADR 0004](../adr/0004-capa-de-datos-open-meteo.md).
 
 ## Qué incluye
@@ -11,7 +11,9 @@ Estado: en curso en la rama `fase-1b` (2026-11-12). Decisiones en
 - **`packages/data`**: cliente de Open-Meteo (base y cima en una llamada, normalización a cm,
   errores tipados, tiempo máximo, cancelación, límite de peticiones) y lista curada de estaciones con
   buscador sin tildes.
-- **`stations/stations.json`**: 8 estaciones del Pirineo, Andorra y Sierra Nevada.
+- **`stations/stations.json`**: 8 estaciones del Pirineo, Andorra y Sierra Nevada, con cotas de base y
+  cima verificadas una a una (fuente de cada una en `sources.elevationSources`). Correcciones:
+  Formigal base 1500 → 1510 m y La Molina base 1700 → 1667 m.
 - **Interfaz**:
   - Inicio con datos reales: nieve prevista en la cima en 3/7/14 días, base, próximas 48 h,
     temperatura, viento y estado del tiempo de la hora en curso.
@@ -39,7 +41,16 @@ SNOWVIEW_LIVE=1 pnpm --filter @snowview/data test
 
 En PowerShell: `$env:SNOWVIEW_LIVE='1'; pnpm --filter @snowview/data test`.
 
+## Instaladores (app 0.2.0)
+
+Generados con `pnpm.cmd build` en el terminal del usuario, en `src-tauri/target/release/bundle/`:
+
+| Archivo                             | Tamaño   |
+| ----------------------------------- | -------- |
+| `msi/SnowView_0.2.0_x64_en-US.msi`  | 3,91 MiB |
+| `nsis/SnowView_0.2.0_x64-setup.exe` | 2,90 MiB |
+
 ## Pendiente
 
-- Verificar una a una las cotas de base y cima de `stations.json` (campo `elevationsVerified`).
 - Las reglas de la pantalla de inicio siguen siendo de ejemplo: llegan en la Fase 1c.
+- Mantener las cotas al día: si una estación cambia, actualizar `stations.json` con su fuente.

@@ -3,7 +3,17 @@
   "updated": "2026-11-12",
   "sources": {
     "coordinates": "Open-Meteo Geocoding API (datos de GeoNames, CC BY 4.0), consultada el 2026-11-12. Son las coordenadas del núcleo de la estación, junto a la base.",
-    "elevations": "Cotas de base y cima publicadas por cada estación. Pendientes de verificar una a una (campo elevationsVerified)."
+    "elevations": "Cotas de base y cima verificadas una a una el 2026-11-12 contra Wikipedia o la web oficial de la estación. La fuente de cada una está en elevationSources.",
+    "elevationSources": {
+      "baqueira-beret": "es.wikipedia.org/wiki/Baqueira-Beret: 1500-2610 m (coincide)",
+      "formigal": "es.wikipedia.org/wiki/Aramón_Formigal-Panticosa: 1510-2250 m (base corregida de 1500 a 1510)",
+      "cerler": "es.wikipedia.org/wiki/Aramón_Cerler: 1500-2630 m (coincide)",
+      "candanchu": "candanchu.com/es/la-estacion: 1530-2400 m, cima en Tuca Blanca (coincide; es.wikipedia da 2230 en la cima, se prefiere la web oficial)",
+      "la-molina": "ca.wikipedia.org/wiki/La_Molina_(estació_d'esquí): 1667-2537 m (base corregida de 1700 a 1667; es.wikipedia da 1650; la web oficial no estaba accesible)",
+      "masella": "es.wikipedia.org/wiki/Masella: 1600-2535 m (coincide)",
+      "grandvalira": "es.wikipedia.org/wiki/Grandvalira: 1710-2640 m (coincide)",
+      "sierra-nevada": "es.wikipedia.org/wiki/Sierra_Nevada_(estación_de_esquí): 2100-3300 m (coincide)"
+    }
   },
   "stations": [
     {
@@ -16,7 +26,7 @@
       "baseElevationM": 1500,
       "topElevationM": 2610,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "formigal",
@@ -25,10 +35,10 @@
       "country": "ES",
       "latitude": 42.77713,
       "longitude": -0.35929,
-      "baseElevationM": 1500,
+      "baseElevationM": 1510,
       "topElevationM": 2250,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "cerler",
@@ -40,7 +50,7 @@
       "baseElevationM": 1500,
       "topElevationM": 2630,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "candanchu",
@@ -52,7 +62,7 @@
       "baseElevationM": 1530,
       "topElevationM": 2400,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "la-molina",
@@ -61,10 +71,10 @@
       "country": "ES",
       "latitude": 42.34478,
       "longitude": 1.95625,
-      "baseElevationM": 1700,
+      "baseElevationM": 1667,
       "topElevationM": 2537,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "masella",
@@ -76,7 +86,7 @@
       "baseElevationM": 1600,
       "topElevationM": 2535,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "grandvalira",
@@ -88,7 +98,7 @@
       "baseElevationM": 1710,
       "topElevationM": 2640,
       "timeZone": "Europe/Andorra",
-      "elevationsVerified": false
+      "elevationsVerified": true
     },
     {
       "id": "sierra-nevada",
@@ -100,7 +110,7 @@
       "baseElevationM": 2100,
       "topElevationM": 3300,
       "timeZone": "Europe/Madrid",
-      "elevationsVerified": false
+      "elevationsVerified": true
     }
   ]
 }

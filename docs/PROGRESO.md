@@ -6,28 +6,28 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** 1b, datos reales — funcionando, en la rama `fase-1b`. Detalle en
+- **Fase actual:** 1c, alertas y sistema, en la rama `fase-1c`.
+- **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
   `docs/fase-1b/README.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
 
-## Fase 1b — tareas
+## Fase 1c — tareas
 
-- [x] Verificar en la documentación de Open-Meteo los parámetros y unidades (nieve en cm, grosor en
-      m; ADR 0004)
-- [x] `core/`: modelos, acumulado en ventana de N horas y nieve por día local (21 tests)
-- [x] `data/`: cliente de Open-Meteo con base y cima, normalización a cm, errores, límite de
-      peticiones (26 tests de integración + 1 en vivo)
-- [x] `stations/`: 8 estaciones con coordenadas verificadas (GeoNames) y fuente
-- [x] TanStack Query en la UI; inicio con datos reales, skeletons, errores y estado vacío
-- [x] Buscador de estaciones y favoritas guardadas con el plugin de almacenamiento de Tauri
-      (comprobado en la app de escritorio)
-- [x] Librería de gráficas: se siguen haciendo a mano (ADR 0004)
-- [x] Añadir `https://api.open-meteo.com` a la CSP
-- [x] README de la Fase 1b
-- [ ] Verificar una a una las cotas de base y cima de las estaciones
-- [ ] Cerrar la fase: instalador 0.2.0, fusión en `main`, etiqueta `fase-1b` y sincronizar claude.ai
+- [ ] `core/`: reglas del usuario (por ejemplo, más de 15 cm en las próximas 48 h) con tests
+- [ ] Notificaciones sin repetir (plugin de notificaciones de Tauri)
+- [ ] Bandeja del sistema (Rust)
+- [ ] Arranque con Windows (plugin autostart)
+- [ ] Pantalla de reglas conectada a datos reales (sustituye las reglas de ejemplo del inicio)
+- [ ] Pulido de animaciones y `prefers-reduced-motion`
+- [ ] Accesibilidad: contraste AA, ARIA y teclado
+- [ ] README de la Fase 1c
+- [ ] Cerrar la fase: instalador 0.3.0, fusión en `main`, etiqueta `fase-1c` y sincronizar claude.ai
+
+## Fase 1b — cerrada
+
+Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones y el instalador 0.2.0.
 
 ## Pendiente de fases anteriores
 
@@ -46,6 +46,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 | 2026-11-12 | Identificador de la app `com.snowview.desktop`             | fase-1a/README |
 | 2026-11-12 | Open-Meteo: base y cima en una llamada, UTC y días locales | ADR 0004       |
 | 2026-11-12 | Gráficas hechas a mano, sin Recharts ni Visx               | ADR 0004       |
+| 2026-11-12 | Cotas verificadas; Formigal base 1510, La Molina base 1667 | stations.json  |
 
 ## Notas de entorno
 
@@ -59,5 +60,4 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Próximos pasos
 
-1. Fase 1b: datos reales con Open-Meteo. Elegir las estaciones de ejemplo (por defecto, Pirineos y
-   Sierra Nevada).
+1. Fase 1c: empezar por las reglas en `core/` con tests; después notificaciones, bandeja y autostart.
