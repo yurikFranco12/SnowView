@@ -42,6 +42,14 @@ export {
   type OpenMeteoHistoryOptions,
 } from './history';
 export {
+  MIN_REFRESH_SECONDS,
+  WEBCAMS,
+  getWebcams,
+  parseWebcams,
+  stationsWithWebcams,
+  type Webcam,
+} from './webcams';
+export {
   STATIONS,
   getStation,
   parseStations,

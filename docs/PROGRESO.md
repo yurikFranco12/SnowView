@@ -6,8 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hechas 4a (más estaciones) y 4b (condiciones para esquiar y
-  snowboard); app 0.5.0.
+- **Fase actual:** ninguna en curso. Hecha la 5a (webcams); app 0.6.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -15,6 +14,15 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 5a — tareas
+
+- [x] Buscar y comprobar las webcams oficiales de las 10 estaciones (ADR 0008)
+- [x] `stations/webcams.json`: 48 cámaras con crédito y página oficial; parser y tests (9 tests)
+- [x] Pantalla Webcams: imagen que se renueva, reproductor en directo incrustado y vista ampliada
+- [x] CSP de Tauri con los orígenes de imágenes y reproductores; un test comprueba que cubre todas
+- [x] Botón Webcams en la estación principal del inicio
+- [ ] Probar las cámaras en la app de escritorio instalada (la CSP real solo se ve ahí)
 
 ## Fase 4 — tareas
 
@@ -101,7 +109,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Verificar las cotas de Cauterets con una fuente oficial.
-2. Ajustar los pesos de la nota de condiciones con el uso real en invierno (ADR 0007).
-3. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
-4. Medir en el equipo real la fluidez del fondo de nieve y el coste del desenfoque.
+1. Probar las webcams en la app instalada y avisarme de las que no carguen.
+2. Verificar las cotas de Cauterets con una fuente oficial.
+3. Ajustar los pesos de la nota de condiciones con el uso real en invierno (ADR 0007).
+4. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.
