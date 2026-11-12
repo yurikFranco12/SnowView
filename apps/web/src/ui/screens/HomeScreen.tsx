@@ -2,15 +2,17 @@ import { getStation } from '@snowview/data';
 import { Mountain, Plus, Star } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PeriodSelector } from '../components/PeriodSelector';
+import { RuleItem } from '../components/RuleItem';
 import { SnowBars } from '../components/SnowBars';
 import { Sparkline } from '../components/Sparkline';
 import { ErrorView, Skeleton } from '../components/StatusViews';
 import { formatCm, provider, summarize, useStationForecast } from '../data/forecast';
-import { MOCK_RULES, type MockRule } from '../mock/rules';
+import { useRuleResults } from '../data/rules';
 import { revealItem } from '../motion/reveal';
 import { useNow } from '../hooks/useNow';
 import { useAppStore } from '../state/appStore';
 import { useFavorites } from '../state/favoritesStore';
+import { useRules } from '../state/rulesStore';
 
 const dateFormatter = new Intl.DateTimeFormat('es-ES', {
   weekday: 'long',
@@ -116,64 +118,48 @@ function MainStationCard({ stationId }: { stationId: string }) {
   );
 }
 
-const STATUS_LABEL: Record<MockRule['status'], string> = {
-  cumplida: 'Cumplida',
-  'en-curso': 'En curso',
-  pendiente: 'Pendiente',
-};
-
 function RulesPanel() {
+  const results = useRuleResults();
+  const loaded = useRules((s) => s.loaded);
+  const setView = useAppStore((s) => s.setView);
   return (
     <motion.aside
       variants={revealItem}
       aria-labelledby="rules-title"
-      className="glass flex flex-col gap-4 p-[22px]"
+      className="glass flex min-h-0 flex-col gap-4 p-[22px]"
     >
       <div className="flex items-center justify-between">
         <div>
           <h2 id="rules-title" className="font-display text-xl font-semibold">
             Reglas activas
           </h2>
-          <p className="text-xs text-muted">Ejemplo · llegan en la Fase 1c</p>
+          <p className="text-xs text-muted">
+            {results.filter((r) => r.rule.enabled).length} de {results.length}
+          </p>
         </div>
         <button
           type="button"
-          aria-label="Nueva regla"
-          title="Nueva regla (Fase 1c)"
+          aria-label="Gestionar reglas"
+          title="Gestionar reglas"
+          onClick={() => setView('alertas')}
           className="grid size-[34px] place-items-center rounded-[10px] bg-ice/[0.14] text-ice transition-colors hover:bg-ice/25"
         >
           <Plus className="size-4" aria-hidden="true" strokeWidth={1.8} />
         </button>
       </div>
-      <ul className="flex flex-col gap-4">
-        {MOCK_RULES.map((rule) => (
-          <li key={rule.id} className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-sm">
-              <span className="font-semibold">{rule.label}</span>
-              <span className={`text-xs ${rule.status === 'cumplida' ? 'text-ice' : 'text-muted'}`}>
-                {STATUS_LABEL[rule.status]}
-              </span>
-            </div>
-            <p className="text-xs text-muted">{rule.stationName}</p>
-            <div
-              role="progressbar"
-              aria-label={`Progreso de la regla ${rule.label}`}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(rule.progress * 100)}
-              className="h-1.5 overflow-hidden rounded-full bg-white/[0.08]"
-            >
-              {/* scaleX en lugar de width: se anima en la GPU sin recalcular el layout cada frame. */}
-              <motion.div
-                className="h-full origin-left rounded-full bg-gradient-to-r from-ice to-indigo"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: rule.progress }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+      {loaded && results.length === 0 ? (
+        <p className="text-sm text-muted">
+          Aún no tienes reglas. Crea una desde Alertas para recibir avisos de nieve.
+        </p>
+      ) : (
+        <ul className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+          {results.slice(0, 4).map((r) => (
+            <li key={r.rule.id}>
+              <RuleItem result={r} />
+            </li>
+          ))}
+        </ul>
+      )}
     </motion.aside>
   );
 }

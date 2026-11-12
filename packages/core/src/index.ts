@@ -11,6 +11,23 @@ export type { Station, HourlyPoint, ElevationForecast, StationForecast } from '.
 export { parseLengthUnit, toCm, type LengthUnit } from './units';
 export { describeWeatherCode, isSnowCode } from './weather';
 export {
+  EPISODE_GAP_HOURS,
+  MAX_WINDOW_HOURS,
+  evaluateRule,
+  eventKey,
+  markNotified,
+  parseRules,
+  pickNewAlerts,
+  pruneLog,
+  snowEpisodeStart,
+  startOfHour,
+  validateRule,
+  type AlertRule,
+  type NotifiedLog,
+  type RuleEvaluation,
+  type RuleStatus,
+} from './rules';
+export {
   HOUR_MS,
   accumulateSnow,
   dailySnowfall,

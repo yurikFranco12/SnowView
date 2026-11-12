@@ -35,8 +35,9 @@
 
 ## Historial
 
-| Etiqueta  | Versión de la app | Fecha      | Contenido                                          |
-| --------- | ----------------- | ---------- | -------------------------------------------------- |
-| `fase-0`  | —                 | 2026-11-12 | Entorno, monorepo, tokens de diseño y ADR 0001     |
-| `fase-1a` | 0.1.0             | 2026-11-12 | Prototipo visual con Tauri 2 y datos simulados     |
-| `fase-1b` | 0.2.0             | 2026-11-12 | Open-Meteo real, estaciones verificadas, favoritas |
+| Etiqueta  | Versión de la app | Fecha      | Contenido                                              |
+| --------- | ----------------- | ---------- | ------------------------------------------------------ |
+| `fase-0`  | —                 | 2026-11-12 | Entorno, monorepo, tokens de diseño y ADR 0001         |
+| `fase-1a` | 0.1.0             | 2026-11-12 | Prototipo visual con Tauri 2 y datos simulados         |
+| `fase-1b` | 0.2.0             | 2026-11-12 | Open-Meteo real, estaciones verificadas, favoritas     |
+| `fase-1c` | 0.3.0             | 2026-11-12 | Reglas, avisos nativos, bandeja y arranque con Windows |
