@@ -7,6 +7,15 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.16.0] - 2026-11-13 · fase 15
+
+### Eliminado
+
+- Las rutas en coche (tráfico, peajes) y en autobús con Google Routes: tarjetas, trazos en el mapa,
+  leyenda, aviso de clave y la fila de la clave de Google en Ajustes. La app ya no necesita ninguna
+  clave. Se borra la clave que hubiera guardada y `routes.googleapis.com` sale de la CSP.
+- Se mantienen la ubicación, la distancia en línea recta y «Ver con mi ubicación».
+
 ## [0.15.1] - 2026-11-13 · fase 14
 
 ### Corregido

@@ -28,13 +28,6 @@ export function MapLegend() {
               Tu ubicación
             </li>
             <li className="flex items-center gap-2">
-              <span className="h-0.5 w-4 rounded bg-ice" aria-hidden="true" /> Ruta en coche
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-4 border-t-2 border-dashed border-indigo" aria-hidden="true" />{' '}
-              Ruta en autobús
-            </li>
-            <li className="flex items-center gap-2">
               <span className="h-px w-4 bg-[rgba(125,227,255,0.8)]" aria-hidden="true" /> Fronteras
               de país
             </li>

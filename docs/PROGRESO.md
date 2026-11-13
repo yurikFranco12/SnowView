@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 14 (arreglo del historial de nevadas); app 0.15.1.
+- **Fase actual:** ninguna en curso. Hecha la 15 (se quitan las rutas en coche y autobús); app 0.16.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,12 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 15 — tareas
+
+- [x] Quitar las rutas en coche y autobús, la clave de Google y su fila de Ajustes, y la CSP de
+      `routes.googleapis.com`; se borra la clave guardada
+- [x] Instalador 0.16.0, fusión en `main`, etiquetas `fase-15` y `v0.16.0`, push y claude.ai
 
 ## Fase 14 — tareas
 
@@ -100,7 +106,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - [x] Rutas en coche (tráfico, peajes) y autobús con Google Routes (`data/`, 22 tests); clave de
       cada usuario en Ajustes, nunca en el código (ADR 0009)
 - [x] Instalador 0.7.0, fusión en `main`, etiquetas `fase-5b` y `v0.7.0`, claude.ai sincronizado
-- [ ] Probar las rutas con una clave real de Google (Madrid a Baqueira-Beret, coche y autobús)
+- [x] ~~Probar las rutas con una clave real de Google~~: las rutas se quitaron en la fase 15
 - [x] Repositorio de GitHub conectado (`origin`): `main` y las 20 etiquetas publicados el 2026-11-12
 
 ## Fase 5a — tareas
@@ -197,7 +203,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 
 ## Próximos pasos
 
-1. Probar las rutas con una clave real de Google y las webcams en la app instalada.
+1. Probar las webcams y los mapas de pistas en la app instalada.
 2. Añadir más estaciones de España, sur de Francia y Andorra: el mapa dibuja las que estén en `stations/stations.json`.
 3. Verificar las cotas de Cauterets con una fuente oficial.
 4. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.

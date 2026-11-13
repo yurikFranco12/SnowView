@@ -1,6 +1,7 @@
 # ADR 0009 — Mapa de estaciones, ubicación y rutas
 
-- Estado: aceptada
+- Estado: parcialmente retirada. Las rutas en coche y autobús (Google Routes, clave de cada usuario)
+  se quitaron en la fase 15; el mapa, la ubicación y la distancia siguen vigentes.
 - Fecha: 2026-11-12
 
 ## Contexto
