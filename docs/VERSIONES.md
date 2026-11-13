@@ -136,6 +136,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-8`  | v0.10.0 | 2026-11-12 | `git show`       | Ficha al pasar por un pin y leyenda sobre el mapa      |
 | `fase-9`  | v0.11.0 | 2026-11-12 | `git show`       | Mapa de pistas de cada estación                        |
 | `fase-10` | v0.12.0 | 2026-11-12 | `git show`       | Relieve en el mapa de pistas y depuración              |
+| `fase-11` | v0.13.0 | 2026-11-13 | `git show`       | Montaña 3D de líneas animada en el mapa de pistas      |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).

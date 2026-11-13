@@ -1,6 +1,6 @@
 import type { CuratedStation } from '@snowview/data';
 import { useQuery } from '@tanstack/react-query';
-import { Minus, Plus, RotateCcw, X } from 'lucide-react';
+import { Box as BoxIcon, Map as MapIcon, Minus, Plus, RotateCcw, X } from 'lucide-react';
 import {
   useEffect,
   useMemo,
@@ -23,6 +23,7 @@ import {
   type PisteData,
   type SceneProjection,
 } from './pisteScene';
+import { RidgeView } from './RidgeView';
 import { contourSegments, elevationAt, shadeImage, type TerrainGrid } from './terrain';
 
 const pisteLoaders = import.meta.glob<PisteData>('./data/pistes/*.json', { import: 'default' });
@@ -61,6 +62,9 @@ const DIFFICULTY: Record<Difficulty, { label: string; color: string; halo?: stri
 };
 const DIFFICULTY_ORDER: Difficulty[] = ['green', 'blue', 'red', 'black', 'freeride', 'unknown'];
 const LIFT_COLOR = '#7de3ff';
+const DIFFICULTY_COLORS = Object.fromEntries(
+  DIFFICULTY_ORDER.map((d) => [d, DIFFICULTY[d].color]),
+) as Record<Difficulty, string>;
 /** Hasta dónde llega el relieve alrededor de las pistas. */
 const REACH_KM = 1.5;
 const CONTOUR_STEP_M = 100;
@@ -135,6 +139,9 @@ function PisteCanvas({
   terrain: TerrainGrid | undefined;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
+  // Con terreno, la vista inicial es la montaña en 3D; sin él solo existe el plano.
+  const [view3d, setView3d] = useState(true);
+  const show3d = view3d && terrain !== undefined;
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [hover, setHover] = useState<string | undefined>(undefined);
   const drag = useRef<{ x: number; y: number; box: Box } | undefined>(undefined);
@@ -251,106 +258,117 @@ function PisteCanvas({
 
   return (
     <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(ellipse_at_30%_20%,#1a2468_0%,#0b1138_70%)]">
-      <svg
-        ref={svgRef}
-        role="img"
-        tabIndex={0}
-        aria-label={`Mapa de pistas y remontes de ${station.name}. Flechas para mover, más y menos para acercar.`}
-        viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-        preserveAspectRatio="xMidYMid meet"
-        className="size-full cursor-grab touch-none select-none active:cursor-grabbing"
-        onWheel={onWheel}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onKeyDown={onKeyDown}
-      >
-        {layer && !hidden.has('relief') && (
-          <image
-            href={layer.imageUrl}
-            x={layer.x}
-            y={layer.y}
-            width={layer.width}
-            height={layer.height}
-            preserveAspectRatio="none"
-          />
-        )}
-        {layer && !hidden.has('contours') && (
-          <g fill="none" strokeLinecap="round">
-            <path
-              d={layer.minorPath}
-              stroke="rgba(190,215,255,0.22)"
-              strokeWidth={0.6}
-              vectorEffect="non-scaling-stroke"
+      {show3d ? (
+        <RidgeView
+          stationName={station.name}
+          latitude={station.latitude}
+          data={data}
+          terrain={terrain}
+          hidden={hidden}
+          colors={DIFFICULTY_COLORS}
+        />
+      ) : (
+        <svg
+          ref={svgRef}
+          role="img"
+          tabIndex={0}
+          aria-label={`Mapa de pistas y remontes de ${station.name}. Flechas para mover, más y menos para acercar.`}
+          viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
+          preserveAspectRatio="xMidYMid meet"
+          className="size-full cursor-grab touch-none select-none active:cursor-grabbing"
+          onWheel={onWheel}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onKeyDown={onKeyDown}
+        >
+          {layer && !hidden.has('relief') && (
+            <image
+              href={layer.imageUrl}
+              x={layer.x}
+              y={layer.y}
+              width={layer.width}
+              height={layer.height}
+              preserveAspectRatio="none"
             />
-            <path
-              d={layer.majorPath}
-              stroke="rgba(190,215,255,0.5)"
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-            />
-          </g>
-        )}
-        <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-          {DIFFICULTY_ORDER.filter((d) => !hidden.has(d)).map((d) => {
-            const style = DIFFICULTY[d];
-            const items = scene.pistes.filter((p) => p.d === d);
-            return (
-              <g key={d}>
-                {style.halo &&
-                  items.map((p) => (
+          )}
+          {layer && !hidden.has('contours') && (
+            <g fill="none" strokeLinecap="round">
+              <path
+                d={layer.minorPath}
+                stroke="rgba(190,215,255,0.22)"
+                strokeWidth={0.6}
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d={layer.majorPath}
+                stroke="rgba(190,215,255,0.5)"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+              />
+            </g>
+          )}
+          <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {DIFFICULTY_ORDER.filter((d) => !hidden.has(d)).map((d) => {
+              const style = DIFFICULTY[d];
+              const items = scene.pistes.filter((p) => p.d === d);
+              return (
+                <g key={d}>
+                  {style.halo &&
+                    items.map((p) => (
+                      <path
+                        key={`${p.id}h`}
+                        d={p.path}
+                        stroke={style.halo}
+                        strokeWidth={5}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    ))}
+                  {items.map((p) => (
                     <path
-                      key={`${p.id}h`}
+                      key={p.id}
                       d={p.path}
-                      stroke={style.halo}
-                      strokeWidth={5}
+                      stroke={style.color}
+                      strokeWidth={hover === p.id ? 4 : 2.5}
                       vectorEffect="non-scaling-stroke"
+                      onPointerEnter={() => setHover(p.id)}
+                      onPointerLeave={() => setHover(undefined)}
                     />
                   ))}
-                {items.map((p) => (
-                  <path
-                    key={p.id}
-                    d={p.path}
-                    stroke={style.color}
-                    strokeWidth={hover === p.id ? 4 : 2.5}
-                    vectorEffect="non-scaling-stroke"
-                    onPointerEnter={() => setHover(p.id)}
-                    onPointerLeave={() => setHover(undefined)}
-                  />
-                ))}
-              </g>
-            );
-          })}
-          {!hidden.has('lifts') &&
-            scene.lifts.map((l) => (
-              <path
-                key={l.id}
-                d={l.path}
-                stroke={LIFT_COLOR}
-                strokeWidth={hover === l.id ? 3 : 1.6}
-                strokeDasharray="6 4"
-                strokeLinecap="butt"
-                vectorEffect="non-scaling-stroke"
-                onPointerEnter={() => setHover(l.id)}
-                onPointerLeave={() => setHover(undefined)}
-              />
-            ))}
-        </g>
-        <path
-          d="M0 0h0"
-          stroke="#ff5d73"
-          strokeWidth={12}
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-        />
-        <path
-          d="M0 0h0"
-          stroke="#fff"
-          strokeWidth={4}
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-        />
-      </svg>
+                </g>
+              );
+            })}
+            {!hidden.has('lifts') &&
+              scene.lifts.map((l) => (
+                <path
+                  key={l.id}
+                  d={l.path}
+                  stroke={LIFT_COLOR}
+                  strokeWidth={hover === l.id ? 3 : 1.6}
+                  strokeDasharray="6 4"
+                  strokeLinecap="butt"
+                  vectorEffect="non-scaling-stroke"
+                  onPointerEnter={() => setHover(l.id)}
+                  onPointerLeave={() => setHover(undefined)}
+                />
+              ))}
+          </g>
+          <path
+            d="M0 0h0"
+            stroke="#ff5d73"
+            strokeWidth={12}
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path
+            d="M0 0h0"
+            stroke="#fff"
+            strokeWidth={4}
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      )}
 
       <div className="absolute top-3 left-3 flex max-w-[calc(100%-24px)] flex-col gap-2 rounded-2xl border border-white/10 bg-[#0d1340]/90 p-3 text-[11px] backdrop-blur-md">
         <p className="text-xs font-semibold">Leyenda</p>
@@ -382,7 +400,7 @@ function PisteCanvas({
               <span className="w-5 border-t-2 border-dashed" style={{ borderColor: LIFT_COLOR }} />
             }
           />
-          {layer && (
+          {layer && !show3d && (
             <>
               <LegendToggle
                 hidden={hidden.has('relief')}
@@ -405,12 +423,29 @@ function PisteCanvas({
       </div>
 
       <div className="absolute right-3 bottom-3 flex flex-col gap-1.5">
-        {(
-          [
-            { label: 'Acercar', icon: Plus, run: () => zoomAt(0.7) },
-            { label: 'Alejar', icon: Minus, run: () => zoomAt(1.4) },
-            { label: 'Ver toda la estación', icon: RotateCcw, run: () => setBox(undefined) },
-          ] as const
+        {terrain && (
+          <button
+            type="button"
+            onClick={() => setView3d((v) => !v)}
+            aria-pressed={show3d}
+            aria-label={show3d ? 'Cambiar al plano 2D' : 'Cambiar a la montaña en 3D'}
+            title={show3d ? 'Plano 2D' : 'Montaña 3D'}
+            className="grid size-8 place-items-center rounded-xl border border-white/10 bg-[#0d1340]/90 backdrop-blur-md transition-colors hover:bg-[#161e5a]"
+          >
+            {show3d ? (
+              <MapIcon className="size-4" aria-hidden="true" />
+            ) : (
+              <BoxIcon className="size-4" aria-hidden="true" />
+            )}
+          </button>
+        )}
+        {(show3d
+          ? []
+          : ([
+              { label: 'Acercar', icon: Plus, run: () => zoomAt(0.7) },
+              { label: 'Alejar', icon: Minus, run: () => zoomAt(1.4) },
+              { label: 'Ver toda la estación', icon: RotateCcw, run: () => setBox(undefined) },
+            ] as const)
         ).map(({ label, icon: Icon, run }) => (
           <button
             key={label}

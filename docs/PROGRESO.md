@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 10 (relieve en el mapa de pistas y depuración); app 0.12.0.
+- **Fase actual:** ninguna en curso. Hecha la 11 (montaña 3D de líneas animada en el mapa de pistas); app 0.13.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,11 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 11 — tareas
+
+- [x] Vista 3D de crestas de neón con pistas encima, animada y con botón 2D/3D (ADR 0014)
+- [x] Instalador 0.13.0, fusión en `main`, etiquetas `fase-11` y `v0.13.0`, push y claude.ai
 
 ## Fase 10 — tareas
 
