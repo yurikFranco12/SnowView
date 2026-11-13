@@ -6,6 +6,8 @@ import { applyRefreshInterval, queryClient } from './data/forecast';
 import { useRuleMonitor } from './data/rules';
 import { Sidebar } from './layout/Sidebar';
 import { storage } from '../platform/storage';
+import { CommandPalette, useGlobalShortcuts } from './components/CommandPalette';
+import { StationSheet } from './components/StationSheet';
 import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
 import { HomeScreen } from './screens/HomeScreen';
@@ -59,6 +61,7 @@ function RuleMonitor() {
 
 export function App() {
   const view = useAppStore((s) => s.view);
+  useGlobalShortcuts();
   const loadFavorites = useFavorites((s) => s.load);
   const loadRules = useRules((s) => s.load);
   const loadSettings = useSettings((s) => s.load);
@@ -119,6 +122,8 @@ export function App() {
               </AnimatePresence>
             </main>
           </div>
+          <StationSheet />
+          <CommandPalette />
         </div>
       </MotionConfig>
     </QueryClientProvider>

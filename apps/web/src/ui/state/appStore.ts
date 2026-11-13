@@ -19,6 +19,13 @@ interface AppState {
   /** Estación elegida en la pantalla de webcams (undefined = la principal). */
   webcamStationId: string | undefined;
   setWebcamStation: (id: string | undefined) => void;
+  /** Estación cuya ficha está abierta (undefined = ninguna). */
+  detailStationId: string | undefined;
+  openStation: (id: string) => void;
+  closeStation: () => void;
+  /** Buscador rápido (Ctrl+K). */
+  paletteOpen: boolean;
+  setPaletteOpen: (open: boolean) => void;
   setView: (view: View) => void;
   setPeriod: (period: Period) => void;
 }
@@ -29,6 +36,11 @@ export const useAppStore = create<AppState>((set) => ({
   period: 7,
   webcamStationId: undefined,
   setWebcamStation: (webcamStationId) => set({ webcamStationId }),
-  setView: (view) => set({ view }),
+  detailStationId: undefined,
+  openStation: (detailStationId) => set({ detailStationId, paletteOpen: false }),
+  closeStation: () => set({ detailStationId: undefined }),
+  paletteOpen: false,
+  setPaletteOpen: (paletteOpen) => set({ paletteOpen }),
+  setView: (view) => set({ view, detailStationId: undefined, paletteOpen: false }),
   setPeriod: (period) => set({ period }),
 }));

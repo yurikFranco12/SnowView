@@ -34,6 +34,8 @@ const TARGET_LINES = 120;
 const CROSS_STEP = 6;
 /** Radianes por milisegundo del giro automático (una vuelta cada ~55 s). */
 const AUTO_SPEED = 0.000115;
+/** Zoom inicial: el encuadre se calcula para el peor ángulo, así que de frente sobra margen. */
+const DEFAULT_ZOOM = 1.3;
 const PITCH_MIN = 0.2;
 const PITCH_MAX = 1.0;
 
@@ -131,7 +133,7 @@ export function RidgeView({
   const input = useRef({
     yaw: 0.35,
     pitch: 0.5,
-    zoom: 1,
+    zoom: DEFAULT_ZOOM,
     dragging: false,
     lastX: 0,
     lastY: 0,
@@ -447,7 +449,7 @@ export function RidgeView({
     redraw();
   };
   const reset = () => {
-    Object.assign(input.current, { yaw: 0.35, pitch: 0.5, zoom: 1 });
+    Object.assign(input.current, { yaw: 0.35, pitch: 0.5, zoom: DEFAULT_ZOOM });
     redraw();
   };
 

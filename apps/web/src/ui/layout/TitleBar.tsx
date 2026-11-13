@@ -1,4 +1,5 @@
-import { Minus, Snowflake, Square, X } from 'lucide-react';
+import { Minus, Search, Snowflake, Square, X } from 'lucide-react';
+import { useAppStore } from '../state/appStore';
 import { windowControls } from '../../platform/window';
 
 /**
@@ -6,6 +7,7 @@ import { windowControls } from '../../platform/window';
  * arrastrar la ventana desde la barra; doble clic la maximiza.
  */
 export function TitleBar() {
+  const setPaletteOpen = useAppStore((s) => s.setPaletteOpen);
   const buttonClass =
     'grid h-11 w-12 place-items-center text-text/80 transition-colors hover:bg-white/10 hover:text-text';
 
@@ -22,7 +24,18 @@ export function TitleBar() {
         SnowView
       </div>
 
-      {windowControls.available && (
+      <button
+        type="button"
+        onClick={() => setPaletteOpen(true)}
+        aria-label="Buscar estación o pantalla (Ctrl+K)"
+        className="absolute left-1/2 flex h-7 w-[min(340px,40vw)] -translate-x-1/2 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.05] px-2.5 text-xs text-muted transition-colors hover:bg-white/[0.1] hover:text-text"
+      >
+        <Search className="size-3.5" aria-hidden="true" />
+        <span className="flex-1 text-left">Buscar estación o pantalla</span>
+        <kbd className="rounded border border-white/15 px-1 text-[10px]">Ctrl K</kbd>
+      </button>
+
+      {windowControls.available ? (
         <div className="flex">
           <button
             type="button"
@@ -49,6 +62,8 @@ export function TitleBar() {
             <X className="size-4" aria-hidden="true" strokeWidth={1.5} />
           </button>
         </div>
+      ) : (
+        <span />
       )}
     </header>
   );
