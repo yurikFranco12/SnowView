@@ -86,8 +86,9 @@ export interface OpenMeteoHistoryOptions {
 
 export function createOpenMeteoHistory(options: OpenMeteoHistoryOptions = {}): HistoryProvider {
   const doFetch = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
-  // Una temporada es una sola llamada: 10 por minuto sobran para recorrer varias temporadas.
-  const limiter = options.limiter ?? new RateLimiter(10, 60_000);
+  // La app pide una sola llamada por estación (todas las temporadas juntas); 30 por minuto, muy por
+  // debajo de los 600 de Open-Meteo, dejan cambiar de estación sin toparse con el límite propio.
+  const limiter = options.limiter ?? new RateLimiter(30, 60_000);
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
   return {

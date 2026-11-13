@@ -7,6 +7,14 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.15.1] - 2026-11-13 · fase 14
+
+### Corregido
+
+- El Historial dejaba cargando todas las estaciones menos la primera: cinco llamadas por estación
+  agotaban el tope propio de 10 por minuto. Ahora es una sola consulta por estación (todas las
+  temporadas) y el tope sube a 30 por minuto.
+
 ## [0.15.0] - 2026-11-13 · fase 13
 
 ### Cambiado
