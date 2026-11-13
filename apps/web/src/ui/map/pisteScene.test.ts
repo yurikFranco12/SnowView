@@ -4,6 +4,7 @@ import {
   homeBox,
   makeProjection,
   percentile,
+  pisteLengthKm,
   toPath,
   toXY,
   zoomBox,
@@ -74,5 +75,28 @@ describe('fitBox y zoomBox', () => {
     const home = { x: 0, y: 0, w: 100, h: 50 };
     expect(zoomBox(home, home, 100).w).toBe(300);
     expect(zoomBox(home, home, 0.0001).w).toBe(2.5);
+  });
+});
+
+describe('pisteLengthKm', () => {
+  const p = makeProjection(station);
+  it('1° de latitud son 111,32 km y el fuera de pista no cuenta', () => {
+    const pistes: RawPiste[] = [
+      {
+        d: 'red',
+        c: [
+          [1, 42],
+          [1, 41],
+        ],
+      },
+      {
+        d: 'freeride',
+        c: [
+          [1, 42],
+          [1, 41],
+        ],
+      },
+    ];
+    expect(pisteLengthKm(p, pistes)).toBeCloseTo(111.32, 4);
   });
 });

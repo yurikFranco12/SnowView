@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 11 (montaña 3D de líneas animada en el mapa de pistas); app 0.13.0.
+- **Fase actual:** ninguna en curso. Hecha la 12 (giro de 360° y malla uniforme en la montaña 3D); app 0.14.0.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,13 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 12 — tareas
+
+- [x] Giro de 360° con orden de dibujo por ángulo, inclinación, giro automático y brújula (ADR 0015)
+- [x] Malla suavizada y más fina, con aristas transversales tenues
+- [x] Pastilla con cima, desnivel y km esquiables
+- [x] Instalador 0.14.0, fusión en `main`, etiquetas `fase-12` y `v0.14.0`, push y claude.ai
 
 ## Fase 11 — tareas
 

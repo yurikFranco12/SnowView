@@ -4,6 +4,8 @@ import {
   distanceToLines,
   elevationAt,
   hillshade,
+  resampleGrid,
+  smoothGrid,
   shadeImage,
   type TerrainGrid,
 } from './terrain';
@@ -79,5 +81,31 @@ describe('contourSegments', () => {
     expect(
       c200?.segments.every(([x1, , x2]) => Math.abs(x1 - 2) < 1e-9 && Math.abs(x2 - 2) < 1e-9),
     ).toBe(true);
+  });
+});
+
+describe('suavizado y remuestreo', () => {
+  const g: TerrainGrid = {
+    lon0: 0,
+    lat0: 1,
+    dLon: 0.01,
+    dLat: 0.01,
+    nx: 3,
+    ny: 3,
+    z: [0, 0, 0, 0, 90, 0, 0, 0, 0],
+  };
+  it('el suavizado baja los picos y conserva el tamaño', () => {
+    const s = smoothGrid(g, 1);
+    expect(s.z.length).toBe(9);
+    expect(s.z[4]).toBeLessThan(90);
+    expect(s.z[4]).toBeGreaterThan(0);
+  });
+  it('el remuestreo duplica la resolución y respeta los puntos originales', () => {
+    const r = resampleGrid(g, 2);
+    expect(r.nx).toBe(5);
+    expect(r.dLon).toBeCloseTo(0.005, 9);
+    expect(r.z[2 * 5 + 2]).toBe(90);
+    expect(r.z[2 * 5 + 3]).toBeCloseTo(45, 6);
+    expect(resampleGrid(g, 1)).toBe(g);
   });
 });

@@ -1,6 +1,15 @@
 import type { CuratedStation } from '@snowview/data';
 import { useQuery } from '@tanstack/react-query';
-import { Box as BoxIcon, Map as MapIcon, Minus, Plus, RotateCcw, X } from 'lucide-react';
+import {
+  Box as BoxIcon,
+  Map as MapIcon,
+  Minus,
+  Mountain,
+  Plus,
+  RotateCcw,
+  Route,
+  X,
+} from 'lucide-react';
 import {
   useEffect,
   useMemo,
@@ -15,6 +24,7 @@ import {
   fitBox,
   homeBox,
   makeProjection,
+  pisteLengthKm,
   toPath,
   toXY,
   zoomBox,
@@ -224,6 +234,11 @@ function PisteCanvas({
     e.preventDefault();
   };
 
+  const skiableKm = useMemo(
+    () => Math.round(pisteLengthKm(scene.proj, data.pistes)),
+    [scene.proj, data.pistes],
+  );
+
   const counts = useMemo(() => {
     const c = new Map<Difficulty, number>();
     for (const p of scene.pistes) c.set(p.d, (c.get(p.d) ?? 0) + 1);
@@ -421,6 +436,22 @@ function PisteCanvas({
         </ul>
         <p className="text-[10px] leading-snug text-muted">Pulsa un tipo para ocultarlo.</p>
       </div>
+
+      <p
+        className="pointer-events-none absolute top-3 right-3 flex items-center gap-3 rounded-full border border-white/10 bg-[#0d1340]/70 px-3 py-1 text-[11px] text-muted backdrop-blur-md"
+        aria-label={`Cima a ${station.topElevationM} metros, desnivel de ${station.topElevationM - station.baseElevationM} metros y unos ${skiableKm} kilómetros de pista`}
+      >
+        <span className="flex items-center gap-1" aria-hidden="true">
+          <Mountain className="size-3" />
+          {station.topElevationM.toLocaleString('es-ES')} m
+          <span className="opacity-60">
+            (↕ {(station.topElevationM - station.baseElevationM).toLocaleString('es-ES')} m)
+          </span>
+        </span>
+        <span className="flex items-center gap-1" aria-hidden="true">
+          <Route className="size-3" />≈ {skiableKm.toLocaleString('es-ES')} km esquiables
+        </span>
+      </p>
 
       <div className="absolute right-3 bottom-3 flex flex-col gap-1.5">
         {terrain && (
