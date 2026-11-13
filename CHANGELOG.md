@@ -7,6 +7,18 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.14.0] - 2026-11-13 · fase 12
+
+### Añadido
+
+- La montaña 3D gira 360°: arrastrar gira e inclina, giro automático lento con botón de pausa y
+  brújula (ADR 0015).
+- Pastilla discreta con la cota de la cima, el desnivel y los km esquiables aproximados.
+
+### Cambiado
+
+- Malla más fina y uniforme: terreno suavizado, unas 120 líneas y aristas transversales tenues.
+
 ## [0.13.0] - 2026-11-13 · fase 11
 
 ### Añadido

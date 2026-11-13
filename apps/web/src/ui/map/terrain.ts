@@ -232,3 +232,46 @@ export function contourSegments(
   }
   return result;
 }
+
+/** Suaviza las altitudes (filtro [1 2 1] en cada eje, `passes` veces) para quitar dientes de sierra. */
+export function smoothGrid(g: TerrainGrid, passes: number): TerrainGrid {
+  const z = g.z.slice();
+  for (let p = 0; p < passes; p++) {
+    const tmp = z.slice();
+    const read = (arr: number[], i: number, j: number) =>
+      arr[Math.min(g.ny - 1, Math.max(0, j)) * g.nx + Math.min(g.nx - 1, Math.max(0, i))] ?? 0;
+    for (let j = 0; j < g.ny; j++) {
+      for (let i = 0; i < g.nx; i++) {
+        tmp[j * g.nx + i] = (read(z, i - 1, j) + 2 * read(z, i, j) + read(z, i + 1, j)) / 4;
+      }
+    }
+    for (let j = 0; j < g.ny; j++) {
+      for (let i = 0; i < g.nx; i++) {
+        z[j * g.nx + i] = (read(tmp, i, j - 1) + 2 * read(tmp, i, j) + read(tmp, i, j + 1)) / 4;
+      }
+    }
+  }
+  return { ...g, z };
+}
+
+/** Malla `factor` veces más fina (interpolación bilineal), con los mismos bordes. */
+export function resampleGrid(g: TerrainGrid, factor: number): TerrainGrid {
+  if (factor <= 1) return g;
+  const nx = (g.nx - 1) * factor + 1;
+  const ny = (g.ny - 1) * factor + 1;
+  const z: number[] = new Array<number>(nx * ny);
+  for (let j = 0; j < ny; j++) {
+    for (let i = 0; i < nx; i++) {
+      const fi = i / factor;
+      const fj = j / factor;
+      const i0 = Math.min(g.nx - 2, Math.floor(fi));
+      const j0 = Math.min(g.ny - 2, Math.floor(fj));
+      const tx = fi - i0;
+      const ty = fj - j0;
+      const top = at(g, i0, j0) * (1 - tx) + at(g, i0 + 1, j0) * tx;
+      const bottom = at(g, i0, j0 + 1) * (1 - tx) + at(g, i0 + 1, j0 + 1) * tx;
+      z[j * nx + i] = top * (1 - ty) + bottom * ty;
+    }
+  }
+  return { ...g, nx, ny, dLon: g.dLon / factor, dLat: g.dLat / factor, z };
+}

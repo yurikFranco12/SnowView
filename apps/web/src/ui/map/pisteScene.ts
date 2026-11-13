@@ -114,3 +114,22 @@ export function zoomBox(view: Box, home: Box, factor: number, fx = 0.5, fy = 0.5
     h,
   };
 }
+
+/**
+ * Kilómetros de pista esquiable: suma de la longitud de las pistas de descenso. Se excluye el fuera
+ * de pista (no está preparado). Es una aproximación: sale de OpenStreetMap y puede contar dos veces
+ * tramos que comparten trazado.
+ */
+export function pisteLengthKm(p: SceneProjection, pistes: readonly RawPiste[]): number {
+  let units = 0;
+  for (const piste of pistes) {
+    if (piste.d === 'freeride') continue;
+    let prev: [number, number] | undefined;
+    for (const [lon, lat] of piste.c) {
+      const xy = toXY(p, lon, lat);
+      if (prev) units += Math.hypot(xy[0] - prev[0], xy[1] - prev[1]);
+      prev = xy;
+    }
+  }
+  return (units * 111.32) / 1000; // 1000 unidades = 1° de latitud = 111,32 km
+}

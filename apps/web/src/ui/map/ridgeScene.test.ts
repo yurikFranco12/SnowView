@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildRidgeMesh,
+  drawOrder,
   fitCamera,
   project,
+  projectMesh,
   visibleRuns,
   worldPoint,
   type Camera,
@@ -22,7 +24,7 @@ const grid: TerrainGrid = {
     1100, 1200, 1100, 1000, 1000, 1000, 1000, 1000, 1000,
   ],
 };
-const cam: Camera = { yaw: 0, pitch: 0.6, scale: 1, cx: 0, cy: 0, persp: 0 };
+const cam: Camera = { yaw: 0, pitch: 0.6, scale: 1, cx: 0, cy: 0, persp: 0, ox: 0, oy: 0, oz: 0 };
 
 describe('malla de relieve', () => {
   const mesh = buildRidgeMesh(grid, 42, [[[1.002, 41.998]]], 10, 2);
@@ -59,15 +61,60 @@ describe('cámara', () => {
       Math.abs(project(p, 100, -500, 0)[0]),
     );
   });
-  it('el ajuste mete la malla en el lienzo', () => {
+  it('gira alrededor del punto de pivote', () => {
+    const c = { ...cam, ox: 10, oy: 20, oz: 5, yaw: 1.3 };
+    const [x, y] = project(c, 10, 20, 5);
+    expect(x).toBeCloseTo(0, 6);
+    expect(y).toBeCloseTo(0, 6);
+  });
+  it('en media vuelta lo que estaba lejos queda cerca', () => {
+    const a = project({ ...cam, yaw: 0 }, 0, 100, 0)[2];
+    const b = project({ ...cam, yaw: Math.PI }, 0, 100, 0)[2];
+    expect(a).toBeCloseTo(-b, 6);
+  });
+  it('el ajuste mete la malla en el lienzo desde cualquier giro', () => {
     const mesh = buildRidgeMesh(grid, 42, [[[1.002, 41.998]]], 10, 2);
     const fit = fitCamera(cam, mesh, 800, 400);
-    for (let k = 0; k < mesh.x.length; k++) {
-      const [sx, sy] = project(fit, mesh.x[k] ?? 0, mesh.y[k] ?? 0, mesh.z[k] ?? 0);
-      expect(sx).toBeGreaterThanOrEqual(0);
-      expect(sx).toBeLessThanOrEqual(800);
-      expect(sy).toBeGreaterThanOrEqual(0);
-      expect(sy).toBeLessThanOrEqual(400);
+    const xs = new Float32Array(mesh.x.length);
+    const ys = new Float32Array(mesh.x.length);
+    for (let yaw = 0; yaw < Math.PI * 2; yaw += 0.5) {
+      for (const pitch of [0.3, 0.9]) {
+        projectMesh({ ...fit, yaw, pitch }, mesh, xs, ys);
+        for (let k = 0; k < xs.length; k++) {
+          expect(xs[k]).toBeGreaterThanOrEqual(0);
+          expect(xs[k]).toBeLessThanOrEqual(800);
+          expect(ys[k]).toBeGreaterThanOrEqual(0);
+          expect(ys[k]).toBeLessThanOrEqual(400);
+        }
+      }
+    }
+  });
+});
+
+describe('orden de dibujo', () => {
+  it('mirando al norte se dibujan las filas de norte a sur', () => {
+    const o = drawOrder(0, 4, 3);
+    expect(o.axis).toBe('row');
+    expect(o.lines).toEqual([0, 1, 2]);
+  });
+  it('mirando al sur, al revés', () => {
+    expect(drawOrder(Math.PI, 4, 3).lines).toEqual([2, 1, 0]);
+  });
+  it('de lado se dibujan columnas', () => {
+    expect(drawOrder(Math.PI / 2, 4, 3)).toEqual({ axis: 'col', lines: [3, 2, 1, 0] });
+    expect(drawOrder(-Math.PI / 2, 4, 3)).toEqual({ axis: 'col', lines: [0, 1, 2, 3] });
+  });
+  it('siempre va de lejos a cerca', () => {
+    const mesh = buildRidgeMesh(grid, 42, [[[1.002, 41.998]]], 10, 2);
+    for (let yaw = -7; yaw < 7; yaw += 0.37) {
+      const { axis, lines } = drawOrder(yaw, mesh.nx, mesh.ny);
+      const depths = lines.map((l) => {
+        const k = axis === 'row' ? l * mesh.nx + 2 : 2 * mesh.nx + l;
+        return project({ ...cam, yaw }, mesh.x[k] ?? 0, mesh.y[k] ?? 0, 0)[2];
+      });
+      for (let n = 1; n < depths.length; n++) {
+        expect(depths[n] ?? 0).toBeLessThanOrEqual(depths[n - 1] ?? 0);
+      }
     }
   });
 });
@@ -80,5 +127,6 @@ describe('tramos visibles', () => {
     expect(visibleRuns(mesh, 0)).toEqual([[0, 2]]);
     mesh.visible.fill(1);
     expect(visibleRuns(mesh, 0)).toEqual([[0, 4]]);
+    expect(visibleRuns(mesh, 0, 'col')).toEqual([[0, 4]]);
   });
 });
