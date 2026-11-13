@@ -5,6 +5,7 @@ import { SnowCanvas } from './background/SnowCanvas';
 import { applyRefreshInterval, queryClient } from './data/forecast';
 import { useRuleMonitor } from './data/rules';
 import { Sidebar } from './layout/Sidebar';
+import { storage } from '../platform/storage';
 import { TitleBar } from './layout/TitleBar';
 import { screenVariants } from './motion/reveal';
 import { HomeScreen } from './screens/HomeScreen';
@@ -12,7 +13,6 @@ import { useAppStore, type View } from './state/appStore';
 import { useFavorites } from './state/favoritesStore';
 import { useRules } from './state/rulesStore';
 import { useManualLocation } from './state/manualLocationStore';
-import { useRoutesKey } from './state/routesKeyStore';
 import { snowIntensity, useSettings } from './state/settingsStore';
 
 // Cada pantalla se descarga al abrirla por primera vez: el arranque carga solo el inicio.
@@ -62,7 +62,6 @@ export function App() {
   const loadFavorites = useFavorites((s) => s.load);
   const loadRules = useRules((s) => s.load);
   const loadSettings = useSettings((s) => s.load);
-  const loadRoutesKey = useRoutesKey((s) => s.load);
   const loadManualLocation = useManualLocation((s) => s.load);
   const refreshMinutes = useSettings((s) => s.refreshMinutes);
   const snowLevel = useSettings((s) => s.snowLevel);
@@ -71,9 +70,10 @@ export function App() {
     void loadFavorites();
     void loadRules();
     void loadSettings();
-    void loadRoutesKey();
+    // La clave de Google de las rutas (quitadas en la fase 15) ya no se usa: se borra del equipo.
+    void storage.set('googleMapsKey', null);
     void loadManualLocation();
-  }, [loadFavorites, loadRules, loadSettings, loadRoutesKey, loadManualLocation]);
+  }, [loadFavorites, loadRules, loadSettings, loadManualLocation]);
 
   useEffect(() => {
     applyRefreshInterval(refreshMinutes);

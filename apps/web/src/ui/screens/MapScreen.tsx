@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { LocationAlert } from '../map/LocationAlert';
 import { LocationPanel } from '../map/LocationPanel';
 import { MapLegend } from '../map/MapLegend';
-import { useStationRoutes } from '../data/routes';
 import { MapView, type HoverInfo } from '../map/MapView';
 import { PinIcon } from '../map/PinIcon';
 import { PisteMapDialog } from '../map/PisteMap';
@@ -30,7 +29,6 @@ export function MapScreen() {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setManual = useManualLocation((s) => s.set);
   const selected = STATIONS.find((s) => s.id === selectedId);
-  const { drive, bus } = useStationRoutes(selected, location.position);
 
   const target: View = useMemo(() => {
     if (!selected) return SPAIN_VIEW;
@@ -72,14 +70,6 @@ export function MapScreen() {
     setFocusToken((t) => t + 1);
   };
 
-  const paths = useMemo(
-    () => ({
-      ...(drive.route?.path.length ? { drive: drive.route.path } : {}),
-      ...(bus.route?.path.length ? { bus: bus.route.path } : {}),
-    }),
-    [drive.route, bus.route],
-  );
-
   return (
     <div className="flex h-full flex-col gap-4 px-8 py-[26px]">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-4">
@@ -120,7 +110,6 @@ export function MapScreen() {
             }}
             focusToken={focusToken}
             onHover={onHover}
-            routes={paths}
           />
           {hover && hoveredStation && !pickMode && (
             <StationHoverCard
@@ -226,7 +215,7 @@ export function MapScreen() {
             />
           ) : (
             <p className="text-xs text-muted">
-              Pulsa un pin o una estación de la lista para ver su zona, la distancia y las rutas.
+              Pulsa un pin o una estación de la lista para ver su zona y la distancia.
             </p>
           )}
         </motion.aside>

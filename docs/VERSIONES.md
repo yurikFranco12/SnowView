@@ -140,6 +140,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-12` | v0.14.0 | 2026-11-13 | `git show`       | Giro de 360° y malla uniforme en la montaña 3D         |
 | `fase-13` | v0.15.0 | 2026-11-13 | `git show`       | Rendimiento de los mapas                               |
 | `fase-14` | v0.15.1 | 2026-11-13 | `git show`       | Arreglo del historial de nevadas                       |
+| `fase-15` | v0.16.0 | 2026-11-13 | `git show`       | Se quitan las rutas en coche y autobús                 |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).

@@ -30,7 +30,7 @@ import {
 const FOCUS_COUNTRIES = new Set(['Spain', 'France', 'Andorra']);
 
 // geoPath trabaja con la proyección ya aplicada: se proyectan las coordenadas a mano para usar el
-// mismo lienzo base que los pines y las rutas.
+// mismo lienzo base que los pines.
 const projected = geoPath({
   stream: (sink) => ({
     point: (lon: number, lat: number) => {
@@ -66,15 +66,6 @@ const PATHS = {
 
 const PIN_PATH = 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z';
 const PIN_RED = '#ff4d5e';
-
-function routePath(points: readonly LatLng[]): string {
-  return points
-    .map((p, i) => {
-      const [x, y] = project(p.longitude, p.latitude);
-      return `${i === 0 ? 'M' : 'L'}${x.toFixed(4)} ${y.toFixed(4)}`;
-    })
-    .join('');
-}
 
 /** Pin de una estación, siempre con el mismo dibujo y tamaño en pantalla. */
 function StationPin({ label, selected }: { label: string; selected: boolean }) {
@@ -128,7 +119,6 @@ interface MapViewProps {
   focusToken?: number;
   /** Se llama al pasar por un pin (con su posición) y al salir (sin argumento). */
   onHover?: (info: HoverInfo | undefined, immediate?: boolean) => void;
-  routes: { drive?: readonly LatLng[]; bus?: readonly LatLng[] } | undefined;
 }
 
 export function MapView({
@@ -142,7 +132,6 @@ export function MapView({
   onPick,
   focusToken = 0,
   onHover,
-  routes,
 }: MapViewProps) {
   const reduced = usePrefersReducedMotion();
   const lnZoom = useMotionValue(Math.log(WORLD_VIEW.zoom));
@@ -410,30 +399,6 @@ export function MapView({
             vectorEffect="non-scaling-stroke"
             strokeLinejoin="round"
           />
-
-          {routes?.bus && routes.bus.length > 1 && (
-            <path
-              d={routePath(routes.bus)}
-              fill="none"
-              stroke="#A5B4FF"
-              strokeWidth="3"
-              strokeDasharray="7 6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          )}
-          {routes?.drive && routes.drive.length > 1 && (
-            <path
-              d={routePath(routes.drive)}
-              fill="none"
-              stroke="#7DE3FF"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          )}
 
           {visiblePlaces.map((p) => {
             const [x, y] = project(p.longitude, p.latitude);

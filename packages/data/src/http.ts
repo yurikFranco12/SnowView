@@ -80,7 +80,7 @@ export async function fetchJson(
   }
 
   if (!response.ok) {
-    // Open-Meteo da `reason`; Google da `error.message`.
+    // Open-Meteo da `reason`; otros servicios, `error.message`.
     const body = json as { reason?: unknown; error?: { message?: unknown } } | null;
     const reason = body?.reason ?? body?.error?.message;
     const unauthorized = response.status === 401 || response.status === 403;
