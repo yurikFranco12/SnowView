@@ -7,6 +7,14 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.13.0] - 2026-11-13 · fase 11
+
+### Añadido
+
+- El mapa de pistas se abre con la montaña en 3D, en líneas de neón: crestas apiladas con las
+  pistas y remontes encima, vaivén lento y barrido de luz. Arrastrar gira, la rueda acerca; botón
+  para volver al plano 2D (ADR 0014).
+
 ## [0.12.0] - 2026-11-12 · fase 10
 
 ### Añadido
