@@ -7,6 +7,19 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [1.0.1] - 2026-11-13 · fase 17
+
+### Cambiado
+
+- Icono de la app: el copo de nieve de la barra de título, en color hielo sobre el degradado de la
+  app (antes era el icono por defecto de Tauri). Se ve en la ventana, la barra de tareas, la
+  bandeja y los instaladores. Fuente en `src-tauri/icons/source/snowview-icon.svg`.
+
+### Añadido
+
+- `scripts/crear-acceso-directo.wsjs`: crea un acceso directo a la app en el escritorio.
+- `docs/COMPARTIR.md`: cómo pasar la app a otras personas.
+
 ## [1.0.0] - 2026-11-13 · fase 16
 
 ### Añadido

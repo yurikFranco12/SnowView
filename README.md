@@ -35,11 +35,11 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 
 Genera los instaladores con `pnpm build`: quedan en `src-tauri/target/release/bundle/` (`.msi` y
 `-setup.exe`). No llevan firma de código, así que Windows puede mostrar un aviso de SmartScreen la
-primera vez.
+primera vez. Cómo pasársela a otras personas: [docs/COMPARTIR.md](docs/COMPARTIR.md).
 
 ## Estado
 
-Versión **1.0.0**: la app está terminada. El detalle de cada fase está en `docs/fase-*/README.md`,
+Versión **1.0.1**: la app está terminada. El detalle de cada fase está en `docs/fase-*/README.md`,
 el avance en [docs/PROGRESO.md](docs/PROGRESO.md) y las decisiones técnicas en `docs/adr/`.
 
 ## Versiones

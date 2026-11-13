@@ -1,0 +1,24 @@
+// Crea en el escritorio un acceso directo a SnowView (la app ya compilada con "pnpm build").
+// Es JScript de Windows Script Host, sin dependencias. Se ejecuta desde la carpeta del proyecto:
+//
+//   cscript //nologo //E:JScript scripts\crear-acceso-directo.wsjs
+//
+// (Solo ASCII en este archivo: cscript lo lee con la pagina de codigos del sistema.)
+var shell = WScript.CreateObject('WScript.Shell');
+var fso = WScript.CreateObject('Scripting.FileSystemObject');
+var root = fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName));
+var exe = root + '\\src-tauri\\target\\release\\snowview.exe';
+
+if (!fso.FileExists(exe)) {
+  WScript.Echo('No existe ' + exe + '. Ejecuta antes: pnpm.cmd build');
+  WScript.Quit(1);
+}
+
+var path = shell.SpecialFolders('Desktop') + '\\SnowView.lnk';
+var link = shell.CreateShortcut(path);
+link.TargetPath = exe;
+link.WorkingDirectory = fso.GetParentFolderName(exe);
+link.IconLocation = exe + ',0';
+link.Description = 'SnowView - monitor de nieve para estaciones de esqui';
+link.Save();
+WScript.Echo('Acceso directo creado: ' + path);

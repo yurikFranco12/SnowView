@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 16 (ficha de estación, clasificación y buscador rápido); app 1.0.0, terminada.
+- **Fase actual:** ninguna en curso. Hecha la 17 (icono del copo, acceso directo y guía para compartir); app 1.0.1, terminada.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,13 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 17 — tareas
+
+- [x] Icono de la app con el copo de nieve (todos los tamaños con `pnpm tauri icon`)
+- [x] Acceso directo en el escritorio (`scripts/crear-acceso-directo.wsjs`)
+- [x] Guía para compartir la app (`docs/COMPARTIR.md`)
+- [x] Instalador 1.0.1, fusión en `main`, etiquetas `fase-17` y `v1.0.1`, push y claude.ai
 
 ## Fase 16 — tareas
 
