@@ -7,7 +7,7 @@ import {
   type SeasonSummary,
 } from '@snowview/core';
 import { ARCHIVE_DELAY_DAYS, createOpenMeteoHistory, getStation } from '@snowview/data';
-import { useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useNow } from '../hooks/useNow';
 
 /** Único proveedor de historial de la app. */
@@ -45,7 +45,11 @@ export interface SeasonResult {
   inProgress: boolean;
 }
 
-/** Resumen de las últimas temporadas de una estación (una consulta por temporada). */
+/**
+ * Resumen de las últimas temporadas de una estación. Una sola consulta por estación que cubre todas
+ * las temporadas (antes eran cinco): menos peticiones, no se agota el límite al cambiar de estación
+ * y todas las temporadas llegan a la vez.
+ */
 export function useSeasonHistory(stationId: string | undefined): SeasonResult[] {
   const now = useNow(60 * 60_000);
   const station = stationId ? getStation(stationId) : undefined;
@@ -54,34 +58,33 @@ export function useSeasonHistory(stationId: string | undefined): SeasonResult[] 
   const lastDate = lastArchiveDate(now, timeZone);
   const years = seasonsToShow(today);
 
-  const queries = useQueries({
-    queries: years.map((year) => {
-      const { start, end } = seasonRange(year);
-      const finished = end <= lastDate;
-      const to = finished ? end : lastDate;
-      return {
-        queryKey: ['history', stationId, year, finished ? 'closed' : to],
-        enabled: station !== undefined && to >= start,
-        // Una temporada cerrada no cambia: se guarda mientras la app esté abierta.
-        staleTime: finished ? Infinity : 6 * 60 * 60_000,
-        gcTime: 24 * 60 * 60_000,
-        refetchInterval: false as const,
-        queryFn: ({ signal }: { signal: AbortSignal }) => {
-          if (!station) throw new Error('Estación desconocida');
-          return historyProvider.getDailySnow(station, start, to, { signal });
-        },
-      };
-    }),
+  const oldest = years[years.length - 1] ?? latestSeason(today);
+  const newest = years[0] ?? oldest;
+  const start = seasonRange(oldest).start;
+  const newestEnd = seasonRange(newest).end;
+  const finished = newestEnd <= lastDate;
+  const to = finished ? newestEnd : lastDate;
+
+  const query = useQuery({
+    queryKey: ['history', stationId, oldest, newest, finished ? 'closed' : to],
+    enabled: station !== undefined && to >= start,
+    // Si la temporada más reciente ya terminó, nada cambia: se guarda mientras la app esté abierta.
+    staleTime: finished ? Infinity : 6 * 60 * 60_000,
+    gcTime: 24 * 60 * 60_000,
+    refetchInterval: false as const,
+    queryFn: ({ signal }: { signal: AbortSignal }) => {
+      if (!station) throw new Error('Estación desconocida');
+      return historyProvider.getDailySnow(station, start, to, { signal });
+    },
   });
 
-  return years.map((year, i) => {
-    const q = queries[i];
+  return years.map((year) => {
     const { end } = seasonRange(year);
     return {
       startYear: year,
-      summary: q?.data ? summarizeSeason(q.data, year, lastDate) : undefined,
-      loading: q?.isPending ?? true,
-      error: q?.error ?? null,
+      summary: query.data ? summarizeSeason(query.data, year, lastDate) : undefined,
+      loading: query.isPending && query.fetchStatus !== 'idle',
+      error: query.error ?? null,
       inProgress: end > lastDate,
     };
   });

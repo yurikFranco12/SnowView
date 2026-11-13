@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 13 (rendimiento de los mapas); app 0.15.0.
+- **Fase actual:** ninguna en curso. Hecha la 14 (arreglo del historial de nevadas); app 0.15.1.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,12 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 14 — tareas
+
+- [x] Historial: una consulta por estación para las cinco temporadas y tope propio de 30 por minuto
+      (actualización del ADR 0006)
+- [x] Instalador 0.15.1, fusión en `main`, etiquetas `fase-14` y `v0.15.1`, push y claude.ai
 
 ## Fase 13 — tareas
 

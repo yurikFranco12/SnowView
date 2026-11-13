@@ -28,3 +28,12 @@
 
 - El historial necesita conexión: no se guarda en disco (a diferencia de la previsión).
 - La CSP de Tauri añade `https://archive-api.open-meteo.com`.
+
+## Actualización (2026-11-13, fase 14)
+
+La decisión 2 («una consulta por temporada y estación») se cambia por **una sola consulta por
+estación que cubre las cinco temporadas**; el resumen de cada una se saca en cliente (`summarizeSeason`
+ya descarta los días de fuera). Motivo: con cinco llamadas por estación y un tope propio de 10 por
+minuto, al cambiar de estación dos veces seguidas el tope se agotaba y las demás se quedaban
+cargando durante el minuto de espera. Ahora son una llamada por estación y el tope propio sube a 30
+por minuto (el de Open-Meteo es 600).

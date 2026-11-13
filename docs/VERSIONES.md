@@ -139,6 +139,7 @@ se subió por error, se corrige con un commit nuevo.
 | `fase-11` | v0.13.0 | 2026-11-13 | `git show`       | Montaña 3D de líneas animada en el mapa de pistas      |
 | `fase-12` | v0.14.0 | 2026-11-13 | `git show`       | Giro de 360° y malla uniforme en la montaña 3D         |
 | `fase-13` | v0.15.0 | 2026-11-13 | `git show`       | Rendimiento de los mapas                               |
+| `fase-14` | v0.15.1 | 2026-11-13 | `git show`       | Arreglo del historial de nevadas                       |
 
 Las fases 3a, 3b y 4a no generaron instalador propio: sus cambios llegaron en el de la fase
 siguiente (v0.4.0 y v0.5.0).
