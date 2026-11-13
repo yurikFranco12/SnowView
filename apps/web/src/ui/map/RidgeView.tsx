@@ -12,8 +12,7 @@ import {
   buildRidgeMesh,
   drawOrder,
   fitCamera,
-  meshIndex,
-  project,
+  makeProjector,
   projectMesh,
   visibleRuns,
   worldPoint,
@@ -183,6 +182,13 @@ export function RidgeView({
     let fitted: Camera | undefined;
     let raf = 0;
     let last = performance.now();
+    // Resolución adaptativa: si el equipo no llega a ~50 fps, se baja la resolución del dibujo (solo
+    // baja, nunca sube, para que no oscile).
+    let quality = 1;
+    let ema = 0;
+    let sinceAdjust = 0;
+    const tmp: [number, number, number] = [0, 0, 0];
+    const tmp2: [number, number, number] = [0, 0, 0];
 
     const base: Camera = {
       yaw: 0,
@@ -196,13 +202,16 @@ export function RidgeView({
       oz: 0,
     };
 
+    const applySize = () => {
+      canvas.width = Math.max(1, Math.round(width * dpr * quality));
+      canvas.height = Math.max(1, Math.round(height * dpr * quality));
+    };
     const resize = () => {
       const r = canvas.getBoundingClientRect();
       dpr = Math.min(2, window.devicePixelRatio || 1);
       width = Math.max(1, Math.round(r.width));
       height = Math.max(1, Math.round(r.height));
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      applySize();
       fitted = fitCamera(base, mesh, width, height);
       draw(performance.now());
     };
@@ -220,93 +229,145 @@ export function RidgeView({
         scale: fitted.scale * st.zoom,
       };
       projectMesh(cam, mesh, sx, sy);
+      const proj = makeProjector(cam);
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const k = dpr * quality;
+      ctx.setTransform(k, 0, 0, k, 0, 0);
       ctx.fillStyle = BG;
       ctx.fillRect(0, 0, width, height);
 
       const hiddenNow = hiddenRef.current;
       const { axis, lines } = drawOrder(st.yaw, mesh.nx, mesh.ny);
-      const scanPhase = reduce ? -1 : (t / 9000) % 1; // barrido de luz de lejos a cerca
+      const stride = axis === 'row' ? 1 : mesh.nx;
+      const origin = (line: number) => (axis === 'row' ? line * mesh.nx : line);
+      // El barrido de luz solo corre con el giro automático: parada, la imagen es estática.
+      const scanPhase = reduce || !st.auto ? -1 : (t / 9000) % 1;
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
 
-      for (let n = 0; n < lines.length; n++) {
+      // Cinta de superficie entre dos líneas contiguas: tapa lo que queda detrás sin rellenar hasta
+      // el borde de la pantalla (poco sobredibujo).
+      const ribbon = (prevLine: number, line: number) => {
+        const o = origin(line);
+        const q = origin(prevLine);
+        ctx.beginPath();
+        let any = false;
+        for (const [from, to] of runs[axis][line] ?? []) {
+          let p = from;
+          while (p <= to) {
+            if (!mesh.visible[q + p * stride]) {
+              p++;
+              continue;
+            }
+            let end = p;
+            while (end + 1 <= to && mesh.visible[q + (end + 1) * stride]) end++;
+            if (end > p) {
+              ctx.moveTo(sx[o + p * stride] ?? 0, sy[o + p * stride] ?? 0);
+              for (let i = p + 1; i <= end; i++) {
+                ctx.lineTo(sx[o + i * stride] ?? 0, sy[o + i * stride] ?? 0);
+              }
+              for (let i = end; i >= p; i--) {
+                ctx.lineTo(sx[q + i * stride] ?? 0, sy[q + i * stride] ?? 0);
+              }
+              ctx.closePath();
+              any = true;
+            }
+            p = end + 1;
+          }
+        }
+        if (!any) return;
+        ctx.fillStyle = BG;
+        ctx.fill();
+        ctx.strokeStyle = BG; // tapa las costuras entre cintas
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Aristas transversales muy tenues (malla de alambre); se omiten si el equipo va justo.
+        if (quality < 0.75) return;
+        ctx.beginPath();
+        for (const [from, to] of runs[axis][line] ?? []) {
+          for (let p = from; p <= to; p += CROSS_STEP) {
+            if (!mesh.visible[q + p * stride]) continue;
+            ctx.moveTo(sx[q + p * stride] ?? 0, sy[q + p * stride] ?? 0);
+            ctx.lineTo(sx[o + p * stride] ?? 0, sy[o + p * stride] ?? 0);
+          }
+        }
+        ctx.strokeStyle = 'rgba(110,150,255,0.16)';
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+      };
+
+      // Cresta: el color sube con la altitud media del tramo.
+      const crest = (n: number) => {
         const line = lines[n] ?? 0;
-        const prevLine = n > 0 ? lines[n - 1] : undefined;
+        const o = origin(line);
         const scan =
           scanPhase < 0 ? 0 : Math.max(0, 1 - Math.abs(n / lines.length - scanPhase) * 22);
         for (const [from, to] of runs[axis][line] ?? []) {
-          const first = meshIndex(mesh, axis, line, from);
-          const lastK = meshIndex(mesh, axis, line, to);
-          // Relleno hacia abajo: cada cresta tapa a las de detrás.
-          ctx.beginPath();
-          ctx.moveTo(sx[first] ?? 0, height + 40);
-          for (let p = from; p <= to; p++) {
-            const k = meshIndex(mesh, axis, line, p);
-            ctx.lineTo(sx[k] ?? 0, sy[k] ?? 0);
-          }
-          ctx.lineTo(sx[lastK] ?? 0, height + 40);
-          ctx.closePath();
-          ctx.fillStyle = BG;
-          ctx.fill();
-
-          // Aristas transversales con la línea anterior (malla de alambre, muy tenue).
-          if (prevLine !== undefined) {
-            ctx.beginPath();
-            for (let p = from; p <= to; p += CROSS_STEP) {
-              const k = meshIndex(mesh, axis, line, p);
-              const q = meshIndex(mesh, axis, prevLine, p);
-              if (!mesh.visible[q]) continue;
-              ctx.moveTo(sx[q] ?? 0, sy[q] ?? 0);
-              ctx.lineTo(sx[k] ?? 0, sy[k] ?? 0);
-            }
-            ctx.strokeStyle = 'rgba(110,150,255,0.16)';
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
-
-          // Cresta: el color sube con la altitud media del tramo.
           let hSum = 0;
+          ctx.beginPath();
           for (let p = from; p <= to; p++) {
-            hSum += mesh.h[meshIndex(mesh, axis, line, p)] ?? mesh.zMin;
+            const i = o + p * stride;
+            hSum += mesh.h[i] ?? mesh.zMin;
+            if (p === from) ctx.moveTo(sx[i] ?? 0, sy[i] ?? 0);
+            else ctx.lineTo(sx[i] ?? 0, sy[i] ?? 0);
           }
           const tone = Math.min(1, Math.max(0, (hSum / (to - from + 1) - mesh.zMin) / span));
-          ctx.beginPath();
-          for (let p = from; p <= to; p++) {
-            const k = meshIndex(mesh, axis, line, p);
-            if (p === from) ctx.moveTo(sx[k] ?? 0, sy[k] ?? 0);
-            else ctx.lineTo(sx[k] ?? 0, sy[k] ?? 0);
-          }
           ctx.strokeStyle = mix(Math.min(1, tone * 0.9 + scan * 0.6));
           ctx.globalAlpha = 0.6 + tone * 0.3 + scan * 0.1;
           ctx.lineWidth = 0.85 + scan * 1.2;
           ctx.stroke();
-          ctx.globalAlpha = 1;
         }
-        for (const s of buckets[axis].get(line) ?? []) {
+        ctx.globalAlpha = 1;
+      };
+
+      // Pistas y remontes de una línea, por lotes (un trazo por tipo, sin desenfoque por segmento).
+      const pistes = (n: number) => {
+        const list = buckets[axis].get(lines[n] ?? 0);
+        if (!list) return;
+        const groups = new Map<string, Segment[]>();
+        for (const s of list) {
           if (hiddenNow.has(s.d === 'lift' ? 'lifts' : s.d)) continue;
-          const [ax, ay] = project(cam, ...s.a);
-          const [bx, by] = project(cam, ...s.b);
+          const g = groups.get(s.d);
+          if (g) g.push(s);
+          else groups.set(s.d, [s]);
+        }
+        for (const [d, segs] of groups) {
           ctx.beginPath();
-          ctx.moveTo(ax, ay);
-          ctx.lineTo(bx, by);
-          if (s.d === 'lift') {
+          for (const s of segs) {
+            proj(...s.a, tmp);
+            proj(...s.b, tmp2);
+            ctx.moveTo(tmp[0], tmp[1]);
+            ctx.lineTo(tmp2[0], tmp2[1]);
+          }
+          if (d === 'lift') {
             ctx.strokeStyle = LIFT;
             ctx.lineWidth = 1.4;
             ctx.setLineDash([5, 4]);
-            ctx.shadowBlur = 0;
-          } else {
-            ctx.strokeStyle = s.d === 'black' ? '#e8edff' : colors[s.d];
-            ctx.lineWidth = 2.2;
+            ctx.stroke();
             ctx.setLineDash([]);
-            ctx.shadowColor = colors[s.d];
-            ctx.shadowBlur = 8;
+          } else {
+            const color = colors[d as Difficulty];
+            // Brillo de neón: un trazo ancho y tenue debajo (mucho más barato que shadowBlur).
+            ctx.strokeStyle = color;
+            ctx.globalAlpha = 0.22;
+            ctx.lineWidth = 5.5;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = d === 'black' ? '#e8edff' : color;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
           }
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.shadowBlur = 0;
         }
+      };
+
+      for (let n = 1; n < lines.length; n++) {
+        ribbon(lines[n - 1] ?? 0, lines[n] ?? 0);
+        crest(n - 1);
+        pistes(n - 1);
+      }
+      if (lines.length > 0) {
+        crest(lines.length - 1);
+        pistes(lines.length - 1);
       }
 
       // Brújula: hacia dónde queda el norte.
@@ -334,9 +395,25 @@ export function RidgeView({
     }
     drawRef.current = draw;
 
+    let prevT = 0;
     const loop = (t: number) => {
-      draw(t);
       raf = requestAnimationFrame(loop);
+      // Parado (sin giro automático) no hay nada que animar: se dibuja solo al interactuar.
+      if (!input.current.auto) {
+        prevT = 0;
+        return;
+      }
+      if (prevT) {
+        ema = ema ? ema * 0.9 + (t - prevT) * 0.1 : t - prevT;
+        if (++sinceAdjust >= 30 && ema > 20 && quality > 0.5) {
+          quality = Math.max(0.5, quality - 0.125);
+          sinceAdjust = 0;
+          ema = 0;
+          applySize();
+        }
+      }
+      prevT = t;
+      draw(t);
     };
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);

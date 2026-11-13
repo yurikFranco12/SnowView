@@ -65,11 +65,17 @@ export function SnowCanvas({ intensity = 1 }: SnowCanvasProps) {
     };
 
     const frame = (now: number) => {
+      rafId = requestAnimationFrame(frame);
+      // Con un cuadro a pantalla completa abierto (mapa de pistas) la nieve queda quieta detrás: así
+      // todo el rendimiento va al cuadro.
+      if (document.documentElement.hasAttribute('data-overlay-open')) {
+        last = 0;
+        return;
+      }
       const dt = last ? (now - last) / 1000 : 1 / 60;
       last = now;
       stepSnowField(field, dt);
       draw();
-      rafId = requestAnimationFrame(frame);
     };
 
     const start = () => {

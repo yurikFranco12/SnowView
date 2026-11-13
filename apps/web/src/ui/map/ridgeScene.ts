@@ -132,16 +132,40 @@ export function project(cam: Camera, x: number, y: number, z: number): [number, 
   return out;
 }
 
-/** Proyecta toda la malla de una vez. */
+/**
+ * Proyector para una cámara fija: las constantes trigonométricas se calculan una sola vez, no por
+ * punto. Escribe [x, y, profundidad] en `out`.
+ */
+export function makeProjector(cam: Camera): (x: number, y: number, z: number, out: Out) => void {
+  const c = Math.cos(cam.yaw);
+  const s = Math.sin(cam.yaw);
+  const cp = Math.cos(cam.pitch);
+  const sp = Math.sin(cam.pitch);
+  const { ox, oy, oz, persp, scale, cx, cy } = cam;
+  return (x, y, z, out) => {
+    const dx = x - ox;
+    const dy = y - oy;
+    const dz = z - oz;
+    const yr = dx * s + dy * c;
+    const f = scale / Math.max(0.3, 1 + yr * persp);
+    out[0] = cx + (dx * c - dy * s) * f;
+    out[1] = cy - (dz * cp + yr * sp) * f;
+    out[2] = yr;
+  };
+}
+
+/** Proyecta la malla de una vez; se salta los puntos que no se dibujan. */
 export function projectMesh(
   cam: Camera,
   mesh: RidgeMesh,
   outX: Float32Array,
   outY: Float32Array,
 ): void {
+  const proj = makeProjector(cam);
   const tmp: [number, number, number] = [0, 0, 0];
   for (let k = 0; k < mesh.x.length; k++) {
-    projectTo(cam, mesh.x[k] ?? 0, mesh.y[k] ?? 0, mesh.z[k] ?? 0, tmp);
+    if (!mesh.visible[k]) continue;
+    proj(mesh.x[k] ?? 0, mesh.y[k] ?? 0, mesh.z[k] ?? 0, tmp);
     outX[k] = tmp[0];
     outY[k] = tmp[1];
   }
