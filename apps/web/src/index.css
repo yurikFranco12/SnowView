@@ -60,3 +60,18 @@
     backdrop-filter: blur(var(--sv-glass-blur));
   }
 }
+
+/* Entrada de los cuadros modales: breve y sin animar la opacidad de un contenedor con cristal. */
+@keyframes sv-pop {
+  from {
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sv-pop {
+    animation: sv-pop 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}

@@ -7,6 +7,30 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [1.0.0] - 2026-11-13 · fase 16
+
+### Añadido
+
+- Ficha de estación: cifras de ahora (temperatura y sensación, viento y rachas, espesor en cima y
+  base, nieve a 24/48/72 h, isoterma de 0 °C), gráfica hora a hora de 72 h y tira de 14 días con
+  cielo, nieve, temperaturas, rachas y nota (ADR 0017).
+- Estaciones como clasificación en vivo, ordenable por nieve prevista, espesor, nota o nombre.
+- Buscador rápido (Ctrl+K) y atajos Ctrl+1…9 para las pantallas.
+- Isoterma de 0 °C (Open-Meteo `freezing_level_height`), resumen diario y sensación térmica en
+  `core`, con tests. Iconos del tiempo.
+- Capturas en el README.
+
+### Cambiado
+
+- Inicio: icono del cielo, espesor, isoterma y botón «Ver ficha completa»; las favoritas abren su
+  ficha.
+- La montaña 3D arranca más cerca.
+
+### Corregido
+
+- El desnivel de una pista en bucle salía 0: ahora usa la cota más alta y más baja del trazado.
+- Cerrar un cuadro abierto dentro de otro ya no reanuda la nieve de fondo ni cierra los dos.
+
 ## [0.16.0] - 2026-11-13 · fase 15
 
 ### Eliminado

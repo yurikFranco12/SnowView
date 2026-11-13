@@ -6,7 +6,7 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 15 (se quitan las rutas en coche y autobús); app 0.16.0.
+- **Fase actual:** ninguna en curso. Hecha la 16 (ficha de estación, clasificación y buscador rápido); app 1.0.0, terminada.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +14,14 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 16 — tareas
+
+- [x] Ficha de estación con cifras de ahora, gráfica hora a hora de 72 h y 14 días (ADR 0017)
+- [x] Resumen diario, código del día y sensación térmica en `core`; isoterma de 0 °C en `data`
+- [x] Estaciones como clasificación ordenable; buscador rápido (Ctrl+K) y atajos Ctrl+1…9
+- [x] `Modal` común con pila de cuadros; desnivel de pistas en bucle corregido
+- [x] Instalador 1.0.0, fusión en `main`, etiquetas `fase-16` y `v1.0.0`, push y claude.ai
 
 ## Fase 15 — tareas
 

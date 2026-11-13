@@ -33,6 +33,7 @@ import {
   type PisteData,
   type SceneProjection,
 } from './pisteScene';
+import { lockOverlay } from '../hooks/overlayLock';
 import { RidgeView } from './RidgeView';
 import { contourSegments, elevationAt, shadeImage, type TerrainGrid } from './terrain';
 
@@ -261,14 +262,19 @@ function PisteCanvas({
     if (!item) return undefined;
     const title = piste ? `Pista ${DIFFICULTY[piste.d].label.toLowerCase()}` : 'Remonte';
     const name = item.n ? `: ${item.n}` : '';
-    const first = item.c[0];
-    const last = item.c[item.c.length - 1];
-    if (!terrain || !first || !last) return title + name;
-    const a = elevationAt(terrain, first[0], first[1]);
-    const b = elevationAt(terrain, last[0], last[1]);
-    if (a === undefined || b === undefined) return title + name;
-    const drop = Math.abs(a - b);
-    return `${title}${name} · ${metres(Math.max(a, b))} → ${metres(Math.min(a, b))} (desnivel ${metres(drop)})`;
+    if (!terrain) return title + name;
+    // Cota más alta y más baja de todo el trazado (no solo de los extremos: en una pista en bucle
+    // empiezan y acaban en el mismo punto y el desnivel saldría 0).
+    let high = -Infinity;
+    let low = Infinity;
+    for (const [lon, lat] of item.c) {
+      const z = elevationAt(terrain, lon, lat);
+      if (z === undefined) continue;
+      high = Math.max(high, z);
+      low = Math.min(low, z);
+    }
+    if (!Number.isFinite(high)) return title + name;
+    return `${title}${name} · ${metres(high)} → ${metres(low)} (desnivel ${metres(high - low)})`;
   }, [hover, scene, terrain]);
 
   return (
@@ -558,9 +564,10 @@ export function PisteMapDialog({
     const previous = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
     // Avisa al fondo de nieve de que se pause mientras el cuadro está abierto.
-    document.documentElement.setAttribute('data-overlay-open', '');
+    const release = lockOverlay();
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
         onCloseRef.current();
         return;
       }
@@ -584,7 +591,7 @@ export function PisteMapDialog({
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
-      document.documentElement.removeAttribute('data-overlay-open');
+      release();
       previous?.focus();
     };
   }, []);

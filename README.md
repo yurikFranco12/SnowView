@@ -5,23 +5,42 @@ favoritas y avisa cuando se cumple una regla, por ejemplo "más de 15 cm en las 
 
 App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 
+![Pantalla de inicio de SnowView](docs/img/inicio.jpg)
+
+## Qué hace
+
+- **Previsión de nieve** de 10 estaciones de España, Andorra y el Pirineo francés, a la cota de la
+  base y de la cima, para 3, 7 o 14 días.
+- **Ficha de cada estación**: temperatura y sensación térmica, viento y rachas, espesor de nieve,
+  isoterma de 0 °C, gráfica hora a hora de 72 h y los próximos 14 días.
+- **Clasificación de estaciones** por nieve prevista, espesor o nota del día.
+- **Nota de 0 a 100** para esquiar o hacer snowboard cada día, con sus motivos, y un calendario con
+  los mejores días.
+- **Avisos de Windows** cuando se cumple una regla tuya («más de 15 cm en 48 h»), también con la
+  ventana cerrada (la app sigue en la bandeja).
+- **Mapa de pistas** de cada estación sobre la montaña en 3D, que gira 360°, y plano 2D con relieve
+  y curvas de nivel.
+- **Mapa de España** con las estaciones, tu ubicación y la distancia a cada una.
+- **Webcams** de las estaciones, comparador, historial de nevadas por temporada y modo sin conexión.
+- **Buscador rápido** con Ctrl+K y atajos Ctrl+1…9. Sin cuentas ni claves: todo funciona al
+  instalar.
+
+| Ficha de estación                            | Mapa de pistas 3D                                    |
+| -------------------------------------------- | ---------------------------------------------------- |
+| ![Ficha de una estación](docs/img/ficha.jpg) | ![Montaña 3D con las pistas](docs/img/pistas-3d.jpg) |
+
+![Clasificación de estaciones](docs/img/estaciones.jpg)
+
+## Instalar
+
+Descarga el instalador (`.msi` o `-setup.exe`) de la última versión, o genera el tuyo con
+`pnpm build`. Los instaladores no llevan firma de código: Windows puede mostrar un aviso de
+SmartScreen la primera vez.
+
 ## Estado
 
-- Fase 0 completada: entorno y monorepo. Ver [docs/fase-0/README.md](docs/fase-0/README.md).
-- Fase 1a completada: prototipo visual con datos simulados. Ver
-  [docs/fase-1a/README.md](docs/fase-1a/README.md).
-- Fase 1b completada: datos reales de Open-Meteo, buscador y favoritas. Ver
-  [docs/fase-1b/README.md](docs/fase-1b/README.md).
-- Fase 1c completada: reglas, avisos de Windows, bandeja y arranque con el sistema. Ver
-  [docs/fase-1c/README.md](docs/fase-1c/README.md).
-- Fase 5b completada: mapa de las estaciones con zoom y ubicación (las rutas en coche y autobús se
-  quitaron en la fase 15). Ver [docs/fase-5b/README.md](docs/fase-5b/README.md).
-- Fase 5a completada: webcams de las 10 estaciones dentro de la app (imágenes que se renuevan y
-  vídeo en directo). Ver [docs/fase-5a/README.md](docs/fase-5a/README.md).
-- Fase 4 completada: estaciones Alto Campoo y Cauterets, y valoración de las condiciones para esquiar
-  y hacer snowboard con un calendario de los próximos días.
-- Fase 3 completada: ajustes y modo sin conexión (3a), comparador (3b) e historial (3c). Progreso en
-  [docs/PROGRESO.md](docs/PROGRESO.md).
+Versión **1.0.0**: la app está terminada. El detalle de cada fase está en `docs/fase-*/README.md`,
+el avance en [docs/PROGRESO.md](docs/PROGRESO.md) y las decisiones técnicas en `docs/adr/`.
 
 ## Versiones
 

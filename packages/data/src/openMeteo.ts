@@ -21,6 +21,7 @@ import { RateLimiter } from './rateLimiter';
  * Parámetros verificados en https://open-meteo.com/en/docs el 2026-11-12:
  * - `snowfall`: nieve de la hora anterior, en cm. `snow_depth`: grosor, en METROS.
  * - `elevation` admite una lista: se piden base y cima en una sola llamada (respuesta en lista).
+ * - `freezing_level_height`: altitud de la isoterma de 0 °C, en metros (comprobado 2026-11-13).
  * - `timeformat=unixtime` da instantes UTC en segundos, sin problemas de cambio de hora.
  */
 
@@ -36,6 +37,7 @@ const HOURLY = [
   'wind_speed_10m',
   'wind_gusts_10m',
   'weather_code',
+  'freezing_level_height',
 ] as const;
 type HourlyVar = (typeof HOURLY)[number];
 
@@ -103,6 +105,7 @@ export function parseLocation(raw: RawLocation, requestedElevationM: number): El
   const wind = column('wind_speed_10m');
   const gust = column('wind_gusts_10m');
   const code = column('weather_code');
+  const freezing = column('freezing_level_height');
 
   const hours: HourlyPoint[] = times.map((t, i) => {
     if (typeof t !== 'number' || !Number.isFinite(t)) invalid(`Hora ${i} no válida.`);
@@ -114,6 +117,7 @@ export function parseLocation(raw: RawLocation, requestedElevationM: number): El
       windKmh: numberOrNull(wind[i]),
       gustKmh: numberOrNull(gust[i]),
       weatherCode: numberOrNull(code[i]),
+      freezingLevelM: numberOrNull(freezing[i]),
     };
   });
 

@@ -15,7 +15,7 @@ import {
   type CuratedStation,
   type ForecastErrorKind,
 } from '@snowview/data';
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { QueryClient, useQueries, useQuery } from '@tanstack/react-query';
 import { loadCachedForecast, saveCachedForecast } from './offlineCache';
 
 /** Único proveedor de la app. Cambiar de proveedor es cambiar esta línea. */
@@ -84,6 +84,26 @@ export function useStationForecast(stationId: string | undefined) {
       if (!station) throw new Error('Estación desconocida');
       return fetchStationForecast(station, signal);
     },
+  });
+}
+
+/**
+ * Previsión de varias estaciones a la vez. Comparte clave y caché con {@link useStationForecast}:
+ * una estación ya consultada no se vuelve a pedir.
+ */
+export function useForecasts(stationIds: readonly string[]) {
+  return useQueries({
+    queries: stationIds.map((id) => {
+      const station = getStation(id);
+      return {
+        queryKey: ['forecast', id],
+        enabled: station !== undefined,
+        queryFn: ({ signal }: { signal: AbortSignal }) => {
+          if (!station) throw new Error('Estación desconocida');
+          return fetchStationForecast(station, signal);
+        },
+      };
+    }),
   });
 }
 

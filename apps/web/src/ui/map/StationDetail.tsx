@@ -2,6 +2,7 @@ import { formatDistanceKm, haversineKm } from '@snowview/core';
 import type { CuratedStation } from '@snowview/data';
 import { Map as MapIcon, Route as RouteIcon } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useAppStore } from '../state/appStore';
 import type { UserLocation } from './useUserLocation';
 
 export function StationDetail({
@@ -19,6 +20,7 @@ export function StationDetail({
   onFocusStation: () => void;
   onOpenPisteMap: () => void;
 }) {
+  const openStation = useAppStore((st) => st.openStation);
   const straight = location.position ? haversineKm(location.position, station) : undefined;
 
   return (
@@ -54,6 +56,13 @@ export function StationDetail({
           className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs transition-colors disabled:opacity-40 ${routeFocused ? 'bg-ice/[0.18] font-semibold text-ice' : 'bg-white/[0.06] hover:bg-white/[0.12]'}`}
         >
           <RouteIcon className="size-3.5" aria-hidden="true" /> Ver con mi ubicación
+        </button>
+        <button
+          type="button"
+          onClick={() => openStation(station.id)}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-ice to-indigo px-3 py-1.5 text-xs font-semibold text-bg-start transition-opacity hover:opacity-90"
+        >
+          Ver ficha completa
         </button>
         <button
           type="button"

@@ -29,6 +29,11 @@ export interface HourlyPoint {
   gustKmh: number | null;
   /** Código de tiempo WMO. */
   weatherCode: number | null;
+  /**
+   * Altitud de la isoterma de 0 °C, en metros. Opcional: las previsiones guardadas por versiones
+   * anteriores de la app no lo traen.
+   */
+  freezingLevelM?: number | null;
 }
 
 /** Previsión a una cota concreta. */

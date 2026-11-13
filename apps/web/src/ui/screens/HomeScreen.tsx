@@ -1,10 +1,11 @@
 import { getStation } from '@snowview/data';
-import { Mountain, Plus, Star, Video } from 'lucide-react';
+import { ArrowUpRight, Mountain, Plus, Star, Video } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { PeriodSelector } from '../components/PeriodSelector';
 import { RatingBadge } from '../components/RatingBadge';
 import { RuleItem } from '../components/RuleItem';
 import { SnowBars } from '../components/SnowBars';
+import { WeatherIcon } from '../components/WeatherIcon';
 import { Sparkline } from '../components/Sparkline';
 import { ErrorView, Skeleton } from '../components/StatusViews';
 import { formatCm, provider, summarize, useStationForecast } from '../data/forecast';
@@ -54,6 +55,7 @@ function MainStationCard({ stationId }: { stationId: string }) {
   const period = useAppStore((s) => s.period);
   const setView = useAppStore((s) => s.setView);
   const setWebcamStation = useAppStore((s) => s.setWebcamStation);
+  const openStation = useAppStore((s) => s.openStation);
   const now = useNow();
   const station = getStation(stationId);
   const query = useStationForecast(stationId);
@@ -69,7 +71,8 @@ function MainStationCard({ stationId }: { stationId: string }) {
       <div className="flex items-center justify-between">
         <p className="text-xs tracking-[0.14em] text-muted uppercase">Estación principal · cima</p>
         {summary && (
-          <span className="rounded-full bg-ice/[0.14] px-2.5 py-1 text-xs text-ice">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-ice/[0.14] px-2.5 py-1 text-xs text-ice">
+            <WeatherIcon code={summary.current?.weatherCode ?? null} className="size-3.5" />
             {summary.condition}
           </span>
         )}
@@ -78,17 +81,27 @@ function MainStationCard({ stationId }: { stationId: string }) {
         <h2 id="main-station-name" className="font-display text-[30px] font-semibold">
           {station?.name ?? stationId}
         </h2>
-        <button
-          type="button"
-          onClick={() => {
-            setWebcamStation(stationId);
-            setView('webcams');
-          }}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.08] px-3 py-1.5 text-xs transition-colors hover:bg-white/[0.14]"
-        >
-          <Video className="size-3.5" aria-hidden="true" />
-          Webcams
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setWebcamStation(stationId);
+              setView('webcams');
+            }}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.08] px-3 py-1.5 text-xs transition-colors hover:bg-white/[0.14]"
+          >
+            <Video className="size-3.5" aria-hidden="true" />
+            Webcams
+          </button>
+          <button
+            type="button"
+            onClick={() => openStation(stationId)}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-ice to-indigo px-3 py-1.5 text-xs font-semibold text-bg-start transition-opacity hover:opacity-90"
+          >
+            Ver ficha completa
+            <ArrowUpRight className="size-3.5" aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
       {query.isPending && (
@@ -149,6 +162,17 @@ function MainStationCard({ stationId }: { stationId: string }) {
             <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
               Próximas 48 h: {formatCm(summary.next48hCm)} cm
             </li>
+            {summary.current?.snowDepthCm != null && (
+              <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
+                Espesor en cima: {formatCm(summary.current.snowDepthCm)} cm
+              </li>
+            )}
+            {summary.current?.freezingLevelM != null && (
+              <li className="rounded-xl bg-white/[0.06] px-3 py-1.5">
+                Isoterma 0 °C:{' '}
+                {(Math.round(summary.current.freezingLevelM / 10) * 10).toLocaleString('es-ES')} m
+              </li>
+            )}
           </ul>
           <TodayRatings forecast={query.data} stationId={station.id} />
           {summary.incomplete && (
@@ -229,7 +253,7 @@ function FavoriteRating({
 function FavoriteCard({ stationId, index }: { stationId: string; index: number }) {
   const period = useAppStore((s) => s.period);
   const now = useNow();
-  const makeMain = useFavorites((s) => s.makeMain);
+  const openStation = useAppStore((s) => s.openStation);
   const station = getStation(stationId);
   const query = useStationForecast(stationId);
   const summary = query.data && station ? summarize(query.data, station, period, now) : undefined;
@@ -243,12 +267,12 @@ function FavoriteCard({ stationId, index }: { stationId: string; index: number }
         whileHover={{ y: -3 }}
         whileTap={{ scale: 0.985 }}
         type="button"
-        onClick={() => makeMain(stationId)}
-        title="Hacer estación principal"
+        onClick={() => openStation(stationId)}
+        title="Ver la ficha de la estación"
         aria-label={
           summary
-            ? `${station.name}, ${formatCm(summary.topTotalCm)} cm en ${period} días. Hacer principal`
-            : `${station.name}. Hacer principal`
+            ? `${station.name}, ${formatCm(summary.topTotalCm)} cm en ${period} días. Ver la ficha`
+            : `${station.name}. Ver la ficha`
         }
         className="relative flex flex-1 flex-col gap-1.5 rounded-[18px] border border-white/10 bg-white/[0.05] px-5 py-[18px] text-left backdrop-blur-[14px] transition-colors hover:border-white/20 hover:bg-white/[0.08]"
       >
@@ -342,7 +366,7 @@ export function HomeScreen() {
         <PeriodSelector />
       </motion.header>
 
-      <section className="grid h-[380px] shrink-0 grid-cols-[1.6fr_1fr] gap-5">
+      <section className="grid h-[420px] shrink-0 grid-cols-[1.6fr_1fr] gap-5">
         {loaded && mainId ? (
           <MainStationCard stationId={mainId} />
         ) : loaded ? (
