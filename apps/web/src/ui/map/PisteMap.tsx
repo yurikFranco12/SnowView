@@ -557,6 +557,8 @@ export function PisteMapDialog({
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
+    // Avisa al fondo de nieve de que se pause mientras el cuadro está abierto.
+    document.documentElement.setAttribute('data-overlay-open', '');
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') {
         onCloseRef.current();
@@ -582,6 +584,7 @@ export function PisteMapDialog({
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
+      document.documentElement.removeAttribute('data-overlay-open');
       previous?.focus();
     };
   }, []);

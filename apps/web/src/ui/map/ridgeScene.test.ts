@@ -3,6 +3,7 @@ import {
   buildRidgeMesh,
   drawOrder,
   fitCamera,
+  makeProjector,
   project,
   projectMesh,
   visibleRuns,
@@ -88,6 +89,42 @@ describe('cámara', () => {
         }
       }
     }
+  });
+});
+
+describe('proyector optimizado', () => {
+  const mesh = buildRidgeMesh(grid, 42, [[[1.002, 41.998]]], 10, 2);
+  const c: Camera = {
+    ...cam,
+    yaw: 1.1,
+    pitch: 0.7,
+    scale: 3,
+    cx: 50,
+    cy: 60,
+    persp: 0.0002,
+    ox: 5,
+    oy: -3,
+    oz: 20,
+  };
+  it('da lo mismo que project para cada punto', () => {
+    const proj = makeProjector(c);
+    const out: [number, number, number] = [0, 0, 0];
+    for (let k = 0; k < mesh.x.length; k++) {
+      proj(mesh.x[k] ?? 0, mesh.y[k] ?? 0, mesh.z[k] ?? 0, out);
+      const ref = project(c, mesh.x[k] ?? 0, mesh.y[k] ?? 0, mesh.z[k] ?? 0);
+      expect(out[0]).toBeCloseTo(ref[0], 6);
+      expect(out[1]).toBeCloseTo(ref[1], 6);
+      expect(out[2]).toBeCloseTo(ref[2], 6);
+    }
+  });
+  it('projectMesh solo proyecta los puntos visibles', () => {
+    const xs = new Float32Array(mesh.x.length).fill(-999);
+    const ys = new Float32Array(mesh.x.length).fill(-999);
+    mesh.visible.fill(0);
+    mesh.visible[7] = 1;
+    projectMesh(c, mesh, xs, ys);
+    expect(xs[7]).not.toBe(-999);
+    expect(xs[8]).toBe(-999);
   });
 });
 

@@ -7,6 +7,16 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [0.15.0] - 2026-11-13 · fase 13
+
+### Cambiado
+
+- La montaña 3D va a 120 fps (antes ~32): cintas de superficie en vez de rellenos hasta el borde,
+  pistas por lotes sin desenfoque, cámara sin trigonometría por vértice y resolución adaptativa
+  (ADR 0016).
+- La nieve de fondo se pausa mientras hay un cuadro de mapa abierto, y la montaña no se redibuja
+  si el giro automático está parado.
+
 ## [0.14.0] - 2026-11-13 · fase 12
 
 ### Añadido
