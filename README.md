@@ -33,9 +33,9 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 
 ## Instalar
 
-Descarga el instalador (`.msi` o `-setup.exe`) de la última versión, o genera el tuyo con
-`pnpm build`. Los instaladores no llevan firma de código: Windows puede mostrar un aviso de
-SmartScreen la primera vez.
+Genera los instaladores con `pnpm build`: quedan en `src-tauri/target/release/bundle/` (`.msi` y
+`-setup.exe`). No llevan firma de código, así que Windows puede mostrar un aviso de SmartScreen la
+primera vez.
 
 ## Estado
 
