@@ -41,8 +41,8 @@ export function LocationPanel({
       </p>
       {imprecise && (
         <p className="text-[11px] leading-snug text-amber-200">
-          Windows la calcula por la red y puede errar varios kilómetros. Si no es donde estás, busca
-          tu pueblo o márcalo en el mapa.
+          El sistema la calcula por la red y puede errar varios kilómetros. Si no es donde estás,
+          busca tu pueblo o márcalo en el mapa.
         </p>
       )}
       <div className="flex flex-wrap gap-1.5">

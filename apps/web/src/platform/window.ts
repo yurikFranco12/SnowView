@@ -1,6 +1,9 @@
+import { isDesktopApp, isTauri } from './device';
+
 /**
  * Control de la ventana (minimizar, maximizar, cerrar) detrás de una interfaz, para que la UI no
- * dependa de Tauri. En el navegador (desarrollo con `pnpm dev` sin Tauri) los botones no hacen nada.
+ * dependa de Tauri. En el navegador (desarrollo con `pnpm dev` sin Tauri) y en Android (no hay ventana
+ * que mover) los botones no existen.
  */
 export interface WindowControls {
   readonly available: boolean;
@@ -9,8 +12,7 @@ export interface WindowControls {
   close(): Promise<void>;
 }
 
-/** Tauri 2 inyecta este objeto en el WebView; si no existe, estamos en un navegador normal. */
-export const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+export { isTauri };
 
 const noop = async (): Promise<void> => {};
 
@@ -33,4 +35,4 @@ const tauriControls: WindowControls = {
   close: async () => (await current()).close(),
 };
 
-export const windowControls: WindowControls = isTauri ? tauriControls : browserControls;
+export const windowControls: WindowControls = isDesktopApp ? tauriControls : browserControls;

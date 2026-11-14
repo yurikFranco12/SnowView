@@ -231,3 +231,66 @@ export function pruneLog(
 ): NotifiedLog {
   return Object.fromEntries(Object.entries(log).filter(([, at]) => nowMs - at <= maxAgeMs));
 }
+
+/**
+ * Hasta cuántas horas por delante se programan avisos con la previsión ya descargada. Más allá de
+ * 5 días la previsión cambia demasiado para avisar sin volver a consultarla.
+ */
+export const SCHEDULE_HORIZON_HOURS = 120;
+
+/** Aviso que se cumplirá en el futuro según la previsión actual. */
+export interface PlannedAlert {
+  /** Evaluación de la regla en el instante `atMs`. */
+  evaluation: RuleEvaluation;
+  /** Momento (ms UTC, en punto) en que la regla pasará a cumplirse. */
+  atMs: number;
+}
+
+/**
+ * Primer momento futuro en que la regla se cumplirá con la previsión actual, para un evento que aún
+ * no se avisó. Sirve para programar el aviso en el sistema y que llegue aunque la app esté cerrada
+ * (Android). El evento que ya se cumple ahora no se programa: ese se avisa al momento.
+ */
+export function planUpcomingAlert(
+  rule: AlertRule,
+  forecast: StationForecast,
+  nowMs: number,
+  log: NotifiedLog,
+  horizonHours = SCHEDULE_HORIZON_HOURS,
+): PlannedAlert | null {
+  if (!rule.enabled) return null;
+  const current = evaluateRule(rule, forecast, nowMs).eventKey;
+  const first = startOfHour(nowMs) + HOUR_MS;
+  for (let h = 0; h < horizonHours; h++) {
+    const atMs = first + h * HOUR_MS;
+    const evaluation = evaluateRule(rule, forecast, atMs);
+    if (!evaluation.met || evaluation.eventKey === null) continue;
+    if (evaluation.eventKey === current || evaluation.eventKey in log) continue;
+    return { evaluation, atMs };
+  }
+  return null;
+}
+
+/** Devuelve un registro nuevo con las claves de evento dadas marcadas como avisadas. */
+export function markKeysNotified(
+  log: NotifiedLog,
+  keys: readonly { eventKey: string; atMs: number }[],
+): NotifiedLog {
+  const next: Record<string, number> = { ...log };
+  for (const k of keys) next[k.eventKey] = k.atMs;
+  return next;
+}
+
+/**
+ * Identificador numérico estable de un evento (entero positivo de 31 bits, como pide Android).
+ * El aviso inmediato y el programado del mismo evento comparten identificador, así que el sistema
+ * muestra uno solo.
+ */
+export function notificationId(key: string): number {
+  let hash = 0x811c9dc5; // FNV-1a de 32 bits
+  for (let i = 0; i < key.length; i++) {
+    hash ^= key.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 1 || 1) | 0;
+}

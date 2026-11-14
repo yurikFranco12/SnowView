@@ -1,5 +1,6 @@
 import { MapPinOff, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { isAndroid, systemName } from '../../platform/device';
 import { storage } from '../../platform/storage';
 import type { UserLocation } from './useUserLocation';
 
@@ -24,9 +25,11 @@ export function LocationAlert({ location }: { location: UserLocation }) {
     status === 'prompt'
       ? 'Activa tu ubicación para ver tu posición en el mapa y la distancia a cada estación.'
       : status === 'denied'
-        ? 'La ubicación está desactivada. Actívala en Windows (Configuración → Privacidad y seguridad → Ubicación) y vuelve aquí.'
+        ? `La ubicación está desactivada. Actívala en ${systemName} y vuelve aquí, o fíjala a mano en el mapa.`
         : status === 'unavailable'
-          ? 'Este equipo no ofrece ubicación.'
+          ? isAndroid
+            ? 'Fija tu ubicación buscando tu pueblo o marcándola en el mapa para ver la distancia a cada estación.'
+            : 'Este equipo no ofrece ubicación.'
           : 'No se pudo obtener tu ubicación.';
 
   return (

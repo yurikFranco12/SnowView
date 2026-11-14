@@ -43,7 +43,7 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
   const isMain = ids[0] === station.id;
 
   return (
-    <li className="group relative flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 transition-colors hover:bg-white/[0.07]">
+    <li className="group relative flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 py-3 md:gap-4 md:px-4 transition-colors hover:bg-white/[0.07]">
       <span className="w-6 shrink-0 text-center font-display text-lg font-semibold text-muted tabular-nums">
         {position}
       </span>
@@ -51,9 +51,9 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
         type="button"
         onClick={() => openStation(station.id)}
         aria-label={`Abrir la ficha de ${station.name}`}
-        className="flex min-w-0 flex-1 items-center gap-4 text-left after:absolute after:inset-0 after:rounded-2xl"
+        className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2 text-left after:absolute after:inset-0 after:rounded-2xl md:flex-nowrap md:gap-4"
       >
-        <span className="min-w-0 flex-[1.3]">
+        <span className="min-w-0 max-md:basis-full md:flex-[1.3]">
           <span className="flex items-center gap-2 text-[15px] font-semibold">
             <span className="truncate">{station.name}</span>
             {isMain && (
@@ -75,7 +75,7 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
           <span className="flex-[2] text-xs text-muted">No se pudo cargar la previsión.</span>
         ) : (
           <>
-            <span className="flex w-24 shrink-0 items-center gap-2 text-xs text-muted">
+            <span className="flex shrink-0 items-center gap-2 text-xs text-muted md:w-24">
               <WeatherIcon code={summary.current?.weatherCode ?? null} className="size-5" />
               <span className="tabular-nums">
                 {summary.current?.temperatureC != null
@@ -98,17 +98,17 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
                 />
               </span>
             </span>
-            <span className="w-24 shrink-0 text-sm tabular-nums">
+            <span className="w-24 shrink-0 text-sm tabular-nums max-md:hidden">
               {row.depthCm !== null ? `${formatCm(row.depthCm)} cm` : '—'}
               <span className="block text-[11px] text-muted">espesor en cima</span>
             </span>
-            <span className="w-32 shrink-0">
+            <span className="shrink-0 md:w-32">
               <RatingBadge rating={row.rating} />
             </span>
           </>
         )}
         <ChevronRight
-          className="size-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
+          className="size-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 max-md:hidden"
           aria-hidden="true"
         />
       </button>
@@ -167,7 +167,7 @@ export function StationsScreen() {
   const maxSnow = Math.max(1, ...rows.map((r) => r.snowCm ?? 0));
 
   return (
-    <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
+    <div className="flex min-h-full flex-col gap-5 md:h-full px-4 py-5 md:px-8 md:py-[26px]">
       <motion.header
         variants={revealItem}
         className="flex flex-wrap items-end justify-between gap-4"
@@ -176,7 +176,9 @@ export function StationsScreen() {
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             {ALL.length} estaciones · {count} {count === 1 ? 'favorita' : 'favoritas'}
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Estaciones</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Estaciones
+          </h1>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
@@ -197,7 +199,7 @@ export function StationsScreen() {
             </select>
           </div>
           <PeriodSelector />
-          <div className="relative w-64">
+          <div className="relative w-full md:w-64">
             <label htmlFor={inputId} className="sr-only">
               Buscar estación por nombre o región
             </label>
@@ -221,7 +223,7 @@ export function StationsScreen() {
       <motion.section
         variants={revealItem}
         aria-label="Clasificación de estaciones"
-        className="glass flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-5"
+        className="glass flex min-h-0 flex-1 flex-col gap-3 p-3 md:overflow-y-auto md:p-5"
       >
         <p className="text-xs text-muted" aria-live="polite">
           {visible.length === 0

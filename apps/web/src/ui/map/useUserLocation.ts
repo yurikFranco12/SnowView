@@ -1,5 +1,6 @@
 import type { LatLng } from '@snowview/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { isAndroidApp } from '../../platform/device';
 import { useManualLocation } from '../state/manualLocationStore';
 
 export type LocationStatus =
@@ -31,7 +32,12 @@ export interface UserLocation {
   request: () => void;
 }
 
-const supported = () => typeof navigator !== 'undefined' && 'geolocation' in navigator;
+/**
+ * En la app de Android no se usa la ubicación del teléfono: la app no declara ese permiso (menos
+ * datos personales y menos trámites en Google Play). Allí la ubicación se fija a mano.
+ */
+const supported = () =>
+  !isAndroidApp && typeof navigator !== 'undefined' && 'geolocation' in navigator;
 const hasPermissionsApi = () => typeof navigator !== 'undefined' && !!navigator.permissions?.query;
 
 function initialStatus(): LocationStatus {

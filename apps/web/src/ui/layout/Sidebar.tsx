@@ -44,7 +44,7 @@ function NavButton({ item }: { item: NavItem }) {
       title={item.label}
       aria-current={active ? 'page' : undefined}
       onClick={() => setView(item.view)}
-      className="relative grid size-14 place-items-center rounded-2xl transition-colors hover:bg-white/[0.06]"
+      className="relative grid h-12 min-w-0 flex-1 place-items-center rounded-2xl transition-colors hover:bg-white/[0.06] md:size-14 md:flex-none"
     >
       {active && (
         // layoutId: el resaltado se desliza de un botón a otro en lugar de aparecer de golpe.
@@ -63,16 +63,20 @@ function NavButton({ item }: { item: NavItem }) {
   );
 }
 
+/**
+ * Navegación principal: columna a la izquierda en el escritorio y barra inferior con todos los
+ * destinos a la vista en el móvil, con hueco para la barra de gestos de Android.
+ */
 export function Sidebar() {
   return (
     <nav
       aria-label="Principal"
-      className="relative z-10 flex w-[84px] shrink-0 flex-col items-center gap-3.5 border-r border-white/[0.06] py-[18px]"
+      className="relative z-10 flex shrink-0 items-center gap-0.5 border-t border-white/[0.06] bg-bg-start/60 px-2 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))] md:w-[84px] md:flex-col md:gap-3.5 md:border-t-0 md:border-r md:bg-transparent md:px-0 md:py-[18px]"
     >
       {MAIN_ITEMS.map((item) => (
         <NavButton key={item.view} item={item} />
       ))}
-      <div className="mt-auto">
+      <div className="flex min-w-0 flex-1 md:mt-auto md:flex-none">
         <NavButton item={SETTINGS_ITEM} />
       </div>
     </nav>

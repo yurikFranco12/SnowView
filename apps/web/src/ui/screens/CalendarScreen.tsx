@@ -129,7 +129,7 @@ export function CalendarScreen() {
     : undefined;
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5 md:px-8 md:py-[26px] [&>*]:shrink-0">
       <motion.header
         variants={revealItem}
         className="flex flex-wrap items-end justify-between gap-4"
@@ -138,7 +138,9 @@ export function CalendarScreen() {
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             Condiciones previstas · {discipline === 'ski' ? 'esquí' : 'snowboard'}
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Calendario</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Calendario
+          </h1>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <DisciplineSelector />
@@ -171,7 +173,7 @@ export function CalendarScreen() {
           </div>
         </div>
         {loading && entries.length === 0 ? (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <Skeleton className="h-24" />
             <Skeleton className="h-24" />
             <Skeleton className="h-24" />
@@ -186,7 +188,7 @@ export function CalendarScreen() {
                 malo.
               </p>
             )}
-            <ol className="grid grid-cols-3 gap-3">
+            <ol className="grid grid-cols-1 gap-3 md:grid-cols-3">
               {picks.map((p, i) => (
                 <li key={p.stationId}>
                   <button

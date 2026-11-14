@@ -20,3 +20,16 @@ Thumbs.db
 
 # Permisos locales de Claude Code (personales de cada equipo)
 .claude/settings.local.json
+
+# Firma de Android (Google Play): la clave y sus contraseñas NUNCA se suben al repositorio.
+*.jks
+*.keystore
+keystore.properties
+*.aab
+*.apk
+
+# Proyecto de Android generado por Tauri: carpetas de compilación y configuración local
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/build/
+src-tauri/gen/android/app/build/
+src-tauri/gen/android/local.properties

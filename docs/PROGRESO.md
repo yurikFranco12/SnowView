@@ -6,7 +6,10 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 17 (icono del copo, acceso directo y guía para compartir); app 1.0.1, terminada.
+- **Fase actual:** 18 (Android y Google Play), en la rama `claude/app-google-play-deploy-c15d33`.
+  Código preparado; falta generar y probar el proyecto de Android en el equipo. Detalle en
+  `docs/fase-18/README.md`.
+- **Fase 17:** hecha (icono del copo, acceso directo y guía para compartir); app 1.0.1.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
@@ -14,6 +17,18 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
 - `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+
+## Fase 18 — tareas
+
+- [x] Rust, permisos y configuración de Tauri separados entre escritorio y Android
+- [x] Notificaciones en Android: canal, permiso y avisos programados sin repetir (ADR 0018)
+- [x] Interfaz adaptable a móvil (barra inferior, una columna); escritorio sin cambios
+- [x] Seguridad: CSP más estricta, sin permiso de ubicación en Android, claves fuera de git
+- [x] Guía de publicación (`docs/fase-18/README.md`) y política de privacidad (`docs/PRIVACIDAD.md`)
+- [ ] Instalar Android Studio, SDK, NDK y Java; `pnpm android:init` (no están en el equipo)
+- [ ] Probar los avisos en un teléfono o emulador (lista en la guía)
+- [ ] Firmar, compilar el `.aab` y subirlo a una prueba interna de Google Play
+- [ ] Decidir: identificador definitivo, permiso para las webcams, licencia de Open-Meteo
 
 ## Fase 17 — tareas
 
@@ -205,6 +220,7 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 | 2026-11-12 | Gráficas hechas a mano, sin Recharts ni Visx               | ADR 0004       |
 | 2026-11-12 | Aviso por episodio de nieve; cerrar oculta en bandeja      | ADR 0005       |
 | 2026-11-12 | Cotas verificadas; Formigal base 1510, La Molina base 1667 | stations.json  |
+| 2026-11-14 | Android con avisos programados; sin ubicación en Android   | ADR 0018       |
 
 ## Notas de entorno
 

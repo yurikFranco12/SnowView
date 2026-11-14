@@ -71,13 +71,15 @@ export function MapScreen() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-4 px-8 py-[26px]">
+    <div className="flex min-h-full flex-col gap-4 md:h-full px-4 py-5 md:px-8 md:py-[26px]">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             {STATIONS.length} estaciones · España, sur de Francia y Andorra
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Mapa</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Mapa
+          </h1>
         </div>
         {location.status !== 'granted' && location.status !== 'checking' && (
           <button
@@ -91,7 +93,7 @@ export function MapScreen() {
         )}
       </motion.header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[1fr_340px] gap-4">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 max-md:grid-rows-[60vh_auto] md:grid-cols-[1fr_340px]">
         <motion.div
           variants={revealItem}
           className="glass relative min-h-[360px] overflow-hidden !p-0"

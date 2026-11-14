@@ -17,12 +17,14 @@ export function WebcamsScreen() {
   const cams = stationId ? getWebcams(stationId) : [];
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5 md:px-8 md:py-[26px] [&>*]:shrink-0">
       <motion.header variants={revealItem}>
         <p className="text-xs tracking-[0.14em] text-muted uppercase">
           {cams.length} {cams.length === 1 ? 'cámara' : 'cámaras'}
         </p>
-        <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Webcams</h1>
+        <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+          Webcams
+        </h1>
       </motion.header>
 
       <motion.nav variants={revealItem} aria-label="Estación" className="glass p-4">
@@ -51,7 +53,7 @@ export function WebcamsScreen() {
 
       {station && (
         <motion.section variants={revealItem} aria-label={`Webcams de ${station.name}`}>
-          <ul className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-4">
             {cams.map((cam) => (
               <li key={cam.id}>
                 <WebcamCard cam={cam} />

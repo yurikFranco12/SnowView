@@ -108,11 +108,13 @@ export function HistoryScreen() {
   const firstError = results.find((r) => r.error)?.error;
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5 md:px-8 md:py-[26px] [&>*]:shrink-0">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-6">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">Nieve en la cima</p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Historial</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Historial
+          </h1>
         </div>
         <div className="w-72">
           <label htmlFor={selectId} className="mb-1 block text-xs text-muted">
@@ -141,7 +143,7 @@ export function HistoryScreen() {
           <ErrorView error={firstError} onRetry={() => window.location.reload()} retrying={false} />
         </motion.div>
       ) : (
-        <div className="grid grid-cols-[1.5fr_1fr] gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-[1.5fr_1fr]">
           <motion.section
             variants={revealItem}
             aria-label="Detalle de la temporada"

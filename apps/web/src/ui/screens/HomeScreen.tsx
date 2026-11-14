@@ -66,7 +66,7 @@ function MainStationCard({ stationId }: { stationId: string }) {
       variants={revealItem}
       aria-labelledby="main-station-name"
       aria-busy={query.isPending}
-      className="glass relative flex min-h-0 flex-col overflow-hidden px-[26px] py-6"
+      className="glass relative flex min-h-0 flex-col overflow-hidden px-5 py-5 md:px-[26px] md:py-6"
     >
       <div className="flex items-center justify-between">
         <p className="text-xs tracking-[0.14em] text-muted uppercase">Estación principal · cima</p>
@@ -77,8 +77,11 @@ function MainStationCard({ stationId }: { stationId: string }) {
           </span>
         )}
       </div>
-      <div className="mt-1.5 flex items-center justify-between gap-3">
-        <h2 id="main-station-name" className="font-display text-[30px] font-semibold">
+      <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <h2
+          id="main-station-name"
+          className="font-display text-[26px] md:text-[30px] font-semibold"
+        >
           {station?.name ?? stationId}
         </h2>
         <div className="flex gap-2">
@@ -134,7 +137,7 @@ function MainStationCard({ stationId }: { stationId: string }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.25 }}
-                className="bg-gradient-to-b from-white from-20% to-ice bg-clip-text font-display text-[104px] leading-none font-bold text-transparent"
+                className="bg-gradient-to-b from-white from-20% to-ice bg-clip-text font-display text-[72px] leading-none md:text-[104px] font-bold text-transparent"
               >
                 {formatCm(summary.topTotalCm)}
               </motion.span>
@@ -314,7 +317,7 @@ function EmptyFavorites() {
   return (
     <motion.div
       variants={revealItem}
-      className="glass col-span-2 flex flex-col items-center justify-center gap-4 p-10 text-center"
+      className="glass flex md:col-span-2 flex-col items-center justify-center gap-4 p-10 text-center"
     >
       <div className="grid size-16 place-items-center rounded-2xl bg-ice/[0.12]">
         <Mountain className="size-8 text-ice" aria-hidden="true" strokeWidth={1.6} />
@@ -344,7 +347,7 @@ export function HomeScreen() {
   const outdated = mainQuery.data !== undefined && isOutdated(age, refreshMinutes);
 
   return (
-    <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
+    <div className="flex min-h-full flex-col gap-5 md:h-full px-4 py-5 md:px-8 md:py-[26px]">
       {outdated && (
         <p
           role="status"
@@ -354,19 +357,22 @@ export function HomeScreen() {
           Sin conexión con Open-Meteo: se muestran datos guardados {formatAge(age)}.
         </p>
       )}
-      <motion.header variants={revealItem} className="flex items-end justify-between">
+      <motion.header
+        variants={revealItem}
+        className="flex flex-wrap items-end justify-between gap-3"
+      >
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             {dateFormatter.format(now)}
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
             Mis estaciones
           </h1>
         </div>
         <PeriodSelector />
       </motion.header>
 
-      <section className="grid h-[420px] shrink-0 grid-cols-[1.6fr_1fr] gap-5">
+      <section className="grid shrink-0 grid-cols-1 gap-5 md:h-[420px] md:grid-cols-[1.6fr_1fr]">
         {loaded && mainId ? (
           <MainStationCard stationId={mainId} />
         ) : loaded ? (
@@ -378,7 +384,10 @@ export function HomeScreen() {
       </section>
 
       <section aria-labelledby="favorites-title" className="flex min-h-0 flex-1 flex-col gap-3">
-        <motion.div variants={revealItem} className="flex items-baseline justify-between">
+        <motion.div
+          variants={revealItem}
+          className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"
+        >
           <h2 id="favorites-title" className="font-display text-xl font-semibold">
             Favoritas
           </h2>
@@ -388,7 +397,7 @@ export function HomeScreen() {
           </p>
         </motion.div>
         {rest.length > 0 ? (
-          <ul className="grid flex-1 grid-cols-3 gap-4">
+          <ul className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-3">
             {rest.slice(0, 3).map((id, i) => (
               <FavoriteCard key={id} stationId={id} index={i} />
             ))}

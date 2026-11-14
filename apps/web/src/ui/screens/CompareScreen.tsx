@@ -93,13 +93,15 @@ export function CompareScreen() {
   const maxTop = Math.max(...columns.map((c) => c.summary?.topTotalCm ?? 0), 1);
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5 md:px-8 md:py-[26px] [&>*]:shrink-0">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-6">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             {ids.length} de {MAX_COMPARED} estaciones
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Comparar</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Comparar
+          </h1>
         </div>
         <PeriodSelector />
       </motion.header>

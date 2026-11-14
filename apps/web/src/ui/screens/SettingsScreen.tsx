@@ -2,6 +2,7 @@ import { Bell, Power, RefreshCw, Snowflake } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useId, useState } from 'react';
 import { autostartAvailable, isAutostartEnabled, setAutostart } from '../../platform/autostart';
+import { isAndroid, isDesktopApp, systemName } from '../../platform/device';
 import {
   getNotificationAccess,
   requestNotificationAccess,
@@ -13,7 +14,7 @@ import { REFRESH_OPTIONS, SNOW_LEVELS, useSettings } from '../state/settingsStor
 
 const ACCESS_TEXT: Record<NotificationAccess, string> = {
   granted: 'Activadas',
-  denied: 'Bloqueadas en Windows',
+  denied: `Bloqueadas en ${systemName}`,
   default: 'Sin activar',
   unsupported: 'No disponibles',
 };
@@ -40,9 +41,9 @@ function AutostartRow() {
   }
 
   return (
-    <li className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 py-4">
+    <li className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-4 md:px-5">
       <Power className="size-5 shrink-0 text-ice" aria-hidden="true" strokeWidth={1.6} />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-40">
         <label htmlFor={id} className="text-[15px] font-semibold">
           Iniciar con Windows
         </label>
@@ -80,18 +81,26 @@ function NotificationsRow() {
   }, []);
 
   async function test() {
-    setSent(await showNotification('SnowView', 'Así se verán tus avisos de nieve.'));
+    setSent(
+      await showNotification({ title: 'SnowView', body: 'Así se verán tus avisos de nieve.' }),
+    );
   }
 
   return (
-    <li className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 py-4">
+    <li className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-4 md:px-5">
       <Bell className="size-5 shrink-0 text-ice" aria-hidden="true" strokeWidth={1.6} />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-40">
         <p className="text-[15px] font-semibold">Notificaciones</p>
         <p className="text-xs text-muted" aria-live="polite">
           {access ? ACCESS_TEXT[access] : 'Comprobando…'}
           {sent === false && ' · no se pudo mostrar la prueba'}
         </p>
+        {isAndroid && access === 'denied' && (
+          <p className="text-xs text-muted">
+            Si Android ya no pregunta, actívalas en Ajustes → Aplicaciones → SnowView →
+            Notificaciones.
+          </p>
+        )}
       </div>
       {access !== 'granted' && access !== 'unsupported' && (
         <button
@@ -135,15 +144,19 @@ function ChoiceRow<T extends string | number>({
 }: ChoiceProps<T>) {
   const labelId = useId();
   return (
-    <li className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 py-4">
+    <li className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-4 md:px-5">
       <Icon className="size-5 shrink-0 text-ice" aria-hidden="true" strokeWidth={1.6} />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-40">
         <p id={labelId} className="text-[15px] font-semibold">
           {title}
         </p>
         <p className="text-xs text-muted">{hint}</p>
       </div>
-      <div role="radiogroup" aria-labelledby={labelId} className="flex shrink-0 gap-1.5">
+      <div
+        role="radiogroup"
+        aria-labelledby={labelId}
+        className="flex shrink-0 flex-wrap gap-1.5 max-md:basis-full"
+      >
         {options.map((o) => (
           <button
             key={o.value}
@@ -187,7 +200,7 @@ function SnowRow() {
     <ChoiceRow
       icon={Snowflake}
       title="Nevada de fondo"
-      hint="Menos copos gastan menos GPU. Con movimiento reducido en Windows la escena queda fija."
+      hint="Menos copos gastan menos GPU. Con movimiento reducido en el sistema la escena queda fija."
       value={level}
       options={SNOW_LEVELS.map((l) => ({ value: l.level, label: l.label }))}
       onChange={set}
@@ -197,24 +210,33 @@ function SnowRow() {
 
 export function SettingsScreen() {
   return (
-    <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
+    <div className="flex min-h-full flex-col gap-5 md:h-full px-4 py-5 md:px-8 md:py-[26px]">
       <motion.h1
         variants={revealItem}
-        className="font-display text-4xl font-semibold tracking-tight"
+        className="font-display text-3xl font-semibold md:text-4xl tracking-tight"
       >
         Ajustes
       </motion.h1>
-      <motion.section variants={revealItem} aria-label="Sistema" className="glass p-5">
+      <motion.section variants={revealItem} aria-label="Sistema" className="glass p-3 md:p-5">
         <ul className="flex flex-col gap-3">
           <NotificationsRow />
-          <AutostartRow />
+          {!isAndroid && <AutostartRow />}
           <RefreshRow />
           <SnowRow />
         </ul>
-        <p className="mt-4 text-xs text-muted">
-          Al cerrar la ventana, SnowView sigue en la bandeja. Para salir del todo, usa «Salir» en el
-          menú del icono de la bandeja.
-        </p>
+        {isDesktopApp && (
+          <p className="mt-4 text-xs text-muted">
+            Al cerrar la ventana, SnowView sigue en la bandeja. Para salir del todo, usa «Salir» en
+            el menú del icono de la bandeja.
+          </p>
+        )}
+        {isAndroid && (
+          <p className="mt-4 text-xs text-muted">
+            En Android los avisos de los próximos 5 días quedan programados con la última previsión
+            descargada y llegan aunque la app esté cerrada. Ábrela de vez en cuando para
+            actualizarlos.
+          </p>
+        )}
       </motion.section>
     </div>
   );
