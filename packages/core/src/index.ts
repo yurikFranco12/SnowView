@@ -7,7 +7,13 @@
 export const SNOW_UNIT = 'cm' as const;
 export type SnowUnit = typeof SNOW_UNIT;
 
-export type { Station, HourlyPoint, ElevationForecast, StationForecast } from './models';
+export type {
+  Station,
+  HourlyPoint,
+  ElevationForecast,
+  StationForecast,
+  StationSnapshot,
+} from './models';
 export { parseLengthUnit, toCm, type LengthUnit } from './units';
 export { describeWeatherCode, isSnowCode } from './weather';
 export { formatDistanceKm, formatDuration, haversineKm, isValidLatLng, type LatLng } from './geo';

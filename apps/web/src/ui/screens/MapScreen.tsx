@@ -1,15 +1,16 @@
 import { formatDistanceKm, haversineKm, type LatLng } from '@snowview/core';
 import { searchStations } from '@snowview/data';
-import { ArrowLeft, Crosshair, LocateFixed } from 'lucide-react';
+import { ArrowLeft, Crosshair, LocateFixed, Search } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { LocationAlert } from '../map/LocationAlert';
 import { LocationPanel } from '../map/LocationPanel';
 import { MapLegend } from '../map/MapLegend';
 import { MapView, type HoverInfo } from '../map/MapView';
 import { PinIcon } from '../map/PinIcon';
+import { hasPisteMap } from '../map/pisteData';
 import { PisteMapDialog } from '../map/PisteMap';
-import { SPAIN_VIEW, fitView, stationView, type View } from '../map/projection';
+import { fitView, stationView, type View } from '../map/projection';
 import { StationDetail } from '../map/StationDetail';
 import { StationHoverCard } from '../map/StationHoverCard';
 import { useUserLocation } from '../map/useUserLocation';
@@ -17,6 +18,10 @@ import { revealItem } from '../motion/reveal';
 import { useManualLocation } from '../state/manualLocationStore';
 
 const STATIONS = searchStations('');
+/** Vista general: todas las estaciones del catálogo. */
+const OVERVIEW: View = fitView(STATIONS, 0.72);
+/** Estaciones que se listan a la vez junto al mapa; el buscador llega al resto. */
+const LIST_LIMIT = 40;
 
 export function MapScreen() {
   const location = useUserLocation();
@@ -29,9 +34,11 @@ export function MapScreen() {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setManual = useManualLocation((s) => s.set);
   const selected = STATIONS.find((s) => s.id === selectedId);
+  const [query, setQuery] = useState('');
+  const searchId = useId();
 
   const target: View = useMemo(() => {
-    if (!selected) return SPAIN_VIEW;
+    if (!selected) return OVERVIEW;
     if (routeFocus && location.position) {
       const pts: LatLng[] = [location.position, selected];
       return fitView(pts, 0.55);
@@ -64,6 +71,22 @@ export function MapScreen() {
   const pisteStation = pisteMapId ? STATIONS.find((st) => st.id === pisteMapId) : undefined;
   const hoveredStation = hover ? STATIONS.find((st) => st.id === hover.id) : undefined;
 
+  // Lista junto al mapa: lo que coincide con la búsqueda, de más cerca a más lejos si se conoce
+  // la ubicación (si no, por nombre).
+  const listed = useMemo(() => {
+    const position = location.position;
+    const found = searchStations(query).map((s) => ({
+      station: s,
+      distanceKm: position ? haversineKm(position, s) : undefined,
+    }));
+    found.sort((a, b) =>
+      a.distanceKm !== undefined && b.distanceKm !== undefined
+        ? a.distanceKm - b.distanceKm
+        : a.station.name.localeCompare(b.station.name, 'es'),
+    );
+    return found;
+  }, [query, location.position]);
+
   const back = () => {
     setSelectedId(undefined);
     setRouteFocus(false);
@@ -75,7 +98,7 @@ export function MapScreen() {
       <motion.header variants={revealItem} className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
-            {STATIONS.length} estaciones · España, sur de Francia y Andorra
+            {STATIONS.length} estaciones · España, Francia, Portugal y Andorra
           </p>
           <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
             Mapa
@@ -123,7 +146,7 @@ export function MapScreen() {
               onOpen={() => {
                 setHover(undefined);
                 select(hoveredStation.id);
-                setPisteMapId(hoveredStation.id);
+                if (hasPisteMap(hoveredStation.id)) setPisteMapId(hoveredStation.id);
               }}
               onEnter={cancelHoverClose}
               onLeave={scheduleHoverClose}
@@ -151,7 +174,7 @@ export function MapScreen() {
               onClick={back}
               className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#0d1340]/90 px-3 py-1.5 text-xs backdrop-blur-md transition-colors hover:bg-[#161e5a]"
             >
-              <ArrowLeft className="size-3.5" aria-hidden="true" /> Volver al mapa de España
+              <ArrowLeft className="size-3.5" aria-hidden="true" /> Volver al mapa general
             </button>
           )}
           <div className="absolute bottom-3 left-3 flex flex-col items-start gap-2">
@@ -174,10 +197,34 @@ export function MapScreen() {
             <h2 id="legend-title" className="mb-2 text-sm font-semibold">
               Estaciones
             </h2>
+            <div className="relative mb-2">
+              <label htmlFor={searchId} className="sr-only">
+                Buscar estación por nombre, región o país
+              </label>
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted"
+                aria-hidden="true"
+              />
+              <input
+                id={searchId}
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar estación, región o país"
+                autoComplete="off"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.06] py-2 pr-3 pl-9 text-[13px] text-text placeholder:text-muted focus:border-ice/50 focus:outline-none"
+              />
+            </div>
+            <p className="mb-2 text-[11px] text-muted" aria-live="polite">
+              {listed.length === 0
+                ? 'Ninguna estación coincide con la búsqueda.'
+                : listed.length > LIST_LIMIT
+                  ? `${LIST_LIMIT} de ${listed.length}${location.position ? ', las más cercanas' : ''}. Escribe para encontrar otra.`
+                  : `${listed.length} ${listed.length === 1 ? 'estación' : 'estaciones'}`}
+            </p>
             <ul className="flex flex-col gap-1">
-              {STATIONS.map((s) => {
+              {listed.slice(0, LIST_LIMIT).map(({ station: s, distanceKm: d }) => {
                 const on = s.id === selectedId;
-                const d = location.position ? haversineKm(location.position, s) : undefined;
                 return (
                   <li key={s.id}>
                     <button

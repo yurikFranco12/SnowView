@@ -9,8 +9,18 @@ const files = import.meta.glob<{ pistes: Item[]; lifts: Item[] }>('./data/pistes
   import: 'default',
 });
 
+// No todas las estaciones del catálogo tienen mapa de pistas: se comprueban las que lo llevan.
+const withPistes = stationsFile.stations.filter((s) => `./data/pistes/${s.id}.json` in files);
+
 describe('datos de pistas', () => {
-  for (const station of stationsFile.stations) {
+  it('las estaciones verificadas a mano tienen mapa de pistas, y ningún mapa queda huérfano', () => {
+    expect(withPistes.length).toBe(Object.keys(files).length);
+    for (const id of ['baqueira-beret', 'sierra-nevada', 'grandvalira', 'cauterets']) {
+      expect(withPistes.some((s) => s.id === id)).toBe(true);
+    }
+  });
+
+  for (const station of withPistes) {
     it(`${station.id} tiene pistas y remontes cerca de la estación`, () => {
       const data = files[`./data/pistes/${station.id}.json`];
       expect(data).toBeDefined();
@@ -41,7 +51,7 @@ const terrainFiles = import.meta.glob<{
 }>('./data/terrain/*.json', { eager: true, import: 'default' });
 
 describe('datos de terreno', () => {
-  for (const station of stationsFile.stations) {
+  for (const station of withPistes) {
     it(`${station.id} tiene una malla de altitudes coherente`, () => {
       const g = terrainFiles[`./data/terrain/${station.id}.json`];
       expect(g).toBeDefined();

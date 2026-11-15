@@ -67,8 +67,29 @@ const PATHS = {
 const PIN_PATH = 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z';
 const PIN_RED = '#ff4d5e';
 
-/** Pin de una estación, siempre con el mismo dibujo y tamaño en pantalla. */
-function StationPin({ label, selected }: { label: string; selected: boolean }) {
+/**
+ * Pin de una estación, siempre con el mismo tamaño en pantalla. Con el mapa alejado hay cientos de
+ * estaciones juntas: `compact` las dibuja como un punto para que no se tapen unas a otras.
+ */
+function StationPin({
+  label,
+  selected,
+  compact,
+}: {
+  label: string;
+  selected: boolean;
+  compact: boolean;
+}) {
+  if (compact) {
+    return (
+      <g>
+        {/* Zona de pulsación más amplia que el punto. */}
+        <circle r="9" fill="transparent" />
+        <circle r="4" fill={PIN_RED} stroke="#ffffff" strokeWidth="1.2" />
+        <title>{label}</title>
+      </g>
+    );
+  }
   return (
     <g>
       {selected && (
@@ -213,7 +234,10 @@ export function MapView({
     [stations],
   );
   const visiblePlaces = PLACES.filter((p) => zoom >= p.minZoom);
-  const showAllLabels = zoom >= 40;
+  // Con cientos de estaciones, los nombres solo caben con el mapa muy cerca, y los pines completos
+  // a partir de un zoom medio; más lejos se dibujan puntos.
+  const showAllLabels = zoom >= 150;
+  const compactPins = zoom < 60;
 
   const onKey = (e: KeyboardEvent, id: string) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -353,7 +377,7 @@ export function MapView({
         onClick={onBackgroundClick}
         viewBox={`0 0 ${MAP_W} ${MAP_H}`}
         role="group"
-        aria-label="Mapa de las estaciones. Cada pin rojo es una estación; la lista de la derecha tiene las mismas."
+        aria-label="Mapa de las estaciones. Cada pin o punto rojo es una estación; la lista de la derecha tiene las mismas."
         className={`size-full touch-none select-none ${pickMode ? 'cursor-crosshair' : 'cursor-grab active:cursor-grabbing'}`}
         preserveAspectRatio="xMidYMid slice"
       >
@@ -451,7 +475,11 @@ export function MapView({
                   className="cursor-pointer outline-none focus-visible:[&_path]:stroke-ice"
                 >
                   <g data-inv="">
-                    <StationPin label={`${station.name} · ${station.region}`} selected={selected} />
+                    <StationPin
+                      label={`${station.name} · ${station.region}`}
+                      selected={selected}
+                      compact={compactPins && !selected && hovered !== station.id}
+                    />
                     {showLabel && (
                       <text
                         x="0"

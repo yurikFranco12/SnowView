@@ -5,6 +5,20 @@ import stationsFile from '../../../stations/stations.json';
 export interface CuratedStation extends Station {
   /** false mientras las cotas de base y cima no se hayan comprobado una a una. */
   elevationsVerified: boolean;
+  /** 'nordic' en los centros de esquí de fondo sin remontes; sin valor, estación de esquí alpino. */
+  kind?: 'nordic';
+}
+
+/** Países del catálogo, en el orden en que se muestran. */
+export const COUNTRIES = [
+  { code: 'ES', name: 'España' },
+  { code: 'FR', name: 'Francia' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'AD', name: 'Andorra' },
+] as const;
+
+export function countryName(code: string): string {
+  return COUNTRIES.find((c) => c.code === code)?.name ?? code;
 }
 
 function fail(msg: string): never {
@@ -55,6 +69,7 @@ export function parseStations(raw: unknown): CuratedStation[] {
       topElevationM: st.topElevationM,
       timeZone: st.timeZone,
       elevationsVerified: s.elevationsVerified === true,
+      ...(s.kind === 'nordic' ? { kind: 'nordic' as const } : {}),
     };
   });
 }
@@ -70,16 +85,20 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** Busca por nombre o región, sin distinguir tildes ni mayúsculas. Consulta vacía: todas. */
+/** Busca por nombre, región o país, sin distinguir tildes ni mayúsculas. Consulta vacía: todas. */
 export function searchStations(
   query: string,
   stations: readonly CuratedStation[] = STATIONS,
 ): CuratedStation[] {
   const q = normalize(query);
   if (!q) return [...stations];
-  return stations.filter((s) => normalize(`${s.name} ${s.region}`).includes(q));
+  return stations.filter((s) =>
+    normalize(`${s.name} ${s.region} ${countryName(s.country)}`).includes(q),
+  );
 }
 
+const BY_ID = new Map(STATIONS.map((s) => [s.id, s]));
+
 export function getStation(id: string): CuratedStation | undefined {
-  return STATIONS.find((s) => s.id === id);
+  return BY_ID.get(id);
 }

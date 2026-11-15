@@ -1,14 +1,15 @@
-import type { DayRating } from '@snowview/core';
-import { searchStations, type CuratedStation } from '@snowview/data';
+import type { DayRating, StationSnapshot } from '@snowview/core';
+import { COUNTRIES, searchStations, type CuratedStation } from '@snowview/data';
 import { ChevronRight, Search, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useId, useMemo, useState } from 'react';
 import { PeriodSelector } from '../components/PeriodSelector';
 import { RatingBadge } from '../components/RatingBadge';
-import { Skeleton } from '../components/StatusViews';
+import { ErrorView, Skeleton } from '../components/StatusViews';
 import { WeatherIcon } from '../components/WeatherIcon';
 import { rateStationDays } from '../data/conditions';
-import { formatCm, summarize, useForecasts, type StationSummary } from '../data/forecast';
+import { formatCm, useForecasts } from '../data/forecast';
+import { snapshotSnowCm, useSnapshots } from '../data/snapshots';
 import { sortStations, type RankRow, type StationSort } from '../data/ranking';
 import { useNow } from '../hooks/useNow';
 import { revealItem } from '../motion/reveal';
@@ -17,18 +18,26 @@ import { useFavorites } from '../state/favoritesStore';
 import { useSettings } from '../state/settingsStore';
 
 const ALL = searchStations('');
-const ALL_IDS = ALL.map((s) => s.id);
+/** Filas que se pintan de entrada; el resto, con «Mostrar más». */
+const PAGE_SIZE = 60;
+
+type Scope = 'all' | 'favorites' | (typeof COUNTRIES)[number]['code'];
+const SCOPES: readonly { key: Scope; label: string }[] = [
+  { key: 'all', label: 'Todas' },
+  { key: 'favorites', label: 'Favoritas' },
+  ...COUNTRIES.map((c) => ({ key: c.code, label: c.name })),
+];
 
 const SORTS: readonly { key: StationSort; label: string }[] = [
   { key: 'snow', label: 'Más nieve prevista' },
   { key: 'depth', label: 'Más espesor' },
-  { key: 'score', label: 'Mejor nota hoy' },
+  { key: 'score', label: 'Mejor nota hoy (favoritas)' },
   { key: 'name', label: 'Nombre' },
 ];
 
 interface Row extends RankRow {
   station: CuratedStation;
-  summary: StationSummary | undefined;
+  snapshot: StationSnapshot | undefined;
   rating: DayRating | undefined;
   loading: boolean;
   failed: boolean;
@@ -38,13 +47,13 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
   const ids = useFavorites((s) => s.ids);
   const toggle = useFavorites((s) => s.toggle);
   const openStation = useAppStore((s) => s.openStation);
-  const { station, summary } = row;
+  const { station, snapshot } = row;
   const favorite = ids.includes(station.id);
   const isMain = ids[0] === station.id;
 
   return (
     <li className="group relative flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 py-3 md:gap-4 md:px-4 transition-colors hover:bg-white/[0.07]">
-      <span className="w-6 shrink-0 text-center font-display text-lg font-semibold text-muted tabular-nums">
+      <span className="w-8 shrink-0 text-center font-display text-base font-semibold text-muted tabular-nums">
         {position}
       </span>
       <button
@@ -65,27 +74,26 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
           <span className="block truncate text-xs text-muted">
             {station.region} · {station.baseElevationM.toLocaleString('es-ES')}–
             {station.topElevationM.toLocaleString('es-ES')} m
-            {!station.elevationsVerified && ' · cotas por verificar'}
+            {station.kind === 'nordic' && ' · esquí de fondo'}
+            {!station.elevationsVerified && ' · cotas estimadas'}
           </span>
         </span>
 
         {row.loading ? (
           <Skeleton className="h-9 flex-[2]" />
-        ) : row.failed || !summary ? (
+        ) : row.failed || !snapshot || row.snowCm === null ? (
           <span className="flex-[2] text-xs text-muted">No se pudo cargar la previsión.</span>
         ) : (
           <>
             <span className="flex shrink-0 items-center gap-2 text-xs text-muted md:w-24">
-              <WeatherIcon code={summary.current?.weatherCode ?? null} className="size-5" />
+              <WeatherIcon code={snapshot.weatherCode} className="size-5" />
               <span className="tabular-nums">
-                {summary.current?.temperatureC != null
-                  ? `${Math.round(summary.current.temperatureC)} °C`
-                  : '—'}
+                {snapshot.temperatureC !== null ? `${Math.round(snapshot.temperatureC)} °C` : '—'}
               </span>
             </span>
             <span className="flex min-w-0 flex-1 flex-col gap-1">
               <span className="text-sm font-semibold tabular-nums">
-                {formatCm(summary.topTotalCm)} cm
+                {formatCm(row.snowCm)} cm
                 <span className="text-xs font-normal text-muted"> previstos</span>
               </span>
               <span
@@ -94,7 +102,7 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
               >
                 <span
                   className="block h-full origin-left rounded-full bg-gradient-to-r from-ice to-indigo transition-transform duration-500 motion-reduce:transition-none"
-                  style={{ transform: `scaleX(${summary.topTotalCm / maxSnow})` }}
+                  style={{ transform: `scaleX(${row.snowCm / maxSnow})` }}
                 />
               </span>
             </span>
@@ -103,7 +111,8 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
               <span className="block text-[11px] text-muted">espesor en cima</span>
             </span>
             <span className="shrink-0 md:w-32">
-              <RatingBadge rating={row.rating} />
+              {/* La nota solo se calcula para las favoritas: en el resto no se pinta nada. */}
+              {(favorite || row.rating) && <RatingBadge rating={row.rating} />}
             </span>
           </>
         )}
@@ -132,38 +141,55 @@ function StationRow({ row, position, maxSnow }: { row: Row; position: number; ma
 export function StationsScreen() {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<StationSort>('snow');
+  const [scope, setScope] = useState<Scope>('all');
+  const [shown, setShown] = useState(PAGE_SIZE);
   const inputId = useId();
   const sortId = useId();
   const now = useNow();
   const period = useAppStore((s) => s.period);
   const discipline = useSettings((s) => s.discipline);
-  const count = useFavorites((s) => s.ids.length);
-  const forecasts = useForecasts(ALL_IDS);
+  const favorites = useFavorites((s) => s.ids);
+  const count = favorites.length;
+  // Todas las estaciones: un resumen ligero. La nota de hoy necesita la previsión hora a hora, que
+  // solo se pide para las favoritas (ver data/snapshots.ts).
+  const snapshots = useSnapshots();
+  const forecasts = useForecasts(favorites);
 
-  const rows: Row[] = ALL.map((station, i) => {
-    const q = forecasts[i];
-    const data = q?.data;
-    const summary = data ? summarize(data, station, period, now) : undefined;
-    const rating = data ? rateStationDays(data, station, now, 1, discipline)[0]?.rating : undefined;
+  const ratings = new Map<string, DayRating>();
+  favorites.forEach((id, i) => {
+    const data = forecasts[i]?.data;
+    const station = ALL.find((s) => s.id === id);
+    const rating =
+      data && station ? rateStationDays(data, station, now, 1, discipline)[0]?.rating : undefined;
+    if (rating) ratings.set(id, rating);
+  });
+
+  const rows: Row[] = ALL.map((station) => {
+    const snapshot = snapshots.byId.get(station.id);
+    const rating = ratings.get(station.id);
     return {
       id: station.id,
       name: station.name,
       station,
-      summary,
+      snapshot,
       rating,
-      snowCm: summary?.topTotalCm ?? null,
-      depthCm: summary?.current?.snowDepthCm ?? null,
+      snowCm: snapshot ? snapshotSnowCm(snapshot, period) : null,
+      depthCm: snapshot?.snowDepthCm ?? null,
       score: rating?.score ?? null,
-      loading: q?.isPending ?? true,
-      failed: q?.isError ?? false,
+      loading: snapshots.isPending,
+      failed: !snapshots.isPending && !snapshot,
     };
   });
 
   const wanted = useMemo(() => new Set(searchStations(query).map((s) => s.id)), [query]);
+  const inScope = (r: Row) =>
+    scope === 'all' ||
+    (scope === 'favorites' ? favorites.includes(r.id) : r.station.country === scope);
   const visible = sortStations(
-    rows.filter((r) => wanted.has(r.id)),
+    rows.filter((r) => wanted.has(r.id) && inScope(r)),
     sort,
   );
+  const page = visible.slice(0, shown);
   const maxSnow = Math.max(1, ...rows.map((r) => r.snowCm ?? 0));
 
   return (
@@ -201,7 +227,7 @@ export function StationsScreen() {
           <PeriodSelector />
           <div className="relative w-full md:w-64">
             <label htmlFor={inputId} className="sr-only">
-              Buscar estación por nombre o región
+              Buscar estación por nombre, región o país
             </label>
             <Search
               className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted"
@@ -211,8 +237,11 @@ export function StationsScreen() {
               id={inputId}
               type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar estación o región"
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setShown(PAGE_SIZE);
+              }}
+              placeholder="Buscar estación, región o país"
               autoComplete="off"
               className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] py-2.5 pr-3 pl-10 text-sm text-text placeholder:text-muted focus:border-ice/50 focus:outline-none"
             />
@@ -220,21 +249,69 @@ export function StationsScreen() {
         </div>
       </motion.header>
 
+      <motion.div
+        variants={revealItem}
+        role="radiogroup"
+        aria-label="Estaciones que se muestran"
+        className="flex flex-wrap gap-1.5"
+      >
+        {SCOPES.map((s) => (
+          <button
+            key={s.key}
+            type="button"
+            role="radio"
+            aria-checked={scope === s.key}
+            onClick={() => {
+              setScope(s.key);
+              setShown(PAGE_SIZE);
+            }}
+            className={`rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
+              scope === s.key
+                ? 'border-ice/50 bg-ice/[0.16] font-semibold text-ice'
+                : 'border-white/10 text-muted hover:bg-white/[0.08] hover:text-text'
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </motion.div>
+
       <motion.section
         variants={revealItem}
         aria-label="Clasificación de estaciones"
         className="glass flex min-h-0 flex-1 flex-col gap-3 p-3 md:overflow-y-auto md:p-5"
       >
-        <p className="text-xs text-muted" aria-live="polite">
-          {visible.length === 0
-            ? 'Ninguna estación coincide con la búsqueda.'
-            : `Nieve prevista en la cima en ${period} días, espesor actual y nota de hoy. Pulsa una estación para ver su ficha; la estrella la añade a favoritas.`}
-        </p>
-        <ol className="flex flex-col gap-2">
-          {visible.map((row, i) => (
-            <StationRow key={row.id} row={row} position={i + 1} maxSnow={maxSnow} />
-          ))}
-        </ol>
+        {snapshots.isError && !snapshots.data ? (
+          <ErrorView
+            error={snapshots.error}
+            onRetry={() => void snapshots.refetch()}
+            retrying={snapshots.isFetching}
+          />
+        ) : (
+          <>
+            <p className="text-xs text-muted" aria-live="polite">
+              {visible.length === 0
+                ? scope === 'favorites' && query === ''
+                  ? 'Todavía no tienes favoritas. Pulsa la estrella de una estación para añadirla.'
+                  : 'Ninguna estación coincide con la búsqueda.'
+                : `${visible.length} ${visible.length === 1 ? 'estación' : 'estaciones'}. Nieve prevista en la cima en ${period} días, espesor actual y nota de hoy (solo en tus favoritas). Pulsa una estación para ver su ficha; la estrella la añade a favoritas.`}
+            </p>
+            <ol className="flex flex-col gap-2">
+              {page.map((row, i) => (
+                <StationRow key={row.id} row={row} position={i + 1} maxSnow={maxSnow} />
+              ))}
+            </ol>
+            {visible.length > page.length && (
+              <button
+                type="button"
+                onClick={() => setShown((n) => n + PAGE_SIZE)}
+                className="self-center rounded-xl bg-white/[0.08] px-4 py-2 text-sm transition-colors hover:bg-white/[0.14]"
+              >
+                Mostrar más ({visible.length - page.length} restantes)
+              </button>
+            )}
+          </>
+        )}
       </motion.section>
     </div>
   );

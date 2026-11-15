@@ -2,6 +2,7 @@ import { seasonLabel } from '@snowview/core';
 import { searchStations } from '@snowview/data';
 import { motion } from 'motion/react';
 import { useId, useState } from 'react';
+import { StationOptions } from '../components/StationOptions';
 import { ErrorView, Skeleton } from '../components/StatusViews';
 import { formatCm } from '../data/forecast';
 import { historyProvider, useSeasonHistory, type SeasonResult } from '../data/history';
@@ -129,11 +130,7 @@ export function HistoryScreen() {
             }}
             className="w-full rounded-[12px] border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-text focus:border-ice/50 focus:outline-none"
           >
-            {ALL_STATIONS.map((s) => (
-              <option key={s.id} value={s.id} className="bg-bg-start">
-                {s.name}
-              </option>
-            ))}
+            <StationOptions favorites={favorites} />
           </select>
         </div>
       </motion.header>

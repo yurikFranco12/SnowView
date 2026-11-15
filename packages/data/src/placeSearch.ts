@@ -10,7 +10,7 @@ import { RateLimiter } from './rateLimiter';
  * Verificado el 2026-11-12 con consultas reales ("Guriezo", "Castro Urd", "Cauterets", "Benasque"):
  * - `layer=city` (municipios, pueblos y ciudades) y `layer=locality` (núcleos y parajes) dejan fuera
  *   calles, paradas y comercios; `lang=default` da los nombres en el idioma del lugar.
- * - `bbox` limita la búsqueda a la zona de las estaciones (España, sur de Francia y Andorra).
+ * - `bbox` limita la búsqueda a la zona de las estaciones (España, Francia, Portugal y Andorra).
  * - Responde con CORS abierto.
  *
  * Datos © colaboradores de OpenStreetMap (ODbL): la interfaz debe citarlo. El servicio es de uso
@@ -18,8 +18,8 @@ import { RateLimiter } from './rateLimiter';
  */
 export const PHOTON_URL = 'https://photon.komoot.io/api/';
 export const PLACE_SEARCH_ATTRIBUTION = 'Búsqueda: Photon · datos © colaboradores de OpenStreetMap';
-/** Zona de búsqueda: oeste, sur, este, norte. Cubre España, el sur de Francia y Andorra. */
-export const SEARCH_BBOX = [-10, 35.5, 9, 48] as const;
+/** Zona de búsqueda: oeste, sur, este, norte. Cubre España, Francia, Portugal y Andorra. */
+export const SEARCH_BBOX = [-10, 35.5, 10, 51.5] as const;
 /** Se empieza a buscar a partir de este número de letras. */
 export const MIN_QUERY_LENGTH = 3;
 

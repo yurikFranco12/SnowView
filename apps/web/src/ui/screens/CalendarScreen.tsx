@@ -1,9 +1,9 @@
 import { RATING_LABEL } from '@snowview/core';
-import { getStation, searchStations } from '@snowview/data';
+import { getStation } from '@snowview/data';
 import { useQueries } from '@tanstack/react-query';
 import { Star } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { PeriodSelector } from '../components/PeriodSelector';
 import { DisciplineSelector, RATING_STYLE, RatingBadge } from '../components/RatingBadge';
 import { Skeleton } from '../components/StatusViews';
@@ -17,13 +17,15 @@ import {
   type StationDays,
 } from '../data/conditions';
 import { fetchStationForecast, formatCm } from '../data/forecast';
+import { snapshotSnowCm, useSnapshots } from '../data/snapshots';
 import { useNow } from '../hooks/useNow';
 import { revealItem } from '../motion/reveal';
 import { useAppStore } from '../state/appStore';
 import { useFavorites } from '../state/favoritesStore';
 import { useSettings } from '../state/settingsStore';
 
-const ALL_IDS = searchStations('').map((s) => s.id);
+/** Estaciones con más nieve prevista que se valoran en «Más nieve». */
+const TOP_SNOW_COUNT = 10;
 const weekday = new Intl.DateTimeFormat('es-ES', { weekday: 'short' });
 const longDay = new Intl.DateTimeFormat('es-ES', {
   weekday: 'long',
@@ -111,11 +113,25 @@ export function CalendarScreen() {
   const period = useAppStore((s) => s.period);
   const discipline = useSettings((s) => s.discipline);
   const favorites = useFavorites((s) => s.ids);
-  const [scope, setScope] = useState<'all' | 'favorites'>('all');
+  const [scope, setScope] = useState<'favorites' | 'snow'>('favorites');
   const [selected, setSelected] = useState<{ stationId: string; date: string } | undefined>(
     undefined,
   );
-  const ids = scope === 'favorites' && favorites.length > 0 ? favorites : ALL_IDS;
+  // Valorar un día necesita la previsión hora a hora: se pide solo para las favoritas o para las
+  // diez estaciones con más nieve prevista (según el resumen ligero), nunca para todo el catálogo.
+  const useSnow = scope === 'snow' || favorites.length === 0;
+  const snapshots = useSnapshots(useSnow);
+  const snowiest = useMemo(
+    () =>
+      [...(snapshots.data ?? [])]
+        .map((s) => ({ id: s.stationId, cm: snapshotSnowCm(s, period) ?? -1 }))
+        .filter((s) => getStation(s.id) !== undefined)
+        .sort((a, b) => b.cm - a.cm || a.id.localeCompare(b.id))
+        .slice(0, TOP_SNOW_COUNT)
+        .map((s) => s.id),
+    [snapshots.data, period],
+  );
+  const ids = useSnow ? snowiest : favorites;
   const { entries, loading, failed } = useStationDays(ids, period);
 
   const sorted = sortByAverage(entries);
@@ -154,7 +170,7 @@ export function CalendarScreen() {
             Mejores opciones para ir
           </h2>
           <div role="radiogroup" aria-label="Estaciones a valorar" className="flex gap-1">
-            {(['all', 'favorites'] as const).map((s) => (
+            {(['favorites', 'snow'] as const).map((s) => (
               <button
                 key={s}
                 type="button"
@@ -167,12 +183,12 @@ export function CalendarScreen() {
                     : 'text-muted hover:bg-white/[0.08] hover:text-text'
                 }`}
               >
-                {s === 'all' ? 'Todas' : 'Favoritas'}
+                {s === 'snow' ? 'Más nieve' : 'Favoritas'}
               </button>
             ))}
           </div>
         </div>
-        {loading && entries.length === 0 ? (
+        {(loading || (useSnow && snapshots.isPending)) && entries.length === 0 ? (
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <Skeleton className="h-24" />
             <Skeleton className="h-24" />

@@ -9,6 +9,7 @@ import {
   type NotificationAccess,
 } from '../../platform/notifications';
 import { RuleItem } from '../components/RuleItem';
+import { StationOptions } from '../components/StationOptions';
 import { useRuleResults } from '../data/rules';
 import { describeRule } from '../data/ruleText';
 import { revealItem } from '../motion/reveal';
@@ -104,11 +105,7 @@ function RuleForm({ rule, onClose }: { rule: AlertRule | undefined; onClose: () 
           onChange={(e) => set('stationId', e.target.value)}
           className={fieldClass}
         >
-          {STATIONS.map((s) => (
-            <option key={s.id} value={s.id} className="bg-bg-start">
-              {s.name} · {s.region}
-            </option>
-          ))}
+          <StationOptions favorites={favorites} />
         </select>
       </div>
       <div>

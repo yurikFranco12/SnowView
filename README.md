@@ -9,18 +9,19 @@ App de escritorio para Windows 11 hecha con Tauri 2, React y TypeScript.
 
 ## Qué hace
 
-- **Previsión de nieve** de 10 estaciones de España, Andorra y el Pirineo francés, a la cota de la
-  base y de la cima, para 3, 7 o 14 días.
+- **Previsión de nieve** de 74 estaciones de esquí de España, Francia, Portugal y Andorra (las de 20 km
+  esquiables o más; 40 km en Francia), a la cota de la base y de la cima, para 3, 7 o 14 días.
 - **Ficha de cada estación**: temperatura y sensación térmica, viento y rachas, espesor de nieve,
   isoterma de 0 °C, gráfica hora a hora de 72 h y los próximos 14 días.
-- **Clasificación de estaciones** por nieve prevista, espesor o nota del día.
+- **Clasificación de todas las estaciones** por nieve prevista, espesor o nota del día, con filtro
+  por país y por favoritas.
 - **Nota de 0 a 100** para esquiar o hacer snowboard cada día, con sus motivos, y un calendario con
   los mejores días.
 - **Avisos de Windows** cuando se cumple una regla tuya («más de 15 cm en 48 h»), también con la
   ventana cerrada (la app sigue en la bandeja).
-- **Mapa de pistas** de cada estación sobre la montaña en 3D, que gira 360°, y plano 2D con relieve
+- **Mapa de pistas** (en 10 estaciones, de momento) sobre la montaña en 3D, que gira 360°, y plano 2D con relieve
   y curvas de nivel.
-- **Mapa de España** con las estaciones, tu ubicación y la distancia a cada una.
+- **Mapa** con todas las estaciones, tu ubicación y la distancia a cada una.
 - **Webcams** de las estaciones, comparador, historial de nevadas por temporada y modo sin conexión.
 - **Buscador rápido** con Ctrl+K y atajos Ctrl+1…9. Sin cuentas ni claves: todo funciona al
   instalar.
@@ -39,7 +40,7 @@ primera vez. Cómo pasársela a otras personas: [docs/COMPARTIR.md](docs/COMPART
 
 ## Estado
 
-Versión **1.0.1**: la app está terminada. El detalle de cada fase está en `docs/fase-*/README.md`,
+Versión **1.1.0**: la app está terminada. El detalle de cada fase está en `docs/fase-*/README.md`,
 el avance en [docs/PROGRESO.md](docs/PROGRESO.md) y las decisiones técnicas en `docs/adr/`.
 
 ## Versiones

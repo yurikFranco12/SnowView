@@ -33,6 +33,8 @@ import { ErrorView, Skeleton } from './StatusViews';
 import { WeatherIcon } from './WeatherIcon';
 
 // El mapa de pistas (con sus datos y la vista 3D) se descarga solo si se abre.
+import { hasPisteMap } from '../map/pisteData';
+
 const PisteMapDialog = lazy(() =>
   import('../map/PisteMap').then((m) => ({ default: m.PisteMapDialog })),
 );
@@ -379,9 +381,11 @@ export function StationSheet() {
                 <Video className="size-3.5" aria-hidden="true" /> Webcams
               </button>
             )}
-            <button type="button" onClick={() => setPisteOpen(true)} className={action}>
-              <MapIcon className="size-3.5" aria-hidden="true" /> Mapa de pistas 3D
-            </button>
+            {hasPisteMap(station.id) && (
+              <button type="button" onClick={() => setPisteOpen(true)} className={action}>
+                <MapIcon className="size-3.5" aria-hidden="true" /> Mapa de pistas 3D
+              </button>
+            )}
             <button
               type="button"
               data-autofocus
