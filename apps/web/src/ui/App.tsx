@@ -93,9 +93,10 @@ export function App() {
         >
           <SnowCanvas intensity={snowIntensity(snowLevel)} />
           <TitleBar />
-          <div className="relative flex min-h-0 flex-1">
+          {/* En el móvil la navegación va abajo (columna invertida); en el escritorio, a la izquierda. */}
+          <div className="relative flex min-h-0 flex-1 flex-col-reverse md:flex-row">
             <Sidebar />
-            <main className="relative min-w-0 flex-1 overflow-y-auto">
+            <main className="relative min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
               <AnimatePresence mode="wait">
                 {/* El contenedor no anima nada propio: solo escalona a los paneles (ver reveal.ts). */}
                 <motion.div

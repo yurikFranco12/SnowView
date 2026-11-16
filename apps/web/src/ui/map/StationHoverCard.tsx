@@ -3,6 +3,7 @@ import type { CuratedStation } from '@snowview/data';
 import { Map as MapIcon } from 'lucide-react';
 import type { HoverInfo } from './MapView';
 import { PinIcon } from './PinIcon';
+import { hasPisteMap } from './pisteData';
 
 /**
  * Ficha que sale al pasar el ratón por un pin: resumen de la estación y el botón para abrir su mapa.
@@ -69,7 +70,8 @@ export function StationHoverCard({
         onClick={onOpen}
         className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-ice to-indigo px-3 py-2 text-xs font-semibold text-bg-start"
       >
-        <MapIcon className="size-3.5" aria-hidden="true" /> Ver mapa de la estación
+        <MapIcon className="size-3.5" aria-hidden="true" />{' '}
+        {hasPisteMap(station.id) ? 'Ver mapa de la estación' : 'Ver la estación'}
       </button>
     </div>
   );

@@ -3,6 +3,7 @@ import type { CuratedStation } from '@snowview/data';
 import { Map as MapIcon, Route as RouteIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAppStore } from '../state/appStore';
+import { hasPisteMap } from './pisteData';
 import type { UserLocation } from './useUserLocation';
 
 export function StationDetail({
@@ -64,13 +65,15 @@ export function StationDetail({
         >
           Ver ficha completa
         </button>
-        <button
-          type="button"
-          onClick={onOpenPisteMap}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-1.5 text-xs transition-colors hover:bg-white/[0.12]"
-        >
-          <MapIcon className="size-3.5" aria-hidden="true" /> Mapa de pistas
-        </button>
+        {hasPisteMap(station.id) && (
+          <button
+            type="button"
+            onClick={onOpenPisteMap}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-1.5 text-xs transition-colors hover:bg-white/[0.12]"
+          >
+            <MapIcon className="size-3.5" aria-hidden="true" /> Mapa de pistas
+          </button>
+        )}
       </div>
 
       <p className="rounded-xl bg-white/[0.06] px-3 py-2 text-sm">

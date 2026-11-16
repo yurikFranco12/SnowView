@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SnowView",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "identifier": "com.snowview.desktop",
   "build": {
     "frontendDist": "../apps/web/dist",
@@ -26,7 +26,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://baqueira-static.s3.eu-south-2.amazonaws.com https://cantur.com https://media.turismefgc.cat https://recursos.sierranevada.es https://webtvhotspot.feratel.com https://wtvhspt.feratel.com https://wtvpict.feratel.com https://www.masella.com; font-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://api.open-meteo.com https://archive-api.open-meteo.com https://photon.komoot.io; frame-src https://g0.ipcamlive.com https://webtv.feratel.com https://www.skaping.com"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://baqueira-static.s3.eu-south-2.amazonaws.com https://cantur.com https://media.turismefgc.cat https://recursos.sierranevada.es https://webtvhotspot.feratel.com https://wtvhspt.feratel.com https://wtvpict.feratel.com https://www.masella.com; font-src 'self'; connect-src 'self' ipc: http://ipc.localhost https://api.open-meteo.com https://archive-api.open-meteo.com https://photon.komoot.io; frame-src https://g0.ipcamlive.com https://webtv.feratel.com https://www.skaping.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; worker-src 'none'"
     }
   },
   "bundle": {

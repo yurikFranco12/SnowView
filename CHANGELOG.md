@@ -7,6 +7,32 @@ Cambios de SnowView por versión, de la más reciente a la más antigua. Formato
 
 ## [Sin publicar]
 
+## [1.1.0] - 2026-11-15 · fase 19
+
+Para la app de escritorio y la de Android (el código es el mismo).
+
+### Añadido
+
+- **Catálogo ampliado**: 74 estaciones de España (18), Francia (52), Portugal (1) y Andorra (3),
+  frente a las 10 de antes: las que tienen 20 km esquiables o más (40 km en Francia). Sale de OpenStreetMap con
+  `scripts/build-stations-download.mjs` y `scripts/build-stations.mjs` (ADR 0019).
+- Clasificación de todas las estaciones con filtro por país y por favoritas, paginada.
+- Resumen ligero de Open-Meteo (`packages/data/src/snapshots.ts`): una ubicación por estación, se
+  guarda en disco y se reutiliza durante 3 horas.
+- Buscar por país («francia», «portugal») en Estaciones, el Mapa y el buscador rápido.
+- Calendario: opción «Más nieve», con las 10 estaciones con más nieve prevista.
+
+### Cambiado
+
+- Mapa: vista general de todas las estaciones, puntos en lugar de pines con el mapa alejado y lista
+  lateral con buscador, ordenada por distancia si se conoce la ubicación.
+- Desplegables de estación (Alertas, Historial, Comparar) agrupados por país, con las favoritas
+  primero. Comparar ofrece las favoritas y un desplegable para añadir cualquier otra.
+- La nota del día en la clasificación solo se calcula para las favoritas.
+- «Buscar mi pueblo» cubre toda Francia y Portugal.
+- Las cotas de las estaciones nuevas son estimadas y la app lo dice («cotas estimadas»).
+- Los botones de mapa de pistas y de webcams solo aparecen en las estaciones que los tienen.
+
 ## [1.0.1] - 2026-11-13 · fase 17
 
 ### Cambiado

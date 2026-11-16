@@ -4,9 +4,12 @@ import type { HourlyPoint, StationForecast } from './models';
 import {
   type AlertRule,
   evaluateRule,
+  markKeysNotified,
   markNotified,
+  notificationId,
   parseRules,
   pickNewAlerts,
+  planUpcomingAlert,
   pruneLog,
   snowEpisodeStart,
   validateRule,
@@ -252,5 +255,44 @@ describe('validateRule y parseRules', () => {
       },
     ]);
     expect(parseRules(undefined)).toEqual([]);
+  });
+});
+
+describe('avisos programados', () => {
+  // 20 cm entre las horas 100 y 109: la regla de 48 h aún no se cumple en T0.
+  const later = hours(T0, 240, (i) => ({ snowfallCm: i >= 100 && i < 110 ? 2 : 0 }));
+  const f = forecast(later);
+
+  it('programa el aviso para la primera hora en que la ventana ya supera el umbral', () => {
+    expect(evaluateRule(RULE, f, T0).met).toBe(false);
+    const plan = planUpcomingAlert(RULE, f, T0 + 10 * 60_000, {});
+    // La ventana [t, t+48) suma más de 15 cm cuando incluye 8 horas de nieve: t + 48 > 107.
+    expect(plan?.atMs).toBe(T0 + 60 * HOUR_MS);
+    expect(plan?.evaluation.eventKey).toBe(`formigal|r1|${T0 + 100 * HOUR_MS}`);
+    expect(plan?.evaluation.totalCm).toBeCloseTo(16);
+  });
+
+  it('no programa el evento que ya se cumple ahora ni uno ya avisado', () => {
+    const now = hours(T0, 96, (i) => ({ snowfallCm: i >= 6 && i < 16 ? 2 : 0 }));
+    expect(planUpcomingAlert(RULE, forecast(now), T0, {})).toBeNull();
+    const key = `formigal|r1|${T0 + 100 * HOUR_MS}`;
+    expect(planUpcomingAlert(RULE, f, T0, { [key]: T0 })).toBeNull();
+  });
+
+  it('no programa reglas desactivadas ni nevadas más allá del horizonte', () => {
+    expect(planUpcomingAlert({ ...RULE, enabled: false }, f, T0, {})).toBeNull();
+    const far = hours(T0, 300, (i) => ({ snowfallCm: i >= 200 && i < 210 ? 2 : 0 }));
+    expect(planUpcomingAlert(RULE, forecast(far), T0, {})).toBeNull();
+  });
+
+  it('markKeysNotified anota los avisos que ya saltaron', () => {
+    expect(markKeysNotified({ a: 1 }, [{ eventKey: 'b', atMs: 2 }])).toEqual({ a: 1, b: 2 });
+  });
+
+  it('notificationId es estable, positivo y cabe en 31 bits', () => {
+    const id = notificationId('formigal|r1|123');
+    expect(id).toBe(notificationId('formigal|r1|123'));
+    expect(id).not.toBe(notificationId('formigal|r2|123'));
+    expect(Number.isInteger(id) && id > 0 && id <= 0x7fffffff).toBe(true);
   });
 });

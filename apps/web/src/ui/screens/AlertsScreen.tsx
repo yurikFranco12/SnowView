@@ -9,6 +9,7 @@ import {
   type NotificationAccess,
 } from '../../platform/notifications';
 import { RuleItem } from '../components/RuleItem';
+import { StationOptions } from '../components/StationOptions';
 import { useRuleResults } from '../data/rules';
 import { describeRule } from '../data/ruleText';
 import { revealItem } from '../motion/reveal';
@@ -82,6 +83,9 @@ function RuleForm({ rule, onClose }: { rule: AlertRule | undefined; onClose: () 
     }
     if (rule) update({ ...next, id: rule.id });
     else add(next);
+    // El permiso se pide al crear la regla, que es cuando se entiende para qué sirve (Android 13+
+    // lo exige en tiempo de ejecución). Si ya está concedido o denegado no pregunta nada.
+    void requestNotificationAccess();
     onClose();
   }
 
@@ -101,11 +105,7 @@ function RuleForm({ rule, onClose }: { rule: AlertRule | undefined; onClose: () 
           onChange={(e) => set('stationId', e.target.value)}
           className={fieldClass}
         >
-          {STATIONS.map((s) => (
-            <option key={s.id} value={s.id} className="bg-bg-start">
-              {s.name} · {s.region}
-            </option>
-          ))}
+          <StationOptions favorites={favorites} />
         </select>
       </div>
       <div>
@@ -217,15 +217,15 @@ function NotificationBanner() {
   return (
     <div
       role="status"
-      className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm"
+      className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm md:px-5"
     >
-      <p className="flex items-center gap-2.5">
+      <p className="flex min-w-0 flex-1 basis-56 items-center gap-2.5">
         <BellOff className="size-4 shrink-0 text-muted" aria-hidden="true" />
         {access === 'denied'
           ? 'Las notificaciones están bloqueadas: las reglas se evalúan, pero no recibirás avisos.'
           : access === 'unsupported'
             ? 'Este entorno no admite notificaciones.'
-            : 'Activa las notificaciones para recibir un aviso de Windows cuando se cumpla una regla.'}
+            : 'Activa las notificaciones para recibir un aviso cuando se cumpla una regla.'}
       </p>
       {access === 'default' && (
         <button
@@ -248,13 +248,18 @@ export function AlertsScreen() {
   const [editing, setEditing] = useState<AlertRule | 'new' | null>(null);
 
   return (
-    <div className="flex h-full flex-col gap-5 px-8 py-[26px]">
-      <motion.header variants={revealItem} className="flex items-end justify-between gap-6">
+    <div className="flex min-h-full flex-col gap-5 md:h-full px-4 py-5 md:px-8 md:py-[26px]">
+      <motion.header
+        variants={revealItem}
+        className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3"
+      >
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             {results.length} {results.length === 1 ? 'regla' : 'reglas'}
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Alertas</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Alertas
+          </h1>
         </div>
         {editing === null && (
           <button
@@ -275,7 +280,7 @@ export function AlertsScreen() {
       <motion.section
         variants={revealItem}
         aria-label="Reglas"
-        className="glass flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5"
+        className="glass flex min-h-0 flex-1 flex-col gap-4 p-4 md:overflow-y-auto md:p-5"
       >
         {editing !== null && (
           <RuleForm
@@ -298,9 +303,9 @@ export function AlertsScreen() {
           {results.map((r) => (
             <li
               key={r.rule.id}
-              className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 py-4"
+              className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-4 md:px-5"
             >
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 basis-full md:basis-0">
                 <RuleItem result={r} />
               </div>
               <label className="flex shrink-0 items-center gap-2 text-xs text-muted">

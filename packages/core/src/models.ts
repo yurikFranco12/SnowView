@@ -52,3 +52,19 @@ export interface StationForecast {
   /** Atribución que la UI debe mostrar (licencia de los datos). */
   attribution: string;
 }
+
+/**
+ * Resumen ligero de una estación en la cima: lo justo para ordenar muchas estaciones a la vez sin
+ * pedir la previsión completa de cada una.
+ */
+export interface StationSnapshot {
+  stationId: string;
+  /** Momento en que se obtuvo, en milisegundos UTC. */
+  fetchedAt: number;
+  /** Nieve prevista en la cima cada día local, en cm; el primero es hoy. */
+  dailySnowCm: (number | null)[];
+  /** Tiempo actual en la cima. */
+  temperatureC: number | null;
+  weatherCode: number | null;
+  snowDepthCm: number | null;
+}

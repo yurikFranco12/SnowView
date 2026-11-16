@@ -1,18 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Permisos de la ventana principal: los básicos más los botones de la barra de título propia.",
+  "description": "Permisos comunes a Windows y Android: lo básico, el almacenamiento de ajustes y las notificaciones. Solo la ventana principal, que carga únicamente el contenido empaquetado con la app.",
   "windows": ["main"],
-  "permissions": [
-    "core:default",
-    "core:window:allow-minimize",
-    "core:window:allow-toggle-maximize",
-    "core:window:allow-close",
-    "core:window:allow-start-dragging",
-    "store:default",
-    "notification:default",
-    "autostart:allow-enable",
-    "autostart:allow-disable",
-    "autostart:allow-is-enabled"
-  ]
+  "permissions": ["core:default", "store:default", "notification:default"]
 }

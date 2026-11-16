@@ -34,13 +34,9 @@ import {
   type SceneProjection,
 } from './pisteScene';
 import { lockOverlay } from '../hooks/overlayLock';
+import { pisteLoaders, terrainLoaders } from './pisteData';
 import { RidgeView } from './RidgeView';
 import { contourSegments, elevationAt, shadeImage, type TerrainGrid } from './terrain';
-
-const pisteLoaders = import.meta.glob<PisteData>('./data/pistes/*.json', { import: 'default' });
-const terrainLoaders = import.meta.glob<TerrainGrid>('./data/terrain/*.json', {
-  import: 'default',
-});
 
 /** Pistas y remontes de una estación (están dentro de la app: no hace falta conexión). */
 function usePisteData(stationId: string) {

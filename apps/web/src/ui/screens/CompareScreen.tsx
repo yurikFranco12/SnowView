@@ -1,9 +1,10 @@
-import { getStation, searchStations } from '@snowview/data';
+import { getStation } from '@snowview/data';
 import { useQueries } from '@tanstack/react-query';
 import { Star } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { PeriodSelector } from '../components/PeriodSelector';
+import { StationOptions } from '../components/StationOptions';
 import { Skeleton } from '../components/StatusViews';
 import { MAX_COMPARED, highlightBest, toggleCompared } from '../data/compare';
 import { fetchStationForecast, formatCm, summarize, type StationSummary } from '../data/forecast';
@@ -11,8 +12,6 @@ import { useNow } from '../hooks/useNow';
 import { revealItem } from '../motion/reveal';
 import { useAppStore } from '../state/appStore';
 import { useFavorites } from '../state/favoritesStore';
-
-const ALL_STATIONS = searchStations('');
 
 interface Column {
   id: string;
@@ -86,6 +85,10 @@ export function CompareScreen() {
   // Mientras el usuario no elija, se comparan las primeras favoritas.
   const ids = picked ?? favorites.slice(0, MAX_COMPARED);
   const columns = useColumns(ids);
+  const addId = useId();
+  // Con cientos de estaciones no caben todas como botones: se ofrecen las favoritas y las que ya
+  // se comparan, y el desplegable añade cualquier otra del catálogo.
+  const chips = [...new Set([...ids, ...favorites])].flatMap((id) => getStation(id) ?? []);
   const highlights = useMemo(
     () => highlightBest(columns.flatMap((c) => (c.summary ? [c.summary] : []))),
     [columns],
@@ -93,13 +96,15 @@ export function CompareScreen() {
   const maxTop = Math.max(...columns.map((c) => c.summary?.topTotalCm ?? 0), 1);
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-y-auto px-8 py-[26px] [&>*]:shrink-0">
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-4 py-5 md:px-8 md:py-[26px] [&>*]:shrink-0">
       <motion.header variants={revealItem} className="flex items-end justify-between gap-6">
         <div>
           <p className="text-xs tracking-[0.14em] text-muted uppercase">
             {ids.length} de {MAX_COMPARED} estaciones
           </p>
-          <h1 className="mt-1.5 font-display text-4xl font-semibold tracking-tight">Comparar</h1>
+          <h1 className="mt-1.5 font-display text-3xl font-semibold md:text-4xl tracking-tight">
+            Comparar
+          </h1>
         </div>
         <PeriodSelector />
       </motion.header>
@@ -109,7 +114,7 @@ export function CompareScreen() {
           Estaciones a comparar
         </h2>
         <ul className="flex flex-wrap gap-2">
-          {ALL_STATIONS.map((s) => {
+          {chips.map((s) => {
             const on = ids.includes(s.id);
             const full = !on && ids.length >= MAX_COMPARED;
             return (
@@ -131,10 +136,30 @@ export function CompareScreen() {
             );
           })}
         </ul>
-        {ids.length >= MAX_COMPARED && (
+        {ids.length >= MAX_COMPARED ? (
           <p className="mt-3 text-xs text-muted">
             Máximo {MAX_COMPARED} a la vez. Quita una para añadir otra.
           </p>
+        ) : (
+          <div className="mt-3 max-w-sm">
+            <label htmlFor={addId} className="mb-1 block text-xs text-muted">
+              Añadir otra estación
+            </label>
+            <select
+              id={addId}
+              value=""
+              onChange={(e) => {
+                const id = e.target.value;
+                if (id && !ids.includes(id)) setPicked(toggleCompared(ids, id));
+              }}
+              className="w-full rounded-[12px] border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-text focus:border-ice/50 focus:outline-none"
+            >
+              <option value="" className="bg-bg-start">
+                Elige una estación…
+              </option>
+              <StationOptions />
+            </select>
+          </div>
         )}
       </motion.section>
 

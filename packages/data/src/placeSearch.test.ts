@@ -112,7 +112,7 @@ describe('buildPlaceSearchUrl', () => {
     expect(url.searchParams.get('q')).toBe('Guriezo');
     expect(url.searchParams.getAll('layer')).toEqual(['city', 'locality']);
     expect(url.searchParams.get('lang')).toBe('default');
-    expect(url.searchParams.get('bbox')).toBe('-10,35.5,9,48');
+    expect(url.searchParams.get('bbox')).toBe('-10,35.5,10,51.5');
   });
 });
 

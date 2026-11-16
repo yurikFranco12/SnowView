@@ -6,14 +6,46 @@ Ramas y etiquetas: `docs/VERSIONES.md`.
 
 ## Estado
 
-- **Fase actual:** ninguna en curso. Hecha la 17 (icono del copo, acceso directo y guía para compartir); app 1.0.1, terminada.
+- **Fase actual:** 19 (catálogo completo de estaciones), en la rama
+  `claude/estaciones-iberia-app-741970`, que parte de la fase 18. Código, catálogo y documentación
+  hechos; app 1.1.0. Falta cerrar (instaladores en el equipo, fusión, etiquetas). Detalle en
+  `docs/fase-19/README.md`.
+- **Fase 18** (Android y Google Play): código preparado; falta generar y probar el proyecto de
+  Android en el equipo. Detalle en `docs/fase-18/README.md`.
+- **Fase 17:** hecha (icono del copo, acceso directo y guía para compartir); app 1.0.1.
 - **Fase 1c:** completada el 2026-11-12. Etiqueta `fase-1c`, app 0.3.0. Detalle en
   `docs/fase-1c/README.md`.
 - **Fase 1b:** completada el 2026-11-12. Etiqueta `fase-1b`, app 0.2.0. Detalle en
   `docs/fase-1b/README.md`.
 - **Fase 0:** completada el 2026-11-12. Etiqueta `fase-0`.
 - **Fase 1a:** completada el 2026-11-12. Etiqueta `fase-1a`, app 0.1.0, instaladores `.msi` y `.exe`.
-- `pnpm check` en verde (tipos, ESLint, Prettier, 52 tests + 1 en vivo opcional).
+- `pnpm check` en verde (tipos, ESLint, Prettier, 309 tests + 1 en vivo opcional).
+
+## Fase 19 — tareas
+
+- [x] Catálogo de 74 estaciones de España, Francia, Portugal y Andorra (20 km esquiables o más; 40 en Francia)
+      desde OpenStreetMap, con cotas estimadas del relieve (`scripts/build-stations*.mjs`, ADR 0019)
+- [x] Resumen ligero de Open-Meteo para ordenar todas las estaciones sin gastar el límite gratuito
+- [x] Pantallas adaptadas a cientos de estaciones: clasificación, mapa, calendario, comparar,
+      alertas, historial y buscador rápido
+- [x] Versión 1.1.0, `pnpm check` en verde, probado en el navegador (escritorio y móvil)
+- [x] Instaladores de Windows 1.1.0 compilados (`.msi` 3,25 MiB, `.exe` 2,69 MiB); sin probar
+      instalados
+- [ ] `.aab` de Android con `pnpm.cmd android:build` (necesita los pasos pendientes de la fase 18)
+- [ ] Cerrar: fusión en `main` (trae también la fase 18), etiquetas `fase-19` y `v1.1.0`, claude.ai
+- [ ] Mapas de pistas y webcams de las estaciones nuevas (hoy solo los tienen las 10 primeras)
+
+## Fase 18 — tareas
+
+- [x] Rust, permisos y configuración de Tauri separados entre escritorio y Android
+- [x] Notificaciones en Android: canal, permiso y avisos programados sin repetir (ADR 0018)
+- [x] Interfaz adaptable a móvil (barra inferior, una columna); escritorio sin cambios
+- [x] Seguridad: CSP más estricta, sin permiso de ubicación en Android, claves fuera de git
+- [x] Guía de publicación (`docs/fase-18/README.md`) y política de privacidad (`docs/PRIVACIDAD.md`)
+- [ ] Instalar Android Studio, SDK, NDK y Java; `pnpm android:init` (no están en el equipo)
+- [ ] Probar los avisos en un teléfono o emulador (lista en la guía)
+- [ ] Firmar, compilar el `.aab` y subirlo a una prueba interna de Google Play
+- [ ] Decidir: identificador definitivo, permiso para las webcams, licencia de Open-Meteo
 
 ## Fase 17 — tareas
 
@@ -205,6 +237,8 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 | 2026-11-12 | Gráficas hechas a mano, sin Recharts ni Visx               | ADR 0004       |
 | 2026-11-12 | Aviso por episodio de nieve; cerrar oculta en bandeja      | ADR 0005       |
 | 2026-11-12 | Cotas verificadas; Formigal base 1510, La Molina base 1667 | stations.json  |
+| 2026-11-14 | Android con avisos programados; sin ubicación en Android   | ADR 0018       |
+| 2026-11-15 | Catálogo generado desde OpenStreetMap; resumen ligero      | ADR 0019       |
 
 ## Notas de entorno
 
@@ -219,6 +253,6 @@ Todas las tareas hechas, incluida la verificación de cotas de las 8 estaciones 
 ## Próximos pasos
 
 1. Probar las webcams y los mapas de pistas en la app instalada.
-2. Añadir más estaciones de España, sur de Francia y Andorra: el mapa dibuja las que estén en `stations/stations.json`.
+2. Mapas de pistas y webcams para las estaciones nuevas del catálogo.
 3. Verificar las cotas de Cauterets con una fuente oficial.
 4. Tus ajustes y añadidos: se irán pidiendo uno a uno, cada uno en su rama.

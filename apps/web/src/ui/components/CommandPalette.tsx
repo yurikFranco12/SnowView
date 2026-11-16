@@ -29,6 +29,9 @@ export const SCREEN_SHORTCUTS: readonly { view: View; label: string; icon: Lucid
   { view: 'ajustes', label: 'Ajustes', icon: Settings },
 ];
 
+/** Estaciones que se listan como mucho al buscar. */
+const MAX_STATION_RESULTS = 12;
+
 interface Entry {
   id: string;
   label: string;
@@ -84,7 +87,9 @@ function PaletteDialog() {
 
   const entries = useMemo<Entry[]>(() => {
     const q = normalizeText(text);
-    const stations: Entry[] = searchStations(text).map((s) => ({
+    // Sin texto no se listan las estaciones (son cientos); buscando, las primeras coincidencias.
+    const found = q === '' ? [] : searchStations(text).slice(0, MAX_STATION_RESULTS);
+    const stations: Entry[] = found.map((s) => ({
       id: `s-${s.id}`,
       label: s.name,
       hint: `${s.region} · ficha de la estación`,

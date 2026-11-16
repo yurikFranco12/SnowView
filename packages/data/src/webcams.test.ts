@@ -15,10 +15,12 @@ const valid = {
 const wrap = (...webcams: unknown[]) => ({ webcams });
 
 describe('webcams.json real', () => {
-  it('es válido y cada estación tiene al menos una webcam', () => {
+  it('es válido y las estaciones verificadas a mano tienen al menos una webcam', () => {
     expect(WEBCAMS.length).toBeGreaterThan(0);
-    for (const s of STATIONS) expect(getWebcams(s.id).length, s.name).toBeGreaterThan(0);
-    expect(stationsWithWebcams()).toHaveLength(STATIONS.length);
+    // Las webcams se buscaron una a una (ADR 0008): el resto del catálogo aún no tiene.
+    const curated = STATIONS.filter((s) => s.elevationsVerified || s.id === 'cauterets');
+    for (const s of curated) expect(getWebcams(s.id).length, s.name).toBeGreaterThan(0);
+    expect(stationsWithWebcams()).toHaveLength(curated.length);
   });
 
   it('todas usan https y la caché de la imagen no baja del mínimo', () => {

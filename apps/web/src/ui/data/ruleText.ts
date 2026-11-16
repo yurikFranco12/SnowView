@@ -29,3 +29,17 @@ export function alertBody(evaluation: RuleEvaluation): string {
   const cota = rule.elevation === 'base' ? 'en la base' : 'en la cima';
   return `Se prevén ${num(totalCm)} cm ${cota} en las próximas ${windowLabel(rule.windowHours)}. Tu regla pedía más de ${num(rule.thresholdCm)} cm.`;
 }
+
+/**
+ * Texto de un aviso programado: salta más tarde, quizá con la app cerrada, así que dice de cuándo
+ * es la previsión con la que se calculó.
+ */
+export function scheduledAlertBody(evaluation: RuleEvaluation, forecastAtMs: number): string {
+  const when = new Date(forecastAtMs).toLocaleString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${alertBody(evaluation)} Previsión del ${when}: abre SnowView para actualizarla.`;
+}
